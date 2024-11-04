@@ -1,26 +1,36 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <v-app>
+    <v-main>
+      <LogIn v-if="!isLoggedIn" @login="handleLogin"/>
+      <div v-else>
+        <h1>Velkommen til Gammelchat</h1>
+        <p>Du er logget ind som {{ username }}</p>
+      </div>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import LogIn from './components/LogIn.vue'
 
 export default {
   name: 'App',
+
   components: {
-    HelloWorld
-  }
+    LogIn,
+  },
+
+  data() {
+    return {
+      isLoggedIn: false,
+      username: '',
+    }
+  },
+  methods: {
+    handleLogin(username) {
+      this.isLoggedIn = true
+      this.username = username
+    },
+  },
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
