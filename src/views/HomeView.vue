@@ -1,18 +1,25 @@
 <template>
   <v-main :class="{ mainContent: this.siteInfo.loggedIn }">
     <LogIn v-if="!siteInfo.loggedIn" @login="handleLogin" />
-    <div class="d-block pa-4" v-else>
-        <v-img
-          :src="loggedInUser.photo"
-          :alt="loggedInUser.username"
-          rounded="circle"
-          aspect-ratio="1"
-          class="d-flex justify-center  userPicture"
-        />
-      <p>Velkommen <b>{{ loggedInUser.username }}</b></p>
+    <div class="d-block homeWrap pa-4" v-else>
+      <v-img
+        :src="loggedInUser.photo"
+        :alt="loggedInUser.username"
+        rounded="circle"
+        class="userPicture"
+      />
+      <p class="text-subtitle-2 mt-16">
+        Velkommen <b>{{ loggedInUser.username }}</b>
+      </p>
       <h1>Dine fællesskaber</h1>
-      <v-btn color="secondary" class="d-block w-25"> Fiskehjørnet </v-btn>
-      <v-btn color="secondary" class="d-block w-25 mt-4"> Lotusklubben </v-btn>
+      <template v-if="this.loggedInUser.communities">
+        <template
+          v-for="(community, index) in this.loggedInUser.communities"
+          :key="index"
+        >
+          <v-btn color="secondary" class="d-block">{{ community.name }}</v-btn>
+        </template>
+      </template>
     </div>
   </v-main>
 </template>
@@ -49,32 +56,19 @@ export default {
 </script>
 
 <style scoped>
-h1 {
-  color: #000000;
-}
-.userWrap {
-  width: 10rem;
-}
-.userPicture {
-  width: 10rem;
-  border-radius: 9999px;
-  display: block;
-}
-.mainContent {
-  margin-left: 26vw;
-}
-
 @media (max-width: 1024px) {
-  .userPicture {
+  .homeWrap {
     margin: 0 auto;
   }
-  .mainContent {
-    display:flex;
-    justify-content:center;
-    margin-left: 0;
+}
+
+@media (min-width: 1024px) {
+  .homeWrap {
+    width: 400px;
+    margin: 0;
   }
-  .mainContent button {
-    min-width:300px;
-  }
+}
+.homeWrap button {
+  width: 100%;
 }
 </style>
