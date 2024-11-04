@@ -13,35 +13,6 @@
         <v-col class="flex-grow-1 flex-shrink-1 userListCol">
 
         </v-col>
-        <v-col class="flex-grow-1 flex-shrink-1 userListCol" v-if="nothing == true"><!-- Vi blev enige om, ikke at vise billeder i header navigationen for nu -->
-            <div class="d-flex flex-wrap flex-grow-1 flex-shrink-1">
-              <div class="loggedInAs">
-                <v-img
-                  :src="loggedInUser.photo"
-                  :alt="loggedInUser.username"
-                  rounded="circle"
-                  aspect-ratio="1"
-                  class="userPicture"
-                />
-              </div>
-            </div>
-            <div class="d-flex flex-wrap userList flex-grow-1 flex-shrink-1">
-              <template v-for="user in siteInfo.users" :key="user.username">
-                <div
-                  v-if="loggedInUser.username !== user.username"
-                  class="userListItem"
-                >
-                  <v-img
-                    :src="user.photo"
-                    :alt="user.username"
-                    rounded="circle"
-                    aspect-ratio="1"
-                    class="userPicture"
-                  />
-                </div>
-              </template>
-            </div>
-        </v-col>
 
         <v-col class="flex-grow-0 flex-shrink-0">
           <div class="d-flex justify-end">

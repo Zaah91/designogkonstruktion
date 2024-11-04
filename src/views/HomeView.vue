@@ -65,9 +65,16 @@ h1 {
 }
 
 @media (max-width: 1024px) {
+  .userPicture {
+    margin: 0 auto;
+  }
   .mainContent {
-    position: relative;
-    left: 0;
+    display:flex;
+    justify-content:center;
+    margin-left: 0;
+  }
+  .mainContent button {
+    min-width:300px;
   }
 }
 </style>
