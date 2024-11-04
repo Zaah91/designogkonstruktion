@@ -1,36 +1,74 @@
 <template>
   <v-app>
-    <v-main>
-      <LogIn v-if="!isLoggedIn" @login="handleLogin"/>
-      <div v-else>
-        <h1>Velkommen til Gammelchat</h1>
-        <p>Du er logget ind som {{ username }}</p>
-      </div>
-    </v-main>
+    <NavHeader :siteInfo="siteInfo" @logout="handleLogout" />
+    <router-view />
   </v-app>
 </template>
 
 <script>
-import LogIn from './components/LogIn.vue'
+// Komponenter
+import NavHeader from '@/components/NavHeader.vue';
 
 export default {
   name: 'App',
-
   components: {
-    LogIn,
+    NavHeader,
   },
-
   data() {
     return {
-      isLoggedIn: false,
-      username: '',
-    }
+      siteInfo: {
+        sitename: 'Gammelchat',
+        logo: require('@/assets/gammelchat-logo.webp'),
+        loggedIn: false,
+        loggedInUser: {},
+        users: [
+          {
+            username: 'Eivind',
+            name: 'Eivind Johannes Goldenstein Hansen',
+            photo: require('@/assets/eivind.webp')
+          },
+          {
+            username: 'Karan',
+            name: 'Karen Elisabeth Johannesson',
+            photo: require('@/assets/karan.webp')
+          },
+          {
+            username: 'Ulla',
+            name: 'Ulla Hansen',
+            photo: require('@/assets/ulla.webp')
+          },
+        ]
+      },
+    };
+  },
+  provide() {
+    // Fordi siteInfo ikke er direkte tilgængelig i vores views, bliver vi nødt til at dele den først via provide
+    // Inde i de views, som skal bruge den, skal vi huske at lave en inject af den. Se eks HomeView.
+    return {
+      siteInfo: this.siteInfo, // Providing `siteInfo` for child components
+    };
   },
   methods: {
     handleLogin(username) {
-      this.isLoggedIn = true
-      this.username = username
+      this.siteInfo.loggedIn = true;
+      this.siteInfo.username = username;
+    },
+    handleLogout() {
+      this.siteInfo.loggedIn = false;
+      this.siteInfo.username = '';
+      this.siteInfo.loggedInUser = {};
     },
   },
-}
+};
 </script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #000;
+}
+a {color: #0C8A6F;}
+</style>
