@@ -1,9 +1,18 @@
 <template>
-  <v-main>
+  <v-main :class="{ mainContent: this.siteInfo.loggedIn }">
     <LogIn v-if="!siteInfo.loggedIn" @login="handleLogin" />
-    <div v-else>
-      <h1>Velkommen til Gammelchat</h1>
-      <p>Du er logget ind som {{ username }}</p>
+    <div class="d-block pa-4" v-else>
+        <v-img
+          :src="loggedInUser.photo"
+          :alt="loggedInUser.username"
+          rounded="circle"
+          aspect-ratio="1"
+          class="d-flex justify-center  userPicture"
+        />
+      <p>Velkommen <b>{{ loggedInUser.username }}</b></p>
+      <h1>Dine fællesskaber</h1>
+      <v-btn color="secondary" class="d-block w-25"> Fiskehjørnet </v-btn>
+      <v-btn color="secondary" class="d-block w-25 mt-4"> Lotusklubben </v-btn>
     </div>
   </v-main>
 </template>
@@ -23,11 +32,42 @@ export default {
       this.siteInfo.username = username;
     },
   },
+  computed: {
+    loggedInUser() {
+      // Retuner user-objektet for den bruger, som er logget ind
+      const loggedInUser = this.siteInfo.users.find(
+        (user) => user.username === this.siteInfo.username
+      );
+      if (loggedInUser) {
+        return loggedInUser;
+      } else {
+        return this.siteInfo.users.find((user) => user.username === "Ulla");
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
 h1 {
   color: #000000;
+}
+.userWrap {
+  width: 10rem;
+}
+.userPicture {
+  width: 10rem;
+  border-radius: 9999px;
+  display: block;
+}
+.mainContent {
+  margin-left: 26vw;
+}
+
+@media (max-width: 1024px) {
+  .mainContent {
+    position: relative;
+    left: 0;
+  }
 }
 </style>
