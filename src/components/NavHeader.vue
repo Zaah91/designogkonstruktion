@@ -11,6 +11,9 @@
         </v-col>
 
         <v-col class="flex-grow-1 flex-shrink-1 userListCol">
+
+        </v-col>
+        <v-col class="flex-grow-1 flex-shrink-1 userListCol" v-if="nothing == true"><!-- Vi blev enige om, ikke at vise billeder i header navigationen for nu -->
             <div class="d-flex flex-wrap flex-grow-1 flex-shrink-1">
               <div class="loggedInAs">
                 <v-img
@@ -49,7 +52,7 @@
                     text
                     icon
                     color="secondary"
-                    :to="{ name: 'Home' }"
+                    :to="{ name: 'Support' }"
                     class="navBtn"
                     ><v-icon color="actionTxt" icon="mdi-face-agent"
                   /></v-btn>
@@ -57,6 +60,11 @@
                 <li v-if="route.name == 'Home'">
                   <v-btn text icon color="secondary" class="navBtn"
                     ><v-icon color="actionTxt" icon="mdi-close" @click="logout"
+                  /></v-btn>
+                </li>
+                <li v-else>
+                  <v-btn text icon color="secondary" class="navBtn"
+                    ><v-icon color="actionTxt" icon="mdi-close" @click="goBack"
                   /></v-btn>
                 </li>
                 <li>
@@ -200,6 +208,7 @@ header li {
 }
 @media (max-width: 1024px) {
   header {
+    position:relative;
     width: 100%;
     top: 0;
     height: auto;
