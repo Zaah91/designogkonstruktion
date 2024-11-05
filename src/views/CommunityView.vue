@@ -3,8 +3,8 @@
     <div class="pa-4 flexWrap">
       <h1>Fællesskab</h1>
       <v-btn color="secondary" class="d-block pa-2" :to="{ name: 'Chat' }">Chat</v-btn>
-      <v-btn color="secondary" class="d-block mt-8 pa-2" :to="{ name: 'Chat' }">Video</v-btn>
-      <v-btn color="secondary" class="d-block mt-8 pa-2" :to="{ name: 'Chat' }">Forum</v-btn>
+      <v-btn color="secondary" class="d-block mt-8 pa-2" :to="{ name: 'Video' }">Video</v-btn>
+      <v-btn color="secondary" class="d-block mt-8 pa-2" :to="{ name: 'Forum' }">Forum</v-btn>
     </div>
   </v-main>
 </template>
