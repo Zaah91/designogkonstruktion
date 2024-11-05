@@ -34,8 +34,8 @@
                   /></v-btn>
                 </li>
                 <li v-else>
-                  <v-btn text icon color="secondary" class="navBtn"
-                    ><v-icon color="actionTxt" icon="mdi-close" @click="goBack"
+                  <v-btn text icon color="secondary" class="navBtn" :to="{ name: 'Home' }"
+                    ><v-icon color="actionTxt" icon="mdi-arrow-left"
                   /></v-btn>
                 </li>
                 <li>
