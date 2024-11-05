@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <NavHeader :siteInfo="siteInfo" @logout="handleLogout" />
-    <router-view />
+    <router-view :siteInfo="siteInfo"/>
   </v-app>
 </template>
 

@@ -11,11 +11,11 @@
       
       <v-divider class="my-4"></v-divider>
       
-      <v-btn class="mb-2" color="red darken-1" large>
+      <v-btn class="mb-2" color="red darken-1" large @click="loginAsRandomUser">
         Log ind med Google
       </v-btn>
       
-      <v-btn color="grey darken-3" large>
+      <v-btn color="grey darken-3" large @click="loginAsRandomUser">
         Log ind med Apple
       </v-btn>
     </v-card>
@@ -25,6 +25,9 @@
 <script>
 export default {
     name: 'LogIn',
+    props: {
+        siteInfo: Object,
+    },
     data() {
         return {
             username: '',
@@ -37,6 +40,10 @@ export default {
             } else {
                 alert('Indtast venligst et brugernavn')
             }
+        },
+        loginAsRandomUser() {
+            const randomUser = this.siteInfo.users[Math.floor(Math.random() * this.siteInfo.users.length)];
+            this.$emit('login', randomUser.username);
         }
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <v-main :class="{ mainContent: this.siteInfo.loggedIn }">
-    <LogIn v-if="!siteInfo.loggedIn" @login="handleLogin" />
+    <LogIn v-if="!siteInfo.loggedIn" :siteInfo="siteInfo" @login="handleLogin" />
     <div class="d-block homeWrap pa-4" v-else>
       <v-img
         :src="loggedInUser.photo"
