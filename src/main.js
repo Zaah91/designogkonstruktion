@@ -3,6 +3,7 @@ import App from './App.vue';
 import router from './router'; // Import af routeren
 import vuetify from './plugins/vuetify';
 import { loadFonts } from './plugins/webfontloader';
+import '@/assets/styles/global.scss';  // Delte SCSS styles
 
 loadFonts();
 

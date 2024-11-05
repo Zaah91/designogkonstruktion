@@ -7,37 +7,71 @@
 
 <script>
 // Komponenter
-import NavHeader from '@/components/NavHeader.vue';
+import NavHeader from "@/components/NavHeader.vue";
+import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     NavHeader,
   },
   data() {
     return {
       siteInfo: {
-        sitename: 'Gammelchat',
-        logo: require('@/assets/gammelchat-logo.webp'),
+        sitename: "Gammelchat",
+        logo: require("@/assets/gammelchat-logo.webp"),
         loggedIn: false,
         loggedInUser: {},
         users: [
           {
-            username: 'Eivind',
-            name: 'Eivind Johannes Goldenstein Hansen',
-            photo: require('@/assets/eivind.webp')
+            username: "Eivind",
+            name: "Eivind Johannes Goldenstein Hansen",
+            email: "eivind@example.com",
+            photo: require("@/assets/eivind.webp"),
+            communities: [
+              {
+                name: "Fiskehjørnet",
+              },
+              {
+                name: "Lotusklubben",
+              },
+            ],
           },
           {
-            username: 'Karan',
-            name: 'Karen Elisabeth Johannesson',
-            photo: require('@/assets/karan.webp')
+            username: "Karan",
+            name: "Karen Elisabeth Johannesson",
+            email: "karen@example.com",
+            photo: require("@/assets/karan.webp"),
+            communities: [
+              {
+                name: "Strikkeklubben",
+              }
+            ],
           },
           {
-            username: 'Ulla',
-            name: 'Ulla Hansen',
-            photo: require('@/assets/ulla.webp')
+            username: "Ulla",
+            name: "Ulla Hansen",
+            email: "ulla@example.com",
+            photo: require("@/assets/ulla.webp"),
+            communities: [
+              {
+                name: "Strikkeklubben",
+              },
+            ],
           },
-        ]
+        ],
+        communities: [
+          {
+            name: "Strikkeklubben",
+          },
+          {
+            name: "Lotusklubben",
+          },
+          {
+            name: "Fiskehjørnet",
+          }
+        ],
       },
     };
   },
@@ -55,9 +89,24 @@ export default {
     },
     handleLogout() {
       this.siteInfo.loggedIn = false;
-      this.siteInfo.username = '';
+      this.siteInfo.username = "";
       this.siteInfo.loggedInUser = {};
     },
+    redirectToHome() {
+      const router = useRouter();
+      if (!this.siteInfo.loggedIn && this.route.name !== "Home") {
+        router.push({ name: "Home" }); // Redirect til home, hvis route name ikke matcher, og brugeren ikke er logget ind
+      }
+    },
+  },
+  mounted() {
+    // Når vores app bliver "mounted", tjek om brugeren er logget ind; hvis ikke omstiller vi til forsiden
+    this.redirectToHome();
+  },
+  setup() {
+    // route komponentet skal bruges til at sammenligne sider
+    const route = useRoute();
+    return { route };
   },
 };
 </script>
@@ -67,8 +116,9 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #000;
 }
-a {color: #0C8A6F;}
+a {
+  color: #0c8a6f;
+}
 </style>

@@ -1,18 +1,25 @@
 <template>
   <v-main :class="{ mainContent: this.siteInfo.loggedIn }">
     <LogIn v-if="!siteInfo.loggedIn" @login="handleLogin" />
-    <div class="d-block pa-4" v-else>
-        <v-img
-          :src="loggedInUser.photo"
-          :alt="loggedInUser.username"
-          rounded="circle"
-          aspect-ratio="1"
-          class="d-flex justify-center  userPicture"
-        />
-      <p>Velkommen <b>{{ loggedInUser.username }}</b></p>
+    <div class="d-block homeWrap pa-4" v-else>
+      <v-img
+        :src="loggedInUser.photo"
+        :alt="loggedInUser.username"
+        rounded="circle"
+        class="userPicture"
+      />
+      <p class="text-subtitle-2 mt-16">
+        Velkommen <b>{{ loggedInUser.username }}</b>
+      </p>
       <h1>Dine fællesskaber</h1>
-      <v-btn color="secondary" class="d-block w-25"> Fiskehjørnet </v-btn>
-      <v-btn color="secondary" class="d-block w-25 mt-4"> Lotusklubben </v-btn>
+      <template v-if="this.loggedInUser.communities">
+        <template
+          v-for="(community, index) in this.loggedInUser.communities"
+          :key="index"
+        >
+          <v-btn v-if="this.loggedInUser.communities[index].value !== false" color="secondary" class="d-block mt-8 pa-2" :to="{ name: 'Community' }">{{ community.name }}</v-btn>
+        </template>
+      </template>
     </div>
   </v-main>
 </template>
@@ -22,6 +29,12 @@ import LogIn from "@/components/LogIn.vue"; // Bare et hurtigt eksempel (se næs
 
 export default {
   name: "HomeView",
+  data() {
+    return {
+      selectedUser: false,
+      tempCommunityUpdated: 0
+    };
+  },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
   components: {
     LogIn,
@@ -45,29 +58,26 @@ export default {
       }
     },
   },
+  mounted() {
+
+  },
 };
 </script>
 
 <style scoped>
-h1 {
-  color: #000000;
-}
-.userWrap {
-  width: 10rem;
-}
-.userPicture {
-  width: 10rem;
-  border-radius: 9999px;
-  display: block;
-}
-.mainContent {
-  margin-left: 26vw;
+@media (max-width: 1024px) {
+  .homeWrap {
+    margin: 0 auto;
+  }
 }
 
-@media (max-width: 1024px) {
-  .mainContent {
-    position: relative;
-    left: 0;
+@media (min-width: 1024px) {
+  .homeWrap {
+    width: 20rem;
+    margin: 0;
   }
+}
+.homeWrap button {
+  width: 100%;
 }
 </style>
