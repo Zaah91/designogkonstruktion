@@ -17,7 +17,7 @@
           v-for="(community, index) in this.loggedInUser.communities"
           :key="index"
         >
-          <v-btn color="secondary" class="d-block">{{ community.name }}</v-btn>
+          <v-btn v-if="this.loggedInUser.communities[index].value !== false" color="secondary" class="d-block mt-8 pa-2" :to="{ name: 'Community' }">{{ community.name }}</v-btn>
         </template>
       </template>
     </div>
@@ -29,6 +29,12 @@ import LogIn from "@/components/LogIn.vue"; // Bare et hurtigt eksempel (se næs
 
 export default {
   name: "HomeView",
+  data() {
+    return {
+      selectedUser: false,
+      tempCommunityUpdated: 0
+    };
+  },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
   components: {
     LogIn,
@@ -52,6 +58,9 @@ export default {
       }
     },
   },
+  mounted() {
+
+  },
 };
 </script>
 
@@ -64,7 +73,7 @@ export default {
 
 @media (min-width: 1024px) {
   .homeWrap {
-    width: 400px;
+    width: 20rem;
     margin: 0;
   }
 }

@@ -69,7 +69,7 @@ export default {
             name: "Lotusklubben",
           },
           {
-            name: "Fiskeklubben",
+            name: "Fiskehjørnet",
           }
         ],
       },
