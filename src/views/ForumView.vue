@@ -1,7 +1,9 @@
 <template>
-  <div>
-    <h1>Forum</h1>
-  </div>
+  <v-main class="mainContent">
+    <div class="pa-4 flexWrap">
+      <h1>Forum</h1>
+    </div>
+  </v-main>
 </template>
 
 <script>

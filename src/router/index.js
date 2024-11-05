@@ -6,6 +6,7 @@ import SupportView from '@/views/SupportView.vue';
 import CommunityView from '@/views/CommunityView.vue';
 import ChatView from '@/views/ChatView.vue';
 import ForumView from '@/views/ForumView.vue';
+import VideoView from '@/views/VideoView.vue';
 
 
 const routes = [
@@ -43,6 +44,11 @@ const routes = [
     path: '/forum',
     name: 'Forum',
     component: ForumView,
+  },
+  {
+    path: '/video',
+    name: 'Video',
+    component: VideoView,
   },
 ];
 
