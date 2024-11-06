@@ -34,7 +34,7 @@
                   /></v-btn>
                 </li>
                 <li v-else>
-                  <v-btn text icon color="secondary" class="navBtn" :to="{ name: 'Home' }"
+                  <v-btn text icon color="secondary" class="navBtn"  @click="goBack"
                     ><v-icon color="actionTxt" icon="mdi-arrow-left"
                   /></v-btn>
                 </li>
@@ -97,6 +97,9 @@ export default {
   methods: {
     logout() {
       this.$emit('logout')
+    },
+    goBack() {
+      this.$router.go(-1); // Tilbage til forrige side
     }
   },
   setup() {
@@ -144,6 +147,8 @@ nav {
   padding: 0.5rem;
 }
 header .navBtn {
+  width:3rem;
+  height:3rem;
   font-size: 2rem;
 }
 
@@ -163,19 +168,7 @@ header li {
   }
 }
 @media (max-width: 570px) {
-  .userPicture,
-  .userListItem, .loggedInAs {
-    width: 2rem;
-  }
-  .loggedInAs {
-    width:5rem;
-    padding: 1rem;
-  }
-  header .navBtn {
-    font-size: 1rem !important;
-    width: 2rem;
-    height: 2rem;
-  }
+
 }
 @media (max-width: 1024px) {
   header {

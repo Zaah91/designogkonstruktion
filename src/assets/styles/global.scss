@@ -1,4 +1,9 @@
-h1 {
+html {
+  font-size:20px;
+}
+
+h1,h2 {
+  padding:0 0 1rem;
   color: #000000;
 }
 .userPicture {
@@ -19,6 +24,6 @@ h1 {
     width:100%;
   }
   .mainContent button {
-    min-width: 300px;
+    min-width: 15rem; /* 20 * 15 = ~300px */
   }
 }
