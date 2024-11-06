@@ -4,26 +4,36 @@
     <div v-else>
       <h1>Support</h1>
       <p>Velkommen, {{ username }}</p>
-      <p>Hvordan kan vi hjælpe dig?</p>
-
-        <v-table  class="pa-4 text-left">
-          <thead>
-              <th>
-                Åbningstider
-              </th>
-          </thead>
-          <tbody>
-            <tr
-              v-for="item in openings"
-              :key="item.name"
-            >
-              <td>{{ item.name }}</td>
-              <td>{{ item.time }}</td>
-            </tr>
-          </tbody>
-        </v-table>
 
       <v-container class="pa-4">
+        <p>Har du spørgsmål eller brug for hjælp?</p>
+        <p>Ring på tlf: <b>123 123 11</b></p>
+      </v-container>
+
+      <v-table  class="pa-4 text-left">
+        <thead>
+            <th>
+              Åbningstider
+            </th>
+        </thead>
+        <tbody>
+          <tr
+            v-for="item in openings"
+            :key="item.name"
+          >
+            <td>{{ item.name }}</td>
+            <td>{{ item.time }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+
+      <v-container class="pa-4">
+        <p>Eller send os en besked:</p>
+        
+        <v-alert v-if="successMessage" type="success" class="mt-4">
+            {{ successMessage }}
+        </v-alert>
+
         <v-form v-model="isValid" @submit.prevent="handleSubmit">
           <v-text-field
             v-model="form.title"
@@ -47,9 +57,7 @@
             Submit
           </v-btn>
 
-          <v-alert v-if="successMessage" type="success" class="mt-4">
-            {{ successMessage }}
-          </v-alert>
+          
         </v-form>
       </v-container>
     </div>
@@ -75,13 +83,13 @@ export default {
       successMessage: '', // Success message after submission
       
       openings: [
-        { name: 'Mandag', time: "10:00 - 14:00" },
-        { name: 'Tirsdag', time: "10:00 - 14:00" },
-        { name: 'Onsdag', time: "10:00 - 14:00" },
-        { name: 'Torsdag', time: "10:00 - 14:00" },
-        { name: 'Fredag', time: "10:00 - 14:00" },
-        { name: 'Lørdag', time: "Lukket" },
-        { name: 'Søndag', time: "Lukket" },
+        { name: 'Mandag til fredag', time: "10:00 - 14:00" },
+        //{ name: 'Tirsdag', time: "10:00 - 14:00" },
+        //{ name: 'Onsdag', time: "10:00 - 14:00" },
+        //{ name: 'Torsdag', time: "10:00 - 14:00" },
+        //{ name: 'Fredag', time: "10:00 - 14:00" },
+        { name: 'Lørdag og søndag', time: "Lukket" },
+        //{ name: 'Søndag', time: "Lukket" },
       ]
     };
   },
