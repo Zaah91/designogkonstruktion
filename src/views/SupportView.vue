@@ -6,7 +6,7 @@
       <p>Velkommen, {{ username }}</p>
       <p>Hvordan kan vi hjælpe dig?</p>
 
-        <v-table  class="pa-1 text-left">
+        <v-table  class="pa-4 text-left">
           <thead>
               <th>
                 Åbningstider
@@ -23,7 +23,6 @@
           </tbody>
         </v-table>
 
-      <!-- Vuetify Contact Form -->
       <v-container class="pa-4">
         <v-form v-model="isValid" @submit.prevent="handleSubmit">
           <v-text-field
@@ -104,10 +103,10 @@ export default {
         this.form.description = '';
         this.isValid = false;
 
-        // Clear the success message after 2 seconds
+        // Clear the success message after 10 seconds
         setTimeout(() => {
           this.successMessage = '';
-        }, 2000);
+        }, 10000);
       }
     },
     handleLogin(username) {
