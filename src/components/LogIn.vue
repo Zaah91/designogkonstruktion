@@ -3,7 +3,7 @@
     <v-card class="pa-5 text-center" max-width="400" outlined>
       <h1 class="text-h4 mb-5">Velkommen til Gammelchat</h1>
       
-      <v-text-field label="Indtast brugernavn" v-model="username" outlined></v-text-field>
+      <v-text-field label="Indtast brugernavn" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
       
       <v-btn class="my-4" color="primary" large @click="storeUsername">
         Log Ind
@@ -11,11 +11,11 @@
       
       <v-divider class="my-4"></v-divider>
       
-      <v-btn class="mb-2" color="red darken-1" large @click="loginAsRandomUser">
+      <v-btn class="mb-2" color="green darken-1" large @click="loginAsRandomUser">
         Log ind med Google
       </v-btn>
       
-      <v-btn color="grey darken-3" large @click="loginAsRandomUser">
+      <v-btn color="blue darken-3" large @click="loginAsRandomUser">
         Log ind med Apple
       </v-btn>
     </v-card>
