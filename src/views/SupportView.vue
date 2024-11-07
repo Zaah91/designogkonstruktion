@@ -2,9 +2,11 @@
   <v-main :class="{ mainContent: this.siteInfo.loggedIn }">
     <LogIn v-if="!siteInfo.loggedIn" @login="handleLogin" />
     <div v-else>
-      <h1>Support</h1>
-      <p>Velkommen, {{ username }}</p>
-
+      <v-container>
+        <h1>Support</h1>
+        <p>Velkommen, {{ username }}</p>
+      </v-container>
+      
       <v-container class="pa-4">
         <p>Har du spørgsmål eller brug for hjælp?</p>
         <p>Ring på tlf: <b>123 123 11</b></p>
@@ -140,13 +142,9 @@ h1 {
   border-radius: 9999px;
   display: block;
 }
-.mainContent {
-  margin-left: 26vw;
-}
 
 @media (max-width: 1024px) {
   .mainContent {
-    position: relative;
     left: 0;
   }
 }
