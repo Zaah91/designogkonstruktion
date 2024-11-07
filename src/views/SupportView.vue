@@ -1,7 +1,6 @@
 <template>
-  <v-main :class="{ mainContent: this.siteInfo.loggedIn }">
-    <LogIn v-if="!siteInfo.loggedIn" @login="handleLogin" />
-    <div v-else>
+  <v-main v-if="this.siteInfo.loggedIn" :class="{ mainContent: this.siteInfo.loggedIn }">
+    <div>
       <h1>Support</h1>
       <p>Velkommen, {{ username }}</p>
 
@@ -65,14 +64,10 @@
 </template>
 
 <script>
-import LogIn from "@/components/LogIn.vue";
 
 export default {
   name: "SupportView",
   inject: ["siteInfo"], // Injects siteInfo provided in App.vue
-  components: {
-    LogIn,
-  },
   data() {
     return {
       isValid: false, // Tracks form validity
@@ -96,7 +91,7 @@ export default {
   computed: {
     username() {
       return this.siteInfo.username || 'User';
-    }
+    },
   },
   methods: {
     handleSubmit() {
@@ -116,38 +111,7 @@ export default {
           this.successMessage = '';
         }, 10000);
       }
-    },
-    handleLogin(username) {
-      this.siteInfo.loggedIn = true;
-      this.siteInfo.username = username;
     }
   }
 };
-
-
-
 </script>
-
-<style scoped>
-h1 {
-  color: #000000;
-}
-.userWrap {
-  width: 10rem;
-}
-.userPicture {
-  width: 10rem;
-  border-radius: 9999px;
-  display: block;
-}
-.mainContent {
-  margin-left: 26vw;
-}
-
-@media (max-width: 1024px) {
-  .mainContent {
-    position: relative;
-    left: 0;
-  }
-}
-</style>

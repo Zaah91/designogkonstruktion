@@ -1,18 +1,12 @@
 <template>
   <header>
-    <v-container v-if="siteInfo.loggedIn" class="headerWrapper">
+    <v-container v-if="siteInfo.loggedIn" class="headerWrapper ma-0 pa-0">
       <v-row class="flex-nowrap headerRow" no-gutters>
-        <v-col class="flex-grow-0 flex-shrink-0">
-          <div class="d-flex justify-content-start m-0 p-0">
-            <router-link to="/"
-              ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
-            /></router-link>
-          </div>
-        </v-col>
+        <router-link to="/"
+            ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
+          /></router-link>
 
-        <v-col class="flex-grow-1 flex-shrink-1 userListCol">
-
-        </v-col>
+        <v-col class="flex-grow-1 flex-shrink-1"> </v-col>
 
         <v-col class="flex-grow-0 flex-shrink-0">
           <div class="d-flex justify-end">
@@ -24,17 +18,22 @@
                     icon
                     color="secondary"
                     :to="{ name: 'Support' }"
-                    class="navBtn"
+                    class="navBtn supportBtn"
                     ><v-icon color="actionTxt" icon="mdi-face-agent"
                   /></v-btn>
                 </li>
                 <li v-if="route.name == 'Home'">
-                  <v-btn text icon color="secondary" class="navBtn"
+                  <v-btn text icon color="secondary" class="navBtn logoutBtn"
                     ><v-icon color="actionTxt" icon="mdi-close" @click="logout"
                   /></v-btn>
                 </li>
                 <li v-else>
-                  <v-btn text icon color="secondary" class="navBtn"  @click="goBack"
+                  <v-btn
+                    text
+                    icon
+                    color="secondary"
+                    class="navBtn backBtn"
+                    @click="goBack"
                     ><v-icon color="actionTxt" icon="mdi-arrow-left"
                   /></v-btn>
                 </li>
@@ -44,7 +43,7 @@
                     icon
                     color="secondary"
                     :to="{ name: 'Settings' }"
-                    class="navBtn"
+                    class="navBtn settingsBtn"
                     ><v-icon color="actionTxt" icon="mdi-cog"
                   /></v-btn>
                 </li>
@@ -58,11 +57,17 @@
 </template>
 
 <script>
-import { useRoute } from 'vue-router';
+import { useRoute } from "vue-router";
 
 export default {
   name: "NavHeader",
+  data() {
+    return {
+      route: null, // Lad os være konsekvent og kun bruge options API (den var composition før)
+    };
+  },
   props: {
+    // Vi skal bruge en prop for at dele siteInfo objektet fra App.vue meed NavHeader
     siteInfo: {
       type: Object,
       required: true,
@@ -88,77 +93,61 @@ export default {
         (user) => user.username === this.siteInfo.username
       );
       if (loggedInUser) {
-        return loggedInUser
+        return loggedInUser;
       } else {
-        return this.siteInfo.users.find((user) => user.username === 'Ulla');
+        return this.siteInfo.users.find((user) => user.username === "Ulla");
       }
     },
   },
   methods: {
     logout() {
-      this.$emit('logout')
+      this.$emit("logout");
     },
     goBack() {
       this.$router.go(-1); // Tilbage til forrige side
-    }
+    },
   },
-  setup() {
-    const route = useRoute();
-    return { route };
-  }
+  created() {
+    this.route = useRoute();
+  },
 };
 </script>
 
 <style scoped>
-.userPicture {
-  width: 100%;
-  border-radius: 9999px;
-  display: block;
-}
-.loggedInAs {
-  width: 98%;
-  padding: 1rem;
-}
 .userList {
   width: 95%;
 }
-.userListItem {
-  width: 50%;
-  padding: 0.5rem;
-}
-
 #logo {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 9999;
   height: 4rem;
 }
-
 header {
-  background: #fa8073;
+  background: rgb(
+    var(--v-theme-primary)
+  ); /* Vi tager farven fra vores Vuetify temafil i plugins/vuetify.js */
   width: 25%;
   height: 100%;
   position: fixed;
   left: 0;
-  min-height: 3rem;
 }
-
 nav {
   display: flex;
   width: 33%;
   justify-content: right;
-  padding: 0.5rem;
 }
+nav li {padding:0.5rem;}
 header .navBtn {
-  width:3rem;
-  height:3rem;
+  width: 3rem;
+  height: 3rem;
   font-size: 2rem;
 }
-
 ul,
 ol {
   list-style-type: none;
   padding: 0;
-}
-header li {
-  padding: 0.5rem;
 }
 
 /* Mobile styles */
@@ -168,30 +157,22 @@ header li {
   }
 }
 @media (max-width: 570px) {
-
 }
 @media (max-width: 1024px) {
   header {
-    position:relative;
+    position: relative;
     width: 100%;
     top: 0;
-    height: auto;
+    height: 5rem;
   }
+  nav li {padding:0.9rem 0.5rem;}
   .headerRow {
     flex-direction: row;
   }
-  .userPicture,
-  .userListItem {
-    width: 5rem;
-  }
-  .loggedInAs {
-    width: 8rem;
-  }
-  header .navBtn {
-    font-size: 2rem;
-  }
-  .userListCol {
-    display: flex;
+  .settingsBtn,
+  .supportBtn,
+  .logoutBtn {
+    display: none;
   }
 }
 
@@ -204,9 +185,5 @@ header li {
   .headerWrapper {
     height: 100vh;
   }
-}
-
-/* Large Desktop styles */
-@media (min-width: 1200px) {
 }
 </style>

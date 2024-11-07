@@ -8,8 +8,8 @@
         rounded="circle"
         class="userPicture"
       />
-      <p class="text-subtitle-2 mt-16">
-        Velkommen <b>{{ loggedInUser.username }}</b>
+      <p class="text-subtitle-2 mt-4 mb-16 text-center">
+        {{ loggedInUser.name }}
       </p>
       <h1>Dine fællesskaber</h1>
       <template v-if="this.loggedInUser.communities">
@@ -17,7 +17,7 @@
           v-for="(community, index) in this.loggedInUser.communities"
           :key="index"
         >
-          <v-btn v-if="this.loggedInUser.communities[index].value !== false" color="secondary" class="d-block mt-8 pa-2" :to="{ name: 'Community' }">{{ community.name }}</v-btn>
+          <v-btn v-if="this.loggedInUser.communities[index].value !== false" color="btnPrimary" class="d-block mt-8 pa-2" :to="{ name: 'Community' }">{{ community.name }}</v-btn>
         </template>
       </template>
     </div>
@@ -57,10 +57,7 @@ export default {
         return this.siteInfo.users.find((user) => user.username === "Ulla");
       }
     },
-  },
-  mounted() {
-
-  },
+  }
 };
 </script>
 
