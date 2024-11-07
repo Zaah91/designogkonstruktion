@@ -1,9 +1,10 @@
 <template>
   <v-main v-if="this.siteInfo.loggedIn" :class="{ mainContent: this.siteInfo.loggedIn }">
     <div>
-      <h1>Support</h1>
-      <p>Velkommen, {{ username }}</p>
-
+      <v-container>
+        <h1>Support</h1>
+        <p>Velkommen, {{ username }}</p>
+      </v-container>
       <v-container class="pa-4">
         <p>Har du spørgsmål eller brug for hjælp?</p>
         <p>Ring på tlf: <b>123 123 11</b></p>
