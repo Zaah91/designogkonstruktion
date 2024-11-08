@@ -3,8 +3,8 @@
     <v-container v-if="siteInfo.loggedIn" class="headerWrapper ma-0 pa-0">
       <v-row class="flex-nowrap headerRow" no-gutters>
         <router-link to="/"
-            ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
-          /></router-link>
+          ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
+        /></router-link>
 
         <v-col class="flex-grow-1 flex-shrink-1"> </v-col>
 
@@ -13,39 +13,65 @@
             <nav>
               <ol class="d-flex justify-center headerNavigation">
                 <li>
-                  <v-btn
-                    text
-                    icon
-                    color="secondary"
-                    :to="{ name: 'Support' }"
-                    class="navBtn supportBtn"
-                    ><v-icon color="actionTxt" icon="mdi-face-agent"
-                  /></v-btn>
-                </li>
-                <li v-if="route.name == 'Home'">
-                  <v-btn text icon color="secondary" class="navBtn logoutBtn"
-                    ><v-icon color="actionTxt" icon="mdi-close" @click="logout"
-                  /></v-btn>
-                </li>
-                <li v-else>
-                  <v-btn
-                    text
-                    icon
-                    color="secondary"
-                    class="navBtn backBtn"
-                    @click="goBack"
-                    ><v-icon color="actionTxt" icon="mdi-arrow-left"
-                  /></v-btn>
+                  <v-tooltip text="Kontakt">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        :to="{ name: 'Support' }"
+                        class="navBtn supportBtn"
+                        ><v-icon color="actionTxt" icon="mdi-face-agent"
+                      /></v-btn>
+                    </template>
+                  </v-tooltip>
                 </li>
                 <li>
-                  <v-btn
-                    text
-                    icon
-                    color="secondary"
-                    :to="{ name: 'Settings' }"
-                    class="navBtn settingsBtn"
-                    ><v-icon color="actionTxt" icon="mdi-cog"
-                  /></v-btn>
+                  <v-tooltip text="Log ud!">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        class="navBtn logoutBtn"
+                        @click="logout"
+                      >
+                        <v-icon color="actionTxt" icon="mdi-close" />
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
+                </li>
+                <li v-if="route.name != 'Home'">
+                  <v-tooltip text="Tilbage">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        class="navBtn backBtn"
+                        @click="goBack"
+                        ><v-icon color="actionTxt" icon="mdi-arrow-left"
+                      /></v-btn>
+                    </template>
+                  </v-tooltip>
+                </li>
+                <li>
+                  <v-tooltip text="Indstillinger">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        :to="{ name: 'Settings' }"
+                        class="navBtn settingsBtn"
+                        ><v-icon color="actionTxt" icon="mdi-cog"
+                      /></v-btn>
+                    </template>
+                  </v-tooltip>
                 </li>
               </ol>
             </nav>
@@ -138,7 +164,9 @@ nav {
   width: 33%;
   justify-content: right;
 }
-nav li {padding:0.5rem;}
+nav li {
+  padding: 0.5rem;
+}
 header .navBtn {
   width: 3rem;
   height: 3rem;
@@ -160,12 +188,15 @@ ol {
 }
 @media (max-width: 1024px) {
   header {
-    position: relative;
+    position: sticky;
+    z-index:9998;
     width: 100%;
     top: 0;
     height: 5rem;
   }
-  nav li {padding:0.9rem 0.5rem;}
+  nav li {
+    padding: 0.9rem 0.5rem;
+  }
   .headerRow {
     flex-direction: row;
   }
