@@ -1,5 +1,5 @@
 <template>
-  <v-main class="mainContent">
+  <v-main v-if="this.siteInfo.loggedIn" class="mainContent">
     <div class="pa-4 flexWrap">
       <div class="flex-grow-1 flex-shrink-1">
         <h1>Indstillinger</h1>
@@ -29,7 +29,7 @@
             :key="index"
           >
             <template v-if="this.selectedUser.communities">
-              <v-checkbox
+              <v-checkbox color="btnPrimary"
                 class="ma-0 pa-0"
                 :label="community.name"
                 v-model="this.selectedUser.communities[index].value"
