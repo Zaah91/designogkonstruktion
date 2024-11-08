@@ -24,13 +24,13 @@
       <v-list-item
         color="#000"
         prepend-icon="mdi-face-agent"
-        title="Support"
+        title="Kontakt"
         :to="{ name: 'Support' }"
       ></v-list-item>
       <v-list-item
         color="#000"
         prepend-icon="mdi-cog"
-        title="Account"
+        title="Indstillinger"
         :to="{ name: 'Settings' }"
       ></v-list-item>
     </v-list>
