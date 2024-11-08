@@ -90,6 +90,10 @@ export default {
 .drawerMobile {
   padding-top: 7rem;
 }
+.drawerMobile .v-list-item {
+  position:relative;
+  z-index:9999;
+}
 
 @media (min-width: 1024px) {
   #burgerMenu,

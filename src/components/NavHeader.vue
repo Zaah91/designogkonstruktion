@@ -6,7 +6,7 @@
           ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
         /></router-link>
 
-        <v-col class="flex-grow-1 flex-shrink-1"> </v-col>
+        <v-col class="flex-grow-1 flex-shrink-1 navSpacer"> </v-col>
 
         <v-col class="flex-grow-0 flex-shrink-0">
           <div class="d-flex justify-end">
@@ -43,7 +43,7 @@
                     </template>
                   </v-tooltip>
                 </li>
-                <li v-if="route.name != 'Home'">
+                <li v-if="route.name != 'Home'" class="backNavItem">
                   <v-tooltip text="Tilbage">
                     <template #activator="{ props }">
                       <v-btn
@@ -204,6 +204,15 @@ ol {
   .supportBtn,
   .logoutBtn {
     display: none;
+  }
+
+  /* This was blocking clicks in Burger on mobile, so this is just a quick-fix. Solve this properly later! */
+  .backNavItem {
+    display:block;
+    position:fixed;
+    top:0.8rem;
+    right:0.5rem;
+    padding:0;
   }
 }
 
