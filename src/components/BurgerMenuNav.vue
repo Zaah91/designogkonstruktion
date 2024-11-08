@@ -42,7 +42,7 @@
         prepend-icon="mdi-close"
         color="secondary"
         block
-        >Logout</v-btn
+        >Log ud</v-btn
       >
     </template>
   </v-navigation-drawer>
