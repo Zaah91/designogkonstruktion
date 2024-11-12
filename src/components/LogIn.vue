@@ -1,7 +1,7 @@
 <template>
   <v-container v-if="!isLoggedIn" fluid class="bgrnd fill-height d-flex justify-center align-center">
     <v-card class="pa-5 text-center" max-width="400" outlined>
-      <h1 class="text-h4 mb-5">Velkommen til Gammelchat</h1>
+      <h1 class="text-h4 mb-5">Velkommen til Venner for Livet</h1>
       
       <v-text-field label="Indtast brugernavn" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
       
