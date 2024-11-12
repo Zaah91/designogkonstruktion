@@ -1,7 +1,8 @@
 <template>
   <v-app>
+    <BurgerMenu v-if="siteInfo.loggedIn" @logout="handleLogout" />
     <NavHeader :siteInfo="siteInfo" @logout="handleLogout" />
-    <router-view :siteInfo="siteInfo"/>
+    <router-view :siteInfo="siteInfo" />
   </v-app>
 </template>
 
@@ -10,14 +11,17 @@
 import NavHeader from "@/components/NavHeader.vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
+import BurgerMenu from "@/components/BurgerMenuNav.vue";
 
 export default {
   name: "App",
   components: {
     NavHeader,
+    BurgerMenu
   },
   data() {
     return {
+      route: null,
       siteInfo: {
         sitename: "Gammelchat",
         logo: require("@/assets/gammelchat-logo.webp"),
@@ -91,6 +95,7 @@ export default {
       this.siteInfo.loggedIn = false;
       this.siteInfo.username = "";
       this.siteInfo.loggedInUser = {};
+      this.redirectToHome();
     },
     redirectToHome() {
       const router = useRouter();
@@ -100,14 +105,10 @@ export default {
     },
   },
   mounted() {
+    this.route = useRoute();
     // Når vores app bliver "mounted", tjek om brugeren er logget ind; hvis ikke omstiller vi til forsiden
     this.redirectToHome();
-  },
-  setup() {
-    // route komponentet skal bruges til at sammenligne sider
-    const route = useRoute();
-    return { route };
-  },
+  }
 };
 </script>
 
@@ -116,9 +117,6 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #000;
-}
-a {
-  color: #0c8a6f;
+  color: #131313;
 }
 </style>

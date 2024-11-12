@@ -25,6 +25,7 @@ export default createVuetify({
           actionTxt: "#fff",
           primary: "#FA8073",
           secondary: "#AD5950",
+          btnPrimary: "#0C8A6F",
         },
       },
     },

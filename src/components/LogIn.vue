@@ -52,7 +52,7 @@ export default {
 
 <style>
     .bgrnd {
-        background-color: #FA8073
+        background-color: rgb(var(--v-theme-primary))
     }
     .hvid {
         background-color: white

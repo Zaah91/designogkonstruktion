@@ -5,13 +5,13 @@
 
       <!-- TODO: dummy beskederne skal flyttes til et array under siteIfor, så vi er forberedt på at få hentet chatten fra en leverandør. Eks. Vores egen database.  -->
       <section>
-        <v-img
-          :src="this.findUser('Eivind').photo"
-          :alt="this.findUser('Eivind').username"
-          rounded="circle"
-          class="userPicture"
-        />
         <div class="msgWrap">
+          <v-img
+            :src="this.findUser('Eivind').photo"
+            :alt="this.findUser('Eivind').username"
+            rounded="circle"
+            class="userPicture"
+          />
           <p class="msg">
             STOP så begge to! Denne opførsel hører ingen steder hjemme her i
             gruppen. Jeg forventer, at I viser respekt for hinanden og holder en
@@ -22,13 +22,13 @@
         </div>
       </section>
       <section>
-        <v-img
-          :src="this.findUser('Karan').photo"
-          :alt="this.findUser('Karan').username"
-          rounded="circle"
-          class="userPicture"
-        />
         <div class="msgWrap">
+          <v-img
+            :src="this.findUser('Karan').photo"
+            :alt="this.findUser('Karan').username"
+            rounded="circle"
+            class="userPicture"
+          />
           <p class="msg">
             Jamen altså, Ulla, det er jo lige netop dét! Din håndskrift er som
             hieroglyffer – ingen kan læse det! Hvis du skrev tydeligt, ville jeg
@@ -39,13 +39,13 @@
         </div>
       </section>
       <section>
-        <v-img
-          :src="this.findUser('Ulla').photo"
-          :alt="this.findUser('Ulla').username"
-          rounded="circle"
-          class="userPicture"
-        />
         <div class="msgWrap">
+          <v-img
+            :src="this.findUser('Ulla').photo"
+            :alt="this.findUser('Ulla').username"
+            rounded="circle"
+            class="userPicture"
+          />
           <p class="msg">
             Helt ærligt, Karen! Hvis du nu bare fulgte opskriften ORDENTLIGT og
             ikke fumlede rundt hele tiden, så var du nok færdig nu! Det er altså
@@ -55,13 +55,13 @@
         </div>
       </section>
       <section>
-        <v-img
-          :src="this.findUser('Karan').photo"
-          :alt="this.findUser('Karan').username"
-          rounded="circle"
-          class="userPicture"
-        />
         <div class="msgWrap">
+          <v-img
+            :src="this.findUser('Karan').photo"
+            :alt="this.findUser('Karan').username"
+            rounded="circle"
+            class="userPicture"
+          />
           <p class="msg">
             Altså, jeg forstår simpelthen ikke denne opskrift! Har tre gange
             pillet det op nu, og det ligner stadig alt andet end en sweater.
@@ -116,14 +116,19 @@ section:nth-child(even) {
   background-color: #eeeeee;
 }
 .userPicture {
-  width: 13rem;
-  margin: 1rem;
-  border-radius: 1rem;
+  width: 8rem;
+  height: 8rem;
+  margin: 0.5rem;
+  float: left;
 }
 .msgWrap .name {
   font-weight: bold;
 }
 @media (max-width: 1024px) {
+  .userPicture {
+    width: 5rem;
+    height: 5rem;
+  }
   .flexWrap {
     display: block;
     justify-content: center;
