@@ -15,6 +15,9 @@
             v-model="this.selectedUser.email"
           />
         </v-container>
+        <v-btn color="btnPrimary" @click="saveSettings">
+          Gem
+        </v-btn>
       </div>
       <div class="flex-grow-1 flex-shrink-1 pt-4">
         <v-img
