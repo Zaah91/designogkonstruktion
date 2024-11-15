@@ -18,6 +18,15 @@
       <v-btn color="blue darken-3" large @click="loginAsRandomUser">
         Log ind med Apple
       </v-btn>
+
+      <h2>Opret bruger</h2>
+      <v-text-field label="Navn" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
+      <v-text-field label="E-mail" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
+      <v-text-field label="Kodeord" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
+
+      <v-btn color="blue darken-3" large @click="loginAsRandomUser">
+      Opret bruger
+      </v-btn>
     </v-card>
   </v-container>
 </template>

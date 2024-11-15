@@ -26,6 +26,7 @@
 
 <script>
 import LogIn from "@/components/LogIn.vue"; // Bare et hurtigt eksempel (se næste kommentar)
+//import NewUser from "@/components/NewUser.vue";
 
 export default {
   name: "HomeView",
@@ -39,6 +40,10 @@ export default {
   components: {
     LogIn,
   },
+  /*inject: ["siteInfo"], // Test
+  components: {
+    NewUser,
+  },*/
   methods: {
     handleLogin(username) {
       this.siteInfo.loggedIn = true;
