@@ -12,13 +12,13 @@
       
        <v-divider class="my-4"></v-divider>
       
-
+      
       <div>
-      <button style="width: 68%" @click="loginAsRandomUser">
-        <img style="width: 100%" src="@/assets/web_neutral_rd_SI@1x.png" alt="">
+      <button @click="loginAsRandomUser">
+        <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
       </button>
-      <button style="width: 80%" @click="loginAsRandomUser">
-        <img style="width: 100%" src="@/assets/app-login.png" alt="">
+      <button @click="loginAsRandomUser">
+        <img src="@/assets/app-login.png" alt="">
       </button>
       </div>
         
