@@ -12,16 +12,7 @@
       
        <v-divider class="my-4"></v-divider>
       
-      
-      <!-- Klassiske knapper
-      <v-btn class="mb-2" large @click="loginAsRandomUser" style="background: none; padding: 0; min-width: auto; border: none; box-shadow: none;">
-        <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
-      </v-btn>
-      
-      <v-btn class="mb-2" large @click="loginAsRandomUser" style="background: none; padding: 0; min-width: auto; border: none; box-shadow: none;">
-        <img src="@/assets/app-login.png" alt="">
-      </v-btn>
-      -->
+
       <div>
       <button style="width: 68%" @click="loginAsRandomUser">
         <img style="width: 100%" src="@/assets/web_neutral_rd_SI@1x.png" alt="">
@@ -40,6 +31,7 @@
         <v-text-field label="Navn"></v-text-field>
         <v-text-field label="E-mail"></v-text-field>
         <v-text-field label="Kodeord"></v-text-field>
+
 
         <v-btn color="blue darken-3" large @click="loginAsRandomUser">
           Opret bruger
