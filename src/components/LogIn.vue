@@ -11,17 +11,7 @@
         </v-btn>
       
        <v-divider class="my-4"></v-divider>
-      
-      
-      <!-- Klassiske knapper
-      <v-btn class="mb-2" large @click="loginAsRandomUser" style="background: none; padding: 0; min-width: auto; border: none; box-shadow: none;">
-        <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
-      </v-btn>
-      
-      <v-btn class="mb-2" large @click="loginAsRandomUser" style="background: none; padding: 0; min-width: auto; border: none; box-shadow: none;">
-        <img src="@/assets/app-login.png" alt="">
-      </v-btn>
-      -->
+
 
       <button @click="loginAsRandomUser">
         <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
