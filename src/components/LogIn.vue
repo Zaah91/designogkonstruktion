@@ -22,13 +22,14 @@
         <img src="@/assets/app-login.png" alt="">
       </v-btn>
       -->
-
-      <button @click="loginAsRandomUser">
-        <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
+      <div>
+      <button style="width: 68%" @click="loginAsRandomUser">
+        <img style="width: 100%" src="@/assets/web_neutral_rd_SI@1x.png" alt="">
       </button>
-      <button @click="loginAsRandomUser">
-        <img src="@/assets/app-login.png" alt="">
+      <button style="width: 80%" @click="loginAsRandomUser">
+        <img style="width: 100%" src="@/assets/app-login.png" alt="">
       </button>
+      </div>
         
         <v-divider class="my-4"></v-divider>
         <span class="linkStyle" @click="toggleView">Opret bruger</span>
