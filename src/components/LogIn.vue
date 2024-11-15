@@ -10,14 +10,22 @@
       </v-btn>
       
       <v-divider class="my-4"></v-divider>
-      
-      <v-btn class="mb-2" color="green darken-1" large @click="loginAsRandomUser">
-        Log ind med Google
+      <!-- Klassiske knapper
+      <v-btn class="mb-2" large @click="loginAsRandomUser" style="background: none; padding: 0; min-width: auto; border: none; box-shadow: none;">
+        <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
       </v-btn>
       
-      <v-btn color="blue darken-3" large @click="loginAsRandomUser">
-        Log ind med Apple
+      <v-btn class="mb-2" large @click="loginAsRandomUser" style="background: none; padding: 0; min-width: auto; border: none; box-shadow: none;">
+        <img src="@/assets/app-login.png" alt="">
       </v-btn>
+      -->
+
+      <button @click="loginAsRandomUser">
+        <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
+      </button>
+      <button @click="loginAsRandomUser">
+        <img src="@/assets/app-login.png" alt="">
+      </button>
 
       <h2>Opret bruger</h2>
       <v-text-field label="Navn" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
