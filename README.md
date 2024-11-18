@@ -25,7 +25,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ```
 
 ### sql commands for local database:
-```
 
 ### Database
 create database vennerforlivet;
