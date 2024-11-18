@@ -68,7 +68,7 @@
                         color="secondary"
                         :to="{ name: 'Settings' }"
                         class="navBtn settingsBtn"
-                        ><v-icon color="actionTxt" icon="mdi-cog"
+                        ><v-icon color="actionTxt" icon="mdi-account-cog"
                       /></v-btn>
                     </template>
                   </v-tooltip>
@@ -83,7 +83,7 @@
                         color="secondary"
                         :to="{ name: 'Admin' }"
                         class="navBtn adminBtn"
-                        ><v-icon color="actionTxt" icon="mdi-cog"
+                        ><v-icon color="actionTxt" icon="mdi-security"
                       /></v-btn>
                     </template>
                   </v-tooltip>
@@ -185,7 +185,7 @@ nav li {
 header .navBtn {
   width: 3rem;
   height: 3rem;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 ul,
 ol {
