@@ -73,6 +73,21 @@
                     </template>
                   </v-tooltip>
                 </li>
+                <li>
+                  <v-tooltip text="Admin">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        :to="{ name: 'Admin' }"
+                        class="navBtn adminBtn"
+                        ><v-icon color="actionTxt" icon="mdi-cog"
+                      /></v-btn>
+                    </template>
+                  </v-tooltip>
+                </li>
               </ol>
             </nav>
           </div>
