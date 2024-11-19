@@ -28,12 +28,12 @@
       
       <div v-else>
         <h2>Opret bruger</h2>
-        <v-text-field label="Navn"></v-text-field>
-        <v-text-field label="E-mail"></v-text-field>
-        <v-text-field label="Kodeord"></v-text-field>
+        <v-text-field label="Navn" v-model="newUser.user_name"></v-text-field>
+        <v-text-field label="E-mail" v-model="newUser.user_mail"></v-text-field>
+        <v-text-field label="Kodeord" v-model="newUser.user_password"></v-text-field>
 
 
-        <v-btn color="blue darken-3" large @click="loginAsRandomUser">
+        <v-btn color="blue darken-3" large @click="registerUser">
           Opret bruger
         </v-btn>
         <v-divider class="my-4"></v-divider>
@@ -53,6 +53,11 @@ export default {
         return {
             username: '',
             showLogin: true,
+            newUser: {
+                user_name: '',
+                user_email: '',
+                user_password: ''
+            }
         }
     },
     methods: {
@@ -69,6 +74,13 @@ export default {
         },
         toggleView() {
             this.showLogin = !this.showLogin;
+        },
+        async registerUser() {
+          if (!this.newUser.user_name || !this.newUser.user_email || !this.newUser.user_password) {
+            alert('Alle felter skal udfyldes');
+            return;
+          }
+          
         }
     }
 }
