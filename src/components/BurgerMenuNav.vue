@@ -29,9 +29,15 @@
       ></v-list-item>
       <v-list-item
         color="#000"
-        prepend-icon="mdi-cog"
+        prepend-icon="mdi-account-cog"
         title="Indstillinger"
         :to="{ name: 'Settings' }"
+      ></v-list-item>
+      <v-list-item
+        color="#000"
+        prepend-icon="mdi-security"
+        title="Admin"
+        :to="{ name: 'Admin' }"
       ></v-list-item>
     </v-list>
 

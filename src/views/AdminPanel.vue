@@ -1,69 +1,73 @@
 <template>
-    <div>
-      <v-container>
-        <v-text-field
-          label="Search users"
-          v-model="searchQuery"
-          outlined
-          clearable
-        ></v-text-field>
-        <div class="table-container">
-          <table class="user-table">
-            <thead>
-              <tr>
-                <th>Users ID</th>
-                <th>Users Name</th>
-                <th>Users Email</th>
-                <th>Users Role</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody class="table-scroll">
-              <tr
-                v-for="(user, index) in filteredUsers"
-                :key="user.id"
-                :class="{ 'even-row': index % 2 === 0 }"
-              >
-                <td>#{{ user.id }}</td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-                <td>
-                  <button class="editButton" @click="editUser(user)">Edit</button>
-                  <button class="editButton" @click="removeUser(user.id)">Remove</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <v-main class="mainContent">
+        <div class="pa-4 flexWrap">
+            <div class="flex-grow-1 flex-shrink-1">
+            <v-container>
+                <v-text-field
+                label="Search users"
+                v-model="searchQuery"
+                outlined
+                clearable
+                ></v-text-field>
+                <div class="table-container">
+                <table class="user-table">
+                    <thead>
+                    <tr>
+                        <th>Users ID</th>
+                        <th>Users Name</th>
+                        <th>Users Email</th>
+                        <th>Users Role</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-scroll">
+                    <tr
+                        v-for="(user, index) in filteredUsers"
+                        :key="user.id"
+                        :class="{ 'even-row': index % 2 === 0 }"
+                    >
+                        <td>#{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                        <button class="editButton" @click="editUser(user)">Edit</button>
+                        <button class="editButton" @click="removeUser(user.id)">Remove</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+            </v-container>
+            <div v-if="isEditDialogOpen" class="dialog-overlay">
+                <div class="dialog-box">
+                <h3>Edit User</h3>
+                <form @submit.prevent="saveEdit">
+                    <div>
+                    <label for="editName">Name:</label>
+                    <input id="editName" v-model="editForm.name" required />
+                    </div>
+                    <div>
+                    <label for="editEmail">Email:</label>
+                    <input id="editEmail" v-model="editForm.email" type="email" required />
+                    </div>
+                    <div>
+                    <label for="editRole">Role:</label>
+                    <select id="editRole" v-model="editForm.role">
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    </div>
+                    <div>
+                    <button class="editButton" type="submit">Save</button>
+                    <button class="editButton" type="button" @click="closeEditDialog">Cancel</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
         </div>
-      </v-container>
-      <div v-if="isEditDialogOpen" class="dialog-overlay">
-        <div class="dialog-box">
-          <h3>Edit User</h3>
-          <form @submit.prevent="saveEdit">
-            <div>
-              <label for="editName">Name:</label>
-              <input id="editName" v-model="editForm.name" required />
-            </div>
-            <div>
-              <label for="editEmail">Email:</label>
-              <input id="editEmail" v-model="editForm.email" type="email" required />
-            </div>
-            <div>
-              <label for="editRole">Role:</label>
-              <select id="editRole" v-model="editForm.role">
-                <option value="User">User</option>
-                <option value="Admin">Admin</option>
-              </select>
-            </div>
-            <div>
-              <button class="editButton" type="submit">Save</button>
-              <button class="editButton" type="button" @click="closeEditDialog">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    </v-main>
   </template>
   
   <script>

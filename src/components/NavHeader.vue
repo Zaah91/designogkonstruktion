@@ -1,17 +1,17 @@
 <template>
   <header>
-    <v-container v-if="siteInfo.loggedIn" class="headerWrapper ma-0 pa-0">
+    <v-container v-if="siteInfo.loggedIn" >
       <v-row class="flex-nowrap headerRow" no-gutters>
         <router-link to="/"
           ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
         /></router-link>
 
         <v-col class="flex-grow-1 flex-shrink-1 navSpacer"> </v-col>
-
+        
         <v-col class="flex-grow-0 flex-shrink-0">
           <div class="d-flex justify-end">
             <nav>
-              <ol class="d-flex justify-center headerNavigation">
+              <ol class="d-flex headerNavigation">
                 <li>
                   <v-tooltip text="Kontakt">
                     <template #activator="{ props }">
@@ -159,7 +159,7 @@ export default {
   width: 95%;
 }
 #logo {
-  position: fixed;
+  /*position: fixed;*/
   top: 0.5rem;
   left: 0.5rem;
   z-index: 9999;
