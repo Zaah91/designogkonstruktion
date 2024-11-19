@@ -25,6 +25,11 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 ```
 
+### New logo's
+```
+https://pictogrammers.com/library/mdi/
+```
+
 ### Requered for this project:
 ```
 https://github.com/jacobseated/designogkonstruktion-backend
