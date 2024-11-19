@@ -25,6 +25,12 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 ```
 
+### Requered for this project:
+```
+https://github.com/jacobseated/designogkonstruktion-backend
+```
+
+
 ## sql commands for local database:
 
 ### Database
