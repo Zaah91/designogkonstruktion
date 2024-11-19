@@ -1,6 +1,6 @@
 <template>
   <v-container v-if="!isLoggedIn" fluid class="bgrnd fill-height d-flex justify-center align-center">
-    <v-card class="pa-5 text-center" max-width="400" outlined>
+    <v-card class="pa-5 text-center" max-width="400" min-height="700" outlined>
       <h1 class="text-h4 mb-5">Velkommen til Venner for Livet</h1>
       <div v-if="showLogin">
         <v-text-field label="Indtast brugernavn" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
@@ -28,12 +28,12 @@
       
       <div v-else>
         <h2>Opret bruger</h2>
-        <v-text-field label="Navn"></v-text-field>
-        <v-text-field label="E-mail"></v-text-field>
-        <v-text-field label="Kodeord"></v-text-field>
+        <v-text-field label="Navn" v-model="newUser.user_name"></v-text-field>
+        <v-text-field label="E-mail" v-model="newUser.user_mail"></v-text-field>
+        <v-text-field label="Kodeord" v-model="newUser.user_password"></v-text-field>
 
 
-        <v-btn color="blue darken-3" large @click="loginAsRandomUser">
+        <v-btn color="blue darken-3" large @click="registerUser">
           Opret bruger
         </v-btn>
         <v-divider class="my-4"></v-divider>
@@ -53,6 +53,11 @@ export default {
         return {
             username: '',
             showLogin: true,
+            newUser: {
+                user_name: '',
+                user_email: '',
+                user_password: ''
+            }
         }
     },
     methods: {
@@ -69,6 +74,13 @@ export default {
         },
         toggleView() {
             this.showLogin = !this.showLogin;
+        },
+        async registerUser() {
+          if (!this.newUser.user_name || !this.newUser.user_email || !this.newUser.user_password) {
+            alert('Alle felter skal udfyldes');
+            return;
+          }
+          
         }
     }
 }
