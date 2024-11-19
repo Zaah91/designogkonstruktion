@@ -174,11 +174,12 @@
   .even-row {
     background-color: #efefef; /* Change this to your desired color */
   }
-  
+
   th,td {
     padding: 8px; /* Add padding for both th and td */
     text-align: left; /* Align text to the left for better readability */
     padding-left: 14px;
+    font-size: 16px;
   }
   
   .table-scroll {
@@ -268,7 +269,7 @@
       padding: 4px; /* Padding inside the select */
       border: 1px solid #888; /* Border color and width */
       border-radius: 4px; /* Rounded corners */
-      font-size: 16px; /* Font size */
+      /*font-size: 16px; /* Font size */
       color: #333; /* Text color */
       appearance: none; /* Remove default styling in some browsers */
       cursor: pointer; /* Pointer cursor on hover */
