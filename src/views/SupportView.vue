@@ -11,12 +11,9 @@
       </v-container>
 
       <v-table  class="pa-4 text-left">
-        <thead>
-            <th>
-              Åbningstider
-            </th>
-        </thead>
-        <tbody>
+          <th>
+            Åbningstider
+          </th>
           <tr
             v-for="item in openings"
             :key="item.name"
@@ -24,7 +21,6 @@
             <td>{{ item.name }}</td>
             <td>{{ item.time }}</td>
           </tr>
-        </tbody>
       </v-table>
 
       <v-container class="pa-4">

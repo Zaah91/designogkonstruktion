@@ -12,12 +12,13 @@ import NavHeader from "@/components/NavHeader.vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import BurgerMenu from "@/components/BurgerMenuNav.vue";
+import axios from "axios";
 
 export default {
   name: "App",
   components: {
     NavHeader,
-    BurgerMenu
+    BurgerMenu,
   },
   data() {
     return {
@@ -50,7 +51,7 @@ export default {
             communities: [
               {
                 name: "Strikkeklubben",
-              }
+              },
             ],
           },
           {
@@ -74,7 +75,7 @@ export default {
           },
           {
             name: "Fiskehjørnet",
-          }
+          },
         ],
       },
     };
@@ -103,12 +104,22 @@ export default {
         router.push({ name: "Home" }); // Redirect til home, hvis route name ikke matcher, og brugeren ikke er logget ind
       }
     },
+    fetchUsers() {
+      axios
+        .get("localhost:8081/users")
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("fetchUsers: Error while communicating with the backend.", error);
+        });
+    },
   },
   mounted() {
     this.route = useRoute();
     // Når vores app bliver "mounted", tjek om brugeren er logget ind; hvis ikke omstiller vi til forsiden
     this.redirectToHome();
-  }
+  },
 };
 </script>
 
