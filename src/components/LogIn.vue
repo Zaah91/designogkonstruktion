@@ -1,28 +1,51 @@
 <template>
+
   <v-container fluid class="bgrnd fill-height d-flex justify-center align-center">
-    <v-card class="pa-5 text-center" max-width="400" outlined>
-      <h1 class="text-h4 mb-5">Velkommen til Gammelchat</h1>
+    <v-card class="pa-5 text-center" max-width="400" min-height="700" outlined>
+      <h1 class="text-h4 mb-5">Velkommen til Venner for Livet</h1>
+      <div v-if="showLogin">
+        <v-text-field label="Indtast brugernavn" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
+        <v-text-field label="Indtast kodeord" type="password"></v-text-field>
       
-      <v-text-field label="Indtast brugernavn" v-model="username" outlined @keyup.enter="storeUsername"></v-text-field>
+        <v-btn class="my-4" color="primary" large @click="storeUsername">
+          Log Ind
+        </v-btn>
       
-      <v-btn class="my-4" color="primary" large @click="storeUsername">
-        Log Ind
-      </v-btn>
+       <v-divider class="my-4"></v-divider>
       
-      <v-divider class="my-4"></v-divider>
       
-      <v-btn class="mb-2" color="green darken-1" large @click="loginAsRandomUser">
-        Log ind med Google
-      </v-btn>
+      <div>
+      <button @click="loginAsRandomUser">
+        <img src="@/assets/web_neutral_rd_SI@1x.png" alt="">
+      </button>
+      <button @click="loginAsRandomUser">
+        <img src="@/assets/app-login.png" alt="">
+      </button>
+      </div>
+        
+        <v-divider class="my-4"></v-divider>
+        <span class="linkStyle" @click="toggleView">Opret bruger</span>
+      </div>
       
-      <v-btn color="blue darken-3" large @click="loginAsRandomUser">
-        Log ind med Apple
-      </v-btn>
+      <div v-else>
+        <h2>Opret bruger</h2>
+        <v-text-field label="Navn" v-model="newUser.user_name"></v-text-field>
+        <v-text-field label="E-mail" v-model="newUser.user_mail"></v-text-field>
+        <v-text-field label="Kodeord" v-model="newUser.user_password"></v-text-field>
+
+
+        <v-btn color="blue darken-3" large @click="registerUser">
+          Opret bruger
+        </v-btn>
+        <v-divider class="my-4"></v-divider>
+        <span class="linkStyle" @click="toggleView">Tilbage til log ind</span>
+      </div>
     </v-card>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     name: 'LogIn',
     props: {
@@ -31,6 +54,12 @@ export default {
     data() {
         return {
             username: '',
+            showLogin: true,
+            newUser: {
+                user_name: '',
+                user_mail: '',
+                user_password: ''
+            }
         }
     },
     methods: {
@@ -44,6 +73,17 @@ export default {
         loginAsRandomUser() {
             const randomUser = this.siteInfo.users[Math.floor(Math.random() * this.siteInfo.users.length)];
             this.$emit('login', randomUser.username);
+        },
+        toggleView() {
+            this.showLogin = !this.showLogin;
+        },
+        async registerUser() {
+          try {
+            const response = await axios.post('http://localhost:8081/users', this.newUser);
+            console.log('User registered successfully:', response.data);
+          } catch (error) {
+            console.error('Error registering user:', error);
+          }
         }
     }
 }
@@ -51,6 +91,11 @@ export default {
 </script>
 
 <style>
+    .linkStyle {
+        color: blue;
+        cursor: pointer;
+        text-decoration: underline;
+    } 
     .bgrnd {
         background-color: rgb(var(--v-theme-primary))
     }

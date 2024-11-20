@@ -1,17 +1,17 @@
 <template>
   <header>
-    <v-container v-if="siteInfo.loggedIn" class="headerWrapper ma-0 pa-0">
+    <v-container v-if="siteInfo.loggedIn" >
       <v-row class="flex-nowrap headerRow" no-gutters>
         <router-link to="/"
           ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
         /></router-link>
 
         <v-col class="flex-grow-1 flex-shrink-1 navSpacer"> </v-col>
-
+        
         <v-col class="flex-grow-0 flex-shrink-0">
           <div class="d-flex justify-end">
             <nav>
-              <ol class="d-flex justify-center headerNavigation">
+              <ol class="d-flex headerNavigation">
                 <li>
                   <v-tooltip text="Kontakt">
                     <template #activator="{ props }">
@@ -68,7 +68,22 @@
                         color="secondary"
                         :to="{ name: 'Settings' }"
                         class="navBtn settingsBtn"
-                        ><v-icon color="actionTxt" icon="mdi-cog"
+                        ><v-icon color="actionTxt" icon="mdi-account-cog"
+                      /></v-btn>
+                    </template>
+                  </v-tooltip>
+                </li>
+                <li>
+                  <v-tooltip text="Admin">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        :to="{ name: 'Admin' }"
+                        class="navBtn adminBtn"
+                        ><v-icon color="actionTxt" icon="mdi-security"
                       /></v-btn>
                     </template>
                   </v-tooltip>
@@ -144,7 +159,7 @@ export default {
   width: 95%;
 }
 #logo {
-  position: fixed;
+  /*position: fixed;*/
   top: 0.5rem;
   left: 0.5rem;
   z-index: 9999;
@@ -170,7 +185,7 @@ nav li {
 header .navBtn {
   width: 3rem;
   height: 3rem;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 ul,
 ol {

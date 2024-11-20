@@ -7,6 +7,7 @@ import CommunityView from '@/views/CommunityView.vue';
 import ChatView from '@/views/ChatView.vue';
 import ForumView from '@/views/ForumView.vue';
 import VideoView from '@/views/VideoView.vue';
+import AdminPanel from '@/views/AdminPanel.vue';
 
 
 const routes = [
@@ -49,6 +50,11 @@ const routes = [
     path: '/video',
     name: 'Video',
     component: VideoView,
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: AdminPanel,
   },
 ];
 

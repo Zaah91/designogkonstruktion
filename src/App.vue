@@ -24,7 +24,7 @@ export default {
     return {
       route: null,
       siteInfo: {
-        sitename: "Gammelchat",
+        sitename: "Venner for Livet",
         logo: require("@/assets/gammelchat-logo.webp"),
         loggedIn: false,
         loggedInUser: {},
@@ -44,7 +44,7 @@ export default {
             ],
           },
           {
-            username: "Karan",
+            username: "Karen",
             name: "Karen Elisabeth Johannesson",
             email: "karen@example.com",
             photo: require("@/assets/karan.webp"),
