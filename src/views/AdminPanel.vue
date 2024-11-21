@@ -40,7 +40,7 @@
                   <td>{{ users.user_admin }}</td>
                   <td>
                     <button class="editButton" @click="editUser(users)">Edit</button>
-                    <button class="editButton" @click="removeUser(users.id)">Remove</button>
+                    <button class="editButton" @click="removeUser(users.user_id)">Remove</button>
                   </td>
                 </tr>
               </tbody>
@@ -150,7 +150,7 @@ export default {
     async removeUser(userId) {
       try {
         await axios.delete(`http://localhost:8081/users/${userId}`);
-        this.user = this.user.filter((users) => users.id !== userId);
+        this.user = this.user.filter((users) => users.user_id !== userId);
       } catch (error) {
         console.error("Failed to remove user:", error.message);
       }
