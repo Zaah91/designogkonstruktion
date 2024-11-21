@@ -145,10 +145,12 @@ export default {
       }
     },
     // Save the edits and update the table
-    saveEdit() {
+    async saveEdit() {
+      const response = await axios.patch(`http://localhost:8081/users/${this.editForm.user_id}`, this.editForm);
+      const updatedUser = response.data;
       const userIndex = this.users.findIndex((u) => u.user_id === this.editForm.user_id);
       if (userIndex !== -1) {
-        this.users[userIndex] = { ...this.editForm };
+        this.users[userIndex] = updatedUser;
       }
       this.closeEditDialog();
     },
