@@ -1,5 +1,6 @@
 <template>
-  <v-container v-if="!isLoggedIn" fluid class="bgrnd fill-height d-flex justify-center align-center">
+
+  <v-container fluid class="bgrnd fill-height d-flex justify-center align-center">
     <v-card class="pa-5 text-center" max-width="400" min-height="700" outlined>
       <h1 class="text-h4 mb-5">Velkommen til Venner for Livet</h1>
       <div v-if="showLogin">
@@ -44,6 +45,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     name: 'LogIn',
     props: {
@@ -55,7 +57,7 @@ export default {
             showLogin: true,
             newUser: {
                 user_name: '',
-                user_email: '',
+                user_mail: '',
                 user_password: ''
             }
         }
@@ -76,11 +78,12 @@ export default {
             this.showLogin = !this.showLogin;
         },
         async registerUser() {
-          if (!this.newUser.user_name || !this.newUser.user_email || !this.newUser.user_password) {
-            alert('Alle felter skal udfyldes');
-            return;
+          try {
+            const response = await axios.post('http://localhost:8081/users', this.newUser);
+            console.log('User registered successfully:', response.data);
+          } catch (error) {
+            console.error('Error registering user:', error);
           }
-          
         }
     }
 }

@@ -15,9 +15,26 @@
             v-model="this.selectedUser.email"
           />
         </v-container>
-        <v-btn color="btnPrimary" @click="saveSettings">
-          Gem
-        </v-btn>
+        <div class="d-flex justify-space-evenly">
+          <v-btn color="btnPrimary" @click="saveSettings"> Gem </v-btn>
+          <v-btn color="red" @click="showOverlay = true"> Slet bruger </v-btn>
+        </div>
+
+        <!-- Dialog-overlay til bekræftelse af sletning af bruger  -->
+        <v-dialog v-model="showOverlay" max-width="400">
+          <v-card>
+            <v-card-title class="headline">Bekræft sletning</v-card-title>
+            <v-card-text>
+              Er du sikker på, at du vil slette brugeren?
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="green darken-1" text @click="showOverlay = false">
+                Annuller
+              </v-btn>
+              <v-btn color="red darken-1" text> Slet </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
       <div class="flex-grow-1 flex-shrink-1 pt-4">
         <v-img
@@ -32,7 +49,8 @@
             :key="index"
           >
             <template v-if="this.selectedUser.communities">
-              <v-checkbox color="btnPrimary"
+              <v-checkbox
+                color="btnPrimary"
                 class="ma-0 pa-0"
                 :label="community.name"
                 v-model="this.selectedUser.communities[index].value"
@@ -52,6 +70,7 @@ export default {
     return {
       selectedUser: false,
       tempCommunityUpdated: false,
+      showOverlay: false,
     };
   },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
@@ -119,8 +138,8 @@ export default {
     display: block;
     justify-content: center;
     margin-left: 0;
-    min-width:300px;
-    width:90%;
+    min-width: 300px;
+    width: 90%;
   }
 }
 @media (min-width: 1024px) {
