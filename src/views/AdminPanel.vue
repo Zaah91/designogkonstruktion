@@ -39,7 +39,7 @@
                   <td>{{ users.user_mail }}</td>
                   <td>{{ users.user_admin }}</td>
                   <td>
-                    <button class="editButton" @click="editUser(users)">Edit</button>
+                    <button class="editButton" @click="openEditDialog(users)">Edit</button>
                     <button class="editButton" @click="removeUser(users.user_id)">Remove</button>
                   </td>
                 </tr>
@@ -55,15 +55,15 @@
             <form @submit.prevent="saveEdit">
               <div>
                 <label for="editName">Name:</label>
-                <input id="editName" v-model="editForm.name" required />
+                <input id="editName" v-model="editForm.user_name" required />
               </div>
               <div>
                 <label for="editEmail">Email:</label>
-                <input id="editEmail" v-model="editForm.mail" type="mail" required />
+                <input id="editEmail" v-model="editForm.user_mail" type="mail" required />
               </div>
               <div>
                 <label for="editRole">Role:</label>
-                <select id="editRole" v-model="editForm.role">
+                <select id="editRole" v-model="editForm.user_admin">
                   <option value="User">User</option>
                   <option value="Admin">Admin</option>
                 </select>
@@ -83,11 +83,9 @@
   
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
-      searchQuery: "",
       users: [],
       isLoading: false,
       isError: false,
@@ -99,12 +97,13 @@ export default {
         mail: "",
         role: "",
       },
+      searchQuery: "",
     };
   },
   computed: {
     filteredUsers() {
       return this.users.filter((users) =>
-        `${users.name} ${users.mail} ${users.role}`
+        `${users.user_name} ${users.user_mail} ${users.user_admin}`
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase())
       );
@@ -129,13 +128,25 @@ export default {
       }
     },
     // Open the edit dialog and populate the form
-    editUser(users) {
+    openEditDialog(user_id) {
       this.isEditDialogOpen = true;
-      this.editForm = { ...users };
+      this.editForm = { ...user_id };
+    },
+    async fetchUserData(userId) {
+      try {
+        const response = await axios.get(`http://localhost:8081/users/${userId}`);
+        const userData = response.data;
+        this.editForm.user_id = userData.user_id;
+        this.editForm.user_name = userData.user_name;
+        this.editForm.user_mail = userData.user_mail;
+        this.editForm.user_admin = userData.user_admin;
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
     },
     // Save the edits and update the table
     saveEdit() {
-      const userIndex = this.users.findIndex((u) => u.id === this.editForm.id);
+      const userIndex = this.users.findIndex((u) => u.user_id === this.editForm.user_id);
       if (userIndex !== -1) {
         this.users[userIndex] = { ...this.editForm };
       }
@@ -144,7 +155,7 @@ export default {
     // Close the edit dialog
     closeEditDialog() {
       this.isEditDialogOpen = false;
-      this.editForm = { id: null, name: "", mail: "", role: "" };
+      this.editForm = { user_id: null, user_name: "", user_mail: "", user_admin: "" };
     },
     // Remove a user
     async removeUser(userId) {

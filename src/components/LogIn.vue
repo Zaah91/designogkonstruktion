@@ -58,7 +58,8 @@ export default {
             newUser: {
                 user_name: '',
                 user_mail: '',
-                user_password: ''
+                user_password: '',
+                user_admin: false
             }
         }
     },
