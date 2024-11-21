@@ -1,149 +1,167 @@
 <template>
-    <v-main class="mainContent">
-        <div class="pa-4 flexWrap">
-            <div class="flex-grow-1 flex-shrink-1">
-            <v-container>
-                <v-text-field
-                label="Search users"
-                v-model="searchQuery"
-                outlined
-                clearable
-                ></v-text-field>
-                <div class="table-container">
-                <table class="user-table">
-                    <thead>
-                    <tr>
-                        <th>Users ID</th>
-                        <th>Users Name</th>
-                        <th>Users Email</th>
-                        <th>Users Role</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody class="table-scroll">
-                    <tr
-                        v-for="(user, index) in filteredUsers"
-                        :key="user.id"
-                        :class="{ 'even-row': index % 2 === 0 }"
-                    >
-                        <td>#{{ user.id }}</td>
-                        <td>{{ user.name }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.role }}</td>
-                        <td>
-                        <button class="editButton" @click="editUser(user)">Edit</button>
-                        <button class="editButton" @click="removeUser(user.id)">Remove</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                </div>
-            </v-container>
-            <div v-if="isEditDialogOpen" class="dialog-overlay">
-                <div class="dialog-box">
-                <h3>Edit User</h3>
-                <form @submit.prevent="saveEdit">
-                    <div>
-                    <label for="editName">Name:</label>
-                    <input id="editName" v-model="editForm.name" required />
-                    </div>
-                    <div>
-                    <label for="editEmail">Email:</label>
-                    <input id="editEmail" v-model="editForm.email" type="email" required />
-                    </div>
-                    <div>
-                    <label for="editRole">Role:</label>
-                    <select id="editRole" v-model="editForm.role">
-                        <option value="User">User</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                    </div>
-                    <div>
-                    <button class="editButton" type="submit">Save</button>
-                    <button class="editButton" type="button" @click="closeEditDialog">Cancel</button>
-                    </div>
-                </form>
-                </div>
-            </div>
-            </div>
+  <v-main class="mainContent">
+    <div class="pa-4 flexWrap">
+      <div class="flex-grow-1 flex-shrink-1">
+        <v-container>
+          <!-- Search Bar -->
+          <v-text-field
+            label="Search users"
+            v-model="searchQuery"
+            outlined
+            clearable
+          ></v-text-field>
+
+          <div v-if="isLoading">Loading users...</div>
+          
+          <div v-if="isError" class="error-message">
+            {{ errorMessage }}
+          </div>
+
+          <div v-if="!isLoading && !isError" class="table-container">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>User Name</th>
+                  <th>User Email</th>
+                  <th>User Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody class="table-scroll">
+                <tr
+                  v-for="(users, index) in filteredUsers"
+                  :key="users.id"
+                  :class="{ 'even-row': index % 2 === 0 }"
+                >
+                  <td>#{{ users.user_id }}</td>
+                  <td>{{ users.user_name }}</td>
+                  <td>{{ users.user_mail }}</td>
+                  <td>{{ users.user_admin }}</td>
+                  <td>
+                    <button class="editButton" @click="editUser(users)">Edit</button>
+                    <button class="editButton" @click="removeUser(users.id)">Remove</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </v-container>
+
+        <!-- Edit User Dialog -->
+        <div v-if="isEditDialogOpen" class="dialog-overlay">
+          <div class="dialog-box">
+            <h3>Edit User</h3>
+            <form @submit.prevent="saveEdit">
+              <div>
+                <label for="editName">Name:</label>
+                <input id="editName" v-model="editForm.name" required />
+              </div>
+              <div>
+                <label for="editEmail">Email:</label>
+                <input id="editEmail" v-model="editForm.mail" type="mail" required />
+              </div>
+              <div>
+                <label for="editRole">Role:</label>
+                <select id="editRole" v-model="editForm.role">
+                  <option value="User">User</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+              <div>
+                <button class="editButton" type="submit">Save</button>
+                <button class="editButton" type="button" @click="closeEditDialog">Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
-    </v-main>
-  </template>
+      </div>
+    </div>
+  </v-main>
+</template>
+
   
-  <script>
-  export default {
-    data() {
-      return {
-        searchQuery: "",
-        users: [
-          { id: 1, name: "Alice Web", email: "alice@example.com", role: "User" },
-          { id: 2, name: "Bob Web", email: "bob@example.com", role: "Admin" },
-          { id: 3, name: "Charlie Lastter", email: "charlie@example.com", role: "User", },
-          { id: 4, name: "Dan Oples", email: "Dan@example.com", role: "User" },
-          { id: 5, name: "Charles Thiger", email: "Charles@example.com", role: "User", },
-          { id: 6, name: "Tobi Gorige", email: "Tobi@example.com", role: "User" },
-          { id: 7, name: "Hedi Gorige", email: "Hedi@example.com", role: "User" },
-          { id: 8, name: "Tehter Yolge", email: "Tehter@example.com", role: "User", },
-          { id: 9, name: "Tobi Hester", email: "Tobi@example.com", role: "User" },
-          { id: 10, name: "Emma Stone", email: "emma.stone@example.com", role: "User", },
-          { id: 11, name: "John Doe", email: "john.doe@example.com", role: "Admin", },
-          { id: 12, name: "Jane Smith", email: "jane.smith@example.com", role: "User", },
-          { id: 13, name: "Michael Johnson", email: "michael.johnson@example.com", role: "User", },
-          { id: 14, name: "Sarah Connor", email: "sarah.connor@example.com", role: "User", },
-          { id: 15, name: "Peter Parker", email: "peter.parker@example.com", role: "User", },
-          { id: 16, name: "Bruce Wayne", email: "bruce.wayne@example.com", role: "Admin", },
-          { id: 17, name: "Clark Kent", email: "clark.kent@example.com", role: "User", },
-          { id: 18, name: "Diana Prince", email: "diana.prince@example.com", role: "User", },
-          { id: 19, name: "Tony Stark", email: "tony.stark@example.com", role: "Admin", },
-          { id: 20, name: "Natasha Romanoff", email: "natasha.romanoff@example.com", role: "User", },
-          { id: 21, name: "Nata Viker", email: "TonToner@example.com", role: "User", },
-          { id: 22, name: "Billy Prince", email: "Princer@example.com", role: "User", },
-          { id: 23, name: "Pete Dan", email: "TheDancer@example.com", role: "User", },
-        ],
-        isEditDialogOpen: false, 
-        editForm: {
-          id: null,
-          name: "",
-          email: "",
-          role: "",
-        },
-      };
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      searchQuery: "",
+      users: [],
+      isLoading: false,
+      isError: false,
+      errorMessage: "",
+      isEditDialogOpen: false,
+      editForm: {
+        id: null,
+        name: "",
+        mail: "",
+        role: "",
+      },
+    };
+  },
+  computed: {
+    filteredUsers() {
+      return this.users.filter((users) =>
+        `${users.name} ${users.mail} ${users.role}`
+          .toLowerCase()
+          .includes(this.searchQuery.toLowerCase())
+      );
     },
-    computed: {
-      filteredUsers() {
-        return this.users.filter((user) =>
-          `${user.name} ${user.email} ${user.role}`
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase())
-        );
-      },
+
+  },
+  methods: {
+    // Fetch users from the API
+    async fetchUsers() {
+      this.isLoading = true;
+      this.isError = false;
+      try {
+        const response = await axios.get("http://localhost:8081/users");
+        this.users = response.data;
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+        this.isError = true;
+        this.errorMessage = error.message || "Failed to load users.";
+      } finally {
+        this.isLoading = false;
+      }
     },
-    methods: {
-      editUser(user) {
-        // Open the edit dialog and populate the form with user data
-        this.isEditDialogOpen = true;
-        this.editForm = { ...user };
-      },
-      saveEdit() {
-        // Find the user and update their details
-        const userIndex = this.users.findIndex((u) => u.id === this.editForm.id);
-        if (userIndex !== -1) {
-          this.users[userIndex] = { ...this.editForm };
-        }
-        this.closeEditDialog();
-      },
-      closeEditDialog() {
-        // Close the edit dialog and reset the form
-        this.isEditDialogOpen = false;
-        this.editForm = { id: null, name: "", email: "", role: "" };
-      },
-      removeUser(userId) {
-        // Remove the user by their ID
-        this.users = this.users.filter((user) => user.id !== userId);
-      },
+    // Open the edit dialog and populate the form
+    editUser(users) {
+      this.isEditDialogOpen = true;
+      this.editForm = { ...users };
     },
-  };
-  </script>
+    // Save the edits and update the table
+    saveEdit() {
+      const userIndex = this.users.findIndex((u) => u.id === this.editForm.id);
+      if (userIndex !== -1) {
+        this.users[userIndex] = { ...this.editForm };
+      }
+      this.closeEditDialog();
+    },
+    // Close the edit dialog
+    closeEditDialog() {
+      this.isEditDialogOpen = false;
+      this.editForm = { id: null, name: "", mail: "", role: "" };
+    },
+    // Remove a user
+    async removeUser(userId) {
+      try {
+        await axios.delete(`http://localhost:8081/users/${userId}`);
+        this.user = this.user.filter((users) => users.id !== userId);
+      } catch (error) {
+        console.error("Failed to remove user:", error.message);
+      }
+    },
+  },
+  async mounted() {
+    await this.fetchUsers(); // Fetch the data when the component is mounted
+  },
+};
+</script>
+
   
   <style>
   
