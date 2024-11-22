@@ -40,7 +40,7 @@
         <h2>Opret bruger</h2>
         <v-text-field label="Navn" v-model="newUser.user_name"></v-text-field>
         <v-text-field label="E-mail" v-model="newUser.user_mail"></v-text-field>
-        <v-text-field
+        <v-text-field type="password"
           label="Kodeord"
           v-model="newUser.user_password"
         ></v-text-field>
