@@ -23,21 +23,7 @@
                     </template>
                   </v-tooltip>
                 </li>
-                <li v-if="route.name != 'Home'" class="backNavItem">
-                  <v-tooltip text="Tilbage">
-                    <template #activator="{ props }">
-                      <v-btn
-                        v-bind="props"
-                        text
-                        icon
-                        color="secondary"
-                        class="navBtn backBtn"
-                        @click="goBack"
-                        ><v-icon color="actionTxt" icon="mdi-arrow-left"
-                      /></v-btn>
-                    </template>
-                  </v-tooltip>
-                </li>
+                
                 <li>
                   <v-tooltip text="Kontakt">
                     <template #activator="{ props }">
@@ -96,6 +82,25 @@
                       >
                         <v-icon color="actionTxt" icon="mdi-close" />
                       </v-btn>
+                    </template>
+                  </v-tooltip>
+                </li>
+              </ol>
+            </nav>
+            <nav id="nav2">
+              <ol>
+                <li v-if="route.name != 'Home'" class="backNavItem">
+                  <v-tooltip text="Tilbage">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        class="navBtn backBtn"
+                        @click="goBack"
+                        ><v-icon color="actionTxt" icon="mdi-arrow-left"
+                      /></v-btn>
                     </template>
                   </v-tooltip>
                 </li>
