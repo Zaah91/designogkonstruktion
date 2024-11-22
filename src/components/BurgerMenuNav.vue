@@ -80,6 +80,7 @@ export default {
       this.drawer = this.isMobile = newWidth <= 1024;
     }
   },
+  emits: ["logout"],
 };
 </script>
 

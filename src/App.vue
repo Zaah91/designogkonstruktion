@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <BurgerMenu v-if="siteInfo.loggedIn" @logout="handleLogout" />
+    <BurgerMenu :siteInfo="siteInfo" v-if="siteInfo.loggedIn" @logout="handleLogout" />
     <NavHeader :siteInfo="siteInfo" @logout="handleLogout" />
     <router-view :siteInfo="siteInfo" />
   </v-app>
