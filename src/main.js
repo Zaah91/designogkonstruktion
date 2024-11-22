@@ -8,6 +8,7 @@ import '@/assets/styles/global.scss';  // Delte SCSS styles
 loadFonts();
 
 const app = createApp(App);
+app.config.globalProperties.$apiUrl = process.env.VUE_APP_API_BASE_URL;
 
 // Tilføj vuetify
 app.use(vuetify);
