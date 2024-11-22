@@ -2,44 +2,24 @@
   <header>
     <v-container v-if="siteInfo.loggedIn" >
       <v-row class="flex-nowrap headerRow" no-gutters>
-        <router-link to="/"
-          ><img id="logo" :alt="siteInfo.sitename" :src="siteInfo.logo"
-        /></router-link>
-
-        <v-col class="flex-grow-1 flex-shrink-1 navSpacer"> </v-col>
         
         <v-col class="flex-grow-0 flex-shrink-0">
-          <div class="d-flex justify-end">
+          <div class="d-flex">
             <nav>
-              <ol class="d-flex headerNavigation">
+              <ol class="headerNavigation">
+                <!--<router-link to="/"><img class="navBtn" :alt="siteInfo.sitename" :src="siteInfo.logo"/></router-link>-->
                 <li>
-                  <v-tooltip text="Kontakt">
+                  <v-tooltip text="Forside">
                     <template #activator="{ props }">
                       <v-btn
                         v-bind="props"
                         text
                         icon
                         color="secondary"
-                        :to="{ name: 'Support' }"
-                        class="navBtn supportBtn"
-                        ><v-icon color="actionTxt" icon="mdi-face-agent"
+                        :to="{ name: 'Home' }"
+                        class="navBtn homeBtn"
+                        ><v-icon color="actionTxt" icon="mdi-home"
                       /></v-btn>
-                    </template>
-                  </v-tooltip>
-                </li>
-                <li>
-                  <v-tooltip text="Log ud!">
-                    <template #activator="{ props }">
-                      <v-btn
-                        v-bind="props"
-                        text
-                        icon
-                        color="secondary"
-                        class="navBtn logoutBtn"
-                        @click="logout"
-                      >
-                        <v-icon color="actionTxt" icon="mdi-close" />
-                      </v-btn>
                     </template>
                   </v-tooltip>
                 </li>
@@ -54,6 +34,21 @@
                         class="navBtn backBtn"
                         @click="goBack"
                         ><v-icon color="actionTxt" icon="mdi-arrow-left"
+                      /></v-btn>
+                    </template>
+                  </v-tooltip>
+                </li>
+                <li>
+                  <v-tooltip text="Kontakt">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        :to="{ name: 'Support' }"
+                        class="navBtn supportBtn"
+                        ><v-icon color="actionTxt" icon="mdi-face-agent"
                       /></v-btn>
                     </template>
                   </v-tooltip>
@@ -85,6 +80,22 @@
                         class="navBtn adminBtn"
                         ><v-icon color="actionTxt" icon="mdi-security"
                       /></v-btn>
+                    </template>
+                  </v-tooltip>
+                </li>
+                <li>
+                  <v-tooltip text="Log ud!">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        text
+                        icon
+                        color="secondary"
+                        class="navBtn logoutBtn"
+                        @click="logout"
+                      >
+                        <v-icon color="actionTxt" icon="mdi-close" />
+                      </v-btn>
                     </template>
                   </v-tooltip>
                 </li>
@@ -158,13 +169,6 @@ export default {
 .userList {
   width: 95%;
 }
-#logo {
-  /*position: fixed;*/
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 9999;
-  height: 4rem;
-}
 header {
   background: rgb(
     var(--v-theme-primary)
@@ -175,7 +179,6 @@ header {
   left: 0;
 }
 nav {
-  display: flex;
   width: 33%;
   justify-content: right;
 }
