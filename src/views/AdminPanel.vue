@@ -13,8 +13,8 @@
 
           <div v-if="isLoading">Loading users...</div>
           
-          <div v-if="isError" class="error-message">
-            {{ errorMessage }}
+          <div v-if="isError" class="statusMessage">
+            {{ statusMessage }}
           </div>
 
           <div v-if="!isLoading && !isError" class="table-container">
@@ -89,7 +89,7 @@ export default {
       users: [],
       isLoading: false,
       isError: false,
-      errorMessage: "",
+      statusMessage: "",
       isEditDialogOpen: false,
       editForm: {
         id: null,
@@ -116,13 +116,13 @@ export default {
       this.isLoading = true;
       this.isError = false;
       try {
-        const response = await axios.get("http://localhost:8081/users");
+        const response = await axios.get(this.$apiUrl + "/users");
         this.users = response.data;
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.log(error);
         this.isError = true;
-        this.errorMessage = error.message || "Failed to load users.";
+        this.statusMessage = error.message || "Kunne ikke indlæse brugere.";
       } finally {
         this.isLoading = false;
       }
@@ -134,7 +134,7 @@ export default {
     },
     async fetchUserData(userId) {
       try {
-        const response = await axios.get(`http://localhost:8081/users/${userId}`);
+        const response = await axios.get(this.$apiUrl + `/users/${userId}`);
         const userData = response.data;
         this.editForm.user_id = userData.user_id;
         this.editForm.user_name = userData.user_name;
@@ -146,7 +146,8 @@ export default {
     },
     // Save the edits and update the table
     async saveEdit() {
-      const response = await axios.patch(`http://localhost:8081/users/${this.editForm.user_id}`, this.editForm);
+      this.editForm.user_admin = (this.editForm.user_admin == 'Admin' ? 1 : 0);
+      const response = await axios.patch(this.$apiUrl + `/users/${this.editForm.user_id}`, this.editForm);
       const updatedUser = response.data;
       const userIndex = this.users.findIndex((u) => u.user_id === this.editForm.user_id);
       if (userIndex !== -1) {
@@ -157,13 +158,13 @@ export default {
     // Close the edit dialog
     closeEditDialog() {
       this.isEditDialogOpen = false;
-      this.editForm = { user_id: null, user_name: "", user_mail: "", user_admin: "" };
+      this.editForm = { user_id: null, user_name: "", user_mail: "", user_admin: 0 };
     },
     // Remove a user
     async removeUser(userId) {
       try {
-        await axios.delete(`http://localhost:8081/users/${userId}`);
-        this.user = this.user.filter((users) => users.user_id !== userId);
+        await axios.delete(this.$apiUrl + `/users/${userId}`);
+        this.fetchUsers();
       } catch (error) {
         console.error("Failed to remove user:", error.message);
       }

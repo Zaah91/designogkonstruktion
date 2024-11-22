@@ -202,8 +202,6 @@ ol {
     flex-direction: column;
   }
 }
-@media (max-width: 570px) {
-}
 @media (max-width: 1024px) {
   header {
     position: sticky;

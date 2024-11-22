@@ -6,7 +6,9 @@
     <v-card class="pa-5 text-center" max-width="400" min-height="700" outlined>
       <h1 class="text-h4 mb-5">Velkommen til Venner for Livet</h1>
       <div v-if="showLogin">
-        <div class="statusMessage">{{ statusMessage }}</div>
+        <div class="statusMessage" v-if="statusMessage">
+          {{ statusMessage }}
+        </div>
         <v-text-field
           label="Indtast brugernavn"
           v-model="username"
@@ -94,18 +96,23 @@ export default {
     async registerUser() {
       try {
         await axios.post("http://localhost:8081/users", this.newUser);
-        this.showLogin = false;
+        this.showLogin = true;
         this.statusMessage = "Brugeren er oprettet. Nu kan du logge ind!";
       } catch (error) {
         if (error.response?.data?.message) {
           this.statusMessage = error.response.data.message;
-          this.showLogin = false;
+          this.showLogin = true;
         } else {
           this.statusMessage = "Der gik noget galt. Prøv igen!";
           console.error("Error registering user:", error.response);
         }
       }
     },
+  },
+  computed: {
+    toggleCreateUserDialog() {
+      return this.showLogin;
+    }
   },
 };
 </script>
