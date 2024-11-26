@@ -29,7 +29,7 @@
       
       <div v-else>
         <h2>Opret bruger</h2>
-        <v-text-field label="Navn" v-model="newUser.user_name"></v-text-field>
+        <v-text-field label="Navn" v-model="newUser.user_fullname"></v-text-field>
         <v-text-field label="E-mail" v-model="newUser.user_mail"></v-text-field>
         <v-text-field label="Kodeord" v-model="newUser.user_password"></v-text-field>
 
@@ -56,7 +56,7 @@ export default {
             username: '',
             showLogin: true,
             newUser: {
-                user_name: '',
+                user_fullname: '',
                 user_mail: '',
                 user_password: '',
                 user_admin: false
