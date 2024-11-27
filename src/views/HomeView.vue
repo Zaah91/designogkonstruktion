@@ -1,5 +1,5 @@
 <template>
-  <v-main :class="{ mainContent: this.siteInfo.loggedIn }">
+  <v-main :class="{ mainContent: siteInfo.loggedIn }">
     <LogIn v-if="!siteInfo.loggedIn" :siteInfo="siteInfo" @login="handleLogin" />
     <div class="d-block homeWrap pa-4" v-else>
       <v-img
@@ -12,12 +12,12 @@
         {{ loggedInUser.name }}
       </p>
       <h1>Dine fællesskaber</h1>
-      <template v-if="this.loggedInUser.communities">
+      <template v-if="loggedInUser.communities">
         <template
-          v-for="(community, index) in this.loggedInUser.communities"
+          v-for="(community, index) in loggedInUser.communities"
           :key="index"
         >
-          <v-btn v-if="this.loggedInUser.communities[index].value !== false" color="btnPrimary" class="d-block mt-8 pa-2" :to="{ name: 'Community' }">{{ community.name }}</v-btn>
+          <v-btn v-if="loggedInUser.communities[index].value !== false" color="btnPrimary" class="d-block mt-8 pa-2" :to="{ name: 'Community' }">{{ community.name }}</v-btn>
         </template>
       </template>
     </div>

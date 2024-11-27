@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <BurgerMenu v-if="siteInfo.loggedIn" @logout="handleLogout" />
+    <BurgerMenu :siteInfo="siteInfo" v-if="siteInfo.loggedIn" @logout="handleLogout" />
     <NavHeader :siteInfo="siteInfo" @logout="handleLogout" />
     <router-view :siteInfo="siteInfo" />
   </v-app>
@@ -9,8 +9,6 @@
 <script>
 // Komponenter
 import NavHeader from "@/components/NavHeader.vue";
-import { useRouter } from "vue-router";
-import { useRoute } from "vue-router";
 import BurgerMenu from "@/components/BurgerMenuNav.vue";
 import axios from "axios";
 
@@ -99,9 +97,8 @@ export default {
       this.redirectToHome();
     },
     redirectToHome() {
-      const router = useRouter();
-      if (!this.siteInfo.loggedIn && this.route.name !== "Home") {
-        router.push({ name: "Home" }); // Redirect til home, hvis route name ikke matcher, og brugeren ikke er logget ind
+      if (!this.siteInfo.loggedIn && this.$route.name !== "Home") {
+        this.$router.push({ name: "Home" }); // Redirect to home if user is not logged in
       }
     },
     fetchUsers() {
@@ -116,7 +113,6 @@ export default {
     },
   },
   mounted() {
-    this.route = useRoute();
     // Når vores app bliver "mounted", tjek om brugeren er logget ind; hvis ikke omstiller vi til forsiden
     this.redirectToHome();
   },
