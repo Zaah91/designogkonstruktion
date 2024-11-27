@@ -7,7 +7,6 @@
           <div class="d-flex">
             <nav>
               <ol class="headerNavigation">
-                <!--<router-link to="/"><img class="navBtn" :alt="siteInfo.sitename" :src="siteInfo.logo"/></router-link>-->
                 <li>
                   <v-tooltip text="Forside">
                     <template #activator="{ props }">
@@ -87,7 +86,7 @@
                 </li>
               </ol>
             </nav>
-            <nav id="nav2">
+            <nav>
               <ol>
                 <li v-if="route.name != 'Home'" class="backNavItem">
                   <v-tooltip text="Tilbage">

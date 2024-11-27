@@ -35,7 +35,7 @@
                   :class="{ 'even-row': index % 2 === 0 }"
                 >
                   <td>#{{ users.user_id }}</td>
-                  <td>{{ users.user_name }}</td>
+                  <td>{{ users.user_fullname }}</td>
                   <td>{{ users.user_mail }}</td>
                   <td>{{ users.user_admin }}</td>
                   <td>
@@ -55,7 +55,7 @@
             <form @submit.prevent="saveEdit">
               <div>
                 <label for="editName">Name:</label>
-                <input id="editName" v-model="editForm.user_name" required />
+                <input id="editName" v-model="editForm.user_fullname" required />
               </div>
               <div>
                 <label for="editEmail">Email:</label>
@@ -103,7 +103,7 @@ export default {
   computed: {
     filteredUsers() {
       return this.users.filter((users) =>
-        `${users.user_name} ${users.user_mail} ${users.user_admin}`
+        `${users.user_fullname} ${users.user_mail} ${users.user_admin}`
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase())
       );
@@ -137,7 +137,7 @@ export default {
         const response = await axios.get(this.$apiUrl + `/users/${userId}`);
         const userData = response.data;
         this.editForm.user_id = userData.user_id;
-        this.editForm.user_name = userData.user_name;
+        this.editForm.user_fullname = userData.user_fullname;
         this.editForm.user_mail = userData.user_mail;
         this.editForm.user_admin = userData.user_admin;
       } catch (error) {
@@ -158,7 +158,7 @@ export default {
     // Close the edit dialog
     closeEditDialog() {
       this.isEditDialogOpen = false;
-      this.editForm = { user_id: null, user_name: "", user_mail: "", user_admin: 0 };
+      this.editForm = { user_id: null, user_fullname: "", user_mail: "", user_admin: "" };
     },
     // Remove a user
     async removeUser(userId) {

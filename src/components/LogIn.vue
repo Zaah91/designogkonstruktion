@@ -38,7 +38,7 @@
 
       <div v-else>
         <h2>Opret bruger</h2>
-        <v-text-field label="Navn" v-model="newUser.user_name"></v-text-field>
+        <v-text-field label="Navn" v-model="newUser.user_fullname"></v-text-field>
         <v-text-field label="E-mail" v-model="newUser.user_mail"></v-text-field>
         <v-text-field type="password"
           label="Kodeord"
@@ -58,63 +58,48 @@
 <script>
 import axios from "axios";
 export default {
-  name: "LogIn",
-  props: {
-    siteInfo: Object,
-  },
-  data() {
-    return {
-      username: "",
-      showLogin: true,
-      statusMessage: "",
-      newUser: {
-        user_name: "",
-        user_mail: "",
-        user_password: "",
-        user_admin: false,
-      },
-    };
-  },
-  methods: {
-    storeUsername() {
-      if (this.username) {
-        this.$emit("login", this.username);
-      } else {
-        this.statusMessage = "Indtast venligst et brugernavn!";
-      }
+    name: 'LogIn',
+    props: {
+        siteInfo: Object,
     },
-    loginAsRandomUser() {
-      const randomUser =
-        this.siteInfo.users[
-          Math.floor(Math.random() * this.siteInfo.users.length)
-        ];
-      this.$emit("login", randomUser.username);
-    },
-    toggleView() {
-      this.showLogin = !this.showLogin;
-    },
-    async registerUser() {
-      try {
-        await axios.post("http://localhost:8081/users", this.newUser);
-        this.showLogin = true;
-        this.statusMessage = "Brugeren er oprettet. Nu kan du logge ind!";
-      } catch (error) {
-        if (error.response?.data?.message) {
-          this.statusMessage = error.response.data.message;
-          this.showLogin = true;
-        } else {
-          this.statusMessage = "Der gik noget galt. Prøv igen!";
-          console.error("Error registering user:", error.response);
+    data() {
+        return {
+            username: '',
+            showLogin: true,
+            newUser: {
+                user_fullname: '',
+                user_mail: '',
+                user_password: '',
+                user_admin: false
+            }
         }
-      }
     },
-  },
-  computed: {
-    toggleCreateUserDialog() {
-      return this.showLogin;
+    methods: {
+        storeUsername() {
+            if (this.username) {
+                this.$emit('login', this.username)
+            } else {
+                alert('Indtast venligst et brugernavn')
+            }
+        },
+        loginAsRandomUser() {
+            const randomUser = this.siteInfo.users[Math.floor(Math.random() * this.siteInfo.users.length)];
+            this.$emit('login', randomUser.username);
+        },
+        toggleView() {
+            this.showLogin = !this.showLogin;
+        },
+        async registerUser() {
+          try {
+            const response = await axios.post('http://localhost:8081/users', this.newUser);
+            console.log('User registered successfully:', response.data);
+          } catch (error) {
+            console.error('Error registering user:', error);
+          }
+        }
     }
-  },
-};
+}
+
 </script>
 
 <style>
