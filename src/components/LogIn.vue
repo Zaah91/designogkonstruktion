@@ -10,14 +10,14 @@
           {{ statusMessage }}
         </div>
         <v-text-field
-          label="Indtast brugernavn"
-          v-model="username"
+          label="Indtast email"
+          v-model="email"
           outlined
-          @keyup.enter="storeUsername"
+          @keyup.enter="storeLogin"
         ></v-text-field>
         <v-text-field label="Indtast kodeord" type="password"></v-text-field>
 
-        <v-btn class="my-4" color="primary" large @click="storeUsername">
+        <v-btn class="my-4" color="primary" large @click="storeLogin">
           Log Ind
         </v-btn>
 
@@ -64,7 +64,8 @@ export default {
     },
     data() {
         return {
-            username: '',
+            email: '',
+            statusMessage: '',
             showLogin: true,
             newUser: {
                 user_fullname: '',
@@ -75,11 +76,11 @@ export default {
         }
     },
     methods: {
-        storeUsername() {
-            if (this.username) {
-                this.$emit('login', this.username)
+        storeLogin() {
+            if (this.email) {
+                this.$emit('login', this.email)
             } else {
-                alert('Indtast venligst et brugernavn')
+                alert('Indtast venligst et email')
             }
         },
         loginAsRandomUser() {
