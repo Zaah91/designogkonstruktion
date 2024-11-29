@@ -28,7 +28,7 @@ export default {
         loggedInUser: {},
         users: [
           {
-            username: "Eivind",
+            username: "eivind@example.com",
             name: "Eivind Johannes Goldenstein Hansen",
             email: "eivind@example.com",
             photo: require("@/assets/eivind.webp"),
@@ -42,7 +42,7 @@ export default {
             ],
           },
           {
-            username: "Karen",
+            username: "karen@example.com",
             name: "Karen Elisabeth Johannesson",
             email: "karen@example.com",
             photo: require("@/assets/karan.webp"),
@@ -53,7 +53,7 @@ export default {
             ],
           },
           {
-            username: "Ulla",
+            username: "ulla@example.com",
             name: "Ulla Hansen",
             email: "ulla@example.com",
             photo: require("@/assets/ulla.webp"),
