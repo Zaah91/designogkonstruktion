@@ -7,16 +7,16 @@
           <v-text-field
             label="Fulde navn"
             prepend-icon="mdi-pencil"
-            v-model="this.selectedUser.name"
+            v-model="loggedInUser.fullname"
           />
           <v-text-field
             label="Email"
             prepend-icon="mdi-mail"
-            v-model="this.selectedUser.email"
+            v-model="loggedInUser.email"
           />
         </v-container>
         <div class="d-flex justify-space-evenly">
-          <v-btn color="btnPrimary" @click="saveSettings"> Gem </v-btn>
+          <v-btn color="btnPrimary"> Gem </v-btn>
           <v-btn color="red" @click="showOverlay = true"> Slet bruger </v-btn>
         </div>
 
@@ -38,22 +38,20 @@
       </div>
       <div class="flex-grow-1 flex-shrink-1 pt-4">
         <v-img
-          :src="loggedInUser.photo"
-          :alt="loggedInUser.username"
+          :src="userImageSrc"
+          :alt="loggedInUser.fullname"
           class="d-flex justify-center userPicture"
         />
         <v-container class="pa-0">
           <h2>Interesser</h2>
-          <template
-            v-for="(community, index) in this.selectedUser.communities"
-            :key="index"
-          >
-            <template v-if="this.selectedUser.communities">
+          <template v-for="(community, index) in userCommunities" :key="index">
+            <template v-if="this.userCommunities">
               <v-checkbox
                 color="btnPrimary"
                 class="ma-0 pa-0"
-                :label="community.name"
-                v-model="this.selectedUser.communities[index].value"
+                :label="community.community_name"
+                v-model="userCommunities[index].value"
+                @click="updateUserCommunities(userCommunities[index])"
               ></v-checkbox>
             </template>
           </template>
@@ -64,65 +62,125 @@
 </template>
 
 <script>
+import axiosInstance from "@/api/axiosInstance";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
+
 export default {
   name: "SettingsView",
   data() {
     return {
-      selectedUser: false,
+      allCommunities: [],
+      userCommunities: [],
       tempCommunityUpdated: false,
+      userImageSrc: null,
       showOverlay: false,
+      statusMessage: "",
+      isLoading: false,
     };
   },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
   methods: {
+    async fetchCommunities() {
+      this.isLoading = true;
+      try {
+        const response = await axiosInstance.get("/communities");
+        this.allCommunities = response.data;
+      } catch (error) {
+        this.statusMessage =
+          error.message || "Kunne ikke indlæse fællesskaber.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async updateUserCommunities(community) {
+      if (!community.value) {
+        this.isLoading = true;
+        try {
+          await axiosInstance.post("/memberships", {
+            user_id: this.loggedInUser.userId,
+            community_id: community.community_id,
+          });
+        } catch (error) {
+          this.statusMessage =
+            error.message || "Kunne ikke tilføje dit medlemskab.";
+        } finally {
+          this.isLoading = false;
+        }
+      } else {
+        this.isLoading = true;
+        try {
+          await axiosInstance.delete("/memberships/" + this.loggedInUser.userId + '/' + community.community_id);
+        } catch (error) {
+          this.statusMessage =
+            error.message || "Kunne ikke tilføje dit medlemskab.";
+        } finally {
+          this.isLoading = false;
+        }
+      }
+    },
+
     addMissingCommunitiesAndValuesInTmp() {
       this.tempCommunityUpdated = true;
+
       // Tilføl en midlertidig "value" property, som vi så kan binde via v-modal i vores v-for (fjernes igen inden dataen evt sendes tilbage selvfølgelig)
-      for (let i = 0; i < this.selectedUser.communities.length; i++) {
-        if (typeof this.selectedUser.communities[i].value == "undefined") {
-          this.selectedUser.communities[i].value = true;
+      for (let i = 0; i < this.userCommunities.length; i++) {
+        if (typeof this.userCommunities[i].value == "undefined") {
+          this.userCommunities[i].value = true;
         }
       }
 
-      // Bemærk: I app.vue har vi defineret den fulde liste af ting, brugeren kan tilmelde sig.
-      // Nu skal vi lige sikre, at alle tingene eksistere i det midlertidige community array. Hvis ikke, så tilføjer vi det som mangler..
-      for (let i = 0; i < this.siteInfo.communities.length; i++) {
+      // Bemærk: Vi heter den fulde liste af communities med fetchCommunities
+      // Nu skal vi lige sikre, at alle communities eksistere i det midlertidige community array. Hvis ikke, så tilføjer vi det som mangler..
+      for (let i = 0; i < this.allCommunities.length; i++) {
         // iterer igennem det midlertidige community array
-        let foundThing = this.selectedUser.communities.find(
-          (community) => community.name === this.siteInfo.communities[i].name
+        let foundCommunity = this.userCommunities.find(
+          (community) =>
+            community.community_name === this.allCommunities[i].community_name
         );
-        if (!foundThing) {
-          this.siteInfo.communities[i].value = false;
-          this.selectedUser.communities.push(this.siteInfo.communities[i]);
+        if (!foundCommunity) {
+          this.allCommunities[i].value = false;
+          this.userCommunities.push(this.allCommunities[i]);
         }
       }
+    },
+    async fetchUserImage(userId) {
+      try {
+        const response = await axiosInstance.get(`/images/${userId}`, {
+          responseType: "blob",
+        });
+        this.userImageSrc = URL.createObjectURL(response.data);
+      } catch (error) {
+        this.userImageSrc = "/images/placeholder.png";
+      }
+    },
+  },
+  watch: {
+    loggedInUser: {
+      immediate: true,
+      handler(newUser) {
+        console.log(newUser);
+        if (newUser && newUser.userId) {
+          this.fetchUserImage(newUser.userId);
+        } else {
+          this.userImageSrc = "/images/placeholder.png";
+        }
+      },
     },
   },
   computed: {
     loggedInUser() {
       // Retuner user-objektet for den bruger, som er logget ind
-      const loggedInUser = this.siteInfo.users.find(
-        (user) => user.username === this.siteInfo.username
-      );
-      if (loggedInUser) {
-        return loggedInUser;
-      } else {
-        return this.siteInfo.users.find((user) => user.username === "Ulla");
-      }
+      return useLoggedInUserStore().user;
     },
   },
-  mounted() {
-    if (!this.tempCommunityUpdated) {
-      // Gem en midlertidig kopi af den bruger, som er logget ind, inklusiv deres settings, som de så kan ændre for deres aktive session
-      this.selectedUser = this.loggedInUser;
-      // --------------------------------------------------
-      // Jeg har haft et fantastisk problem med arrays af UI komponenter (v-checkbox i det her tilfælde), fordi man ikke nødvendigvis binde direkte til dem via v-model
-      // Funktionskald nedenfor er et sindsygt hack til at omgå problemet..
-      // Jeg ved godt, jeg bare kunne tilføje "value" manuelt i App.vue, men jeg har før haft situationer, hvor jeg ikke har haft kontrol over den data jeg fik.
-      // Nu prøver jeg lige at løse det på denne her måde...
-      // Forbered vores midlertidige kopi af communities arraryet på denne her sindsyge besværlige måde!!
+  async mounted() {
+    if (!this.tempCommunityUpdated) { // Tjek at vi ikke allerede har kørt funktionerne, fordi vi skal kun køre dem på første visning
+
+      // Lav en direkte reference til communities i vores loggedInUser store
+      this.userCommunities = this.loggedInUser.communities;
+
+      await this.fetchCommunities();
       this.addMissingCommunitiesAndValuesInTmp();
-      // --------------------------------------------------
     }
   },
 };

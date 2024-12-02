@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <BurgerMenu :siteInfo="siteInfo" v-if="siteInfo.loggedIn" @logout="handleLogout" />
-    <NavHeader :siteInfo="siteInfo" @logout="handleLogout" />
+    <BurgerMenu :siteInfo="siteInfo" v-if="loggedInUser" />
+    <NavHeader :siteInfo="siteInfo" />
     <router-view :siteInfo="siteInfo" />
   </v-app>
 </template>
@@ -11,6 +11,7 @@
 import NavHeader from "@/components/NavHeader.vue";
 import BurgerMenu from "@/components/BurgerMenuNav.vue";
 import axios from "axios";
+import { useLoggedInUserStore } from './stores/loggedInUser';
 
 export default {
   name: "App",
@@ -25,7 +26,6 @@ export default {
         sitename: "Venner for Livet",
         logo: require("@/assets/gammelchat-logo.webp"),
         loggedIn: false,
-        loggedInUser: {},
         users: [
           {
             username: "eivind@example.com",
@@ -78,6 +78,11 @@ export default {
       },
     };
   },
+  computed: {
+    loggedInUser() {
+      return this.loggedInUserStore.user;
+    }
+  },
   provide() {
     // Fordi siteInfo ikke er direkte tilgængelig i vores views, bliver vi nødt til at dele den først via provide
     // Inde i de views, som skal bruge den, skal vi huske at lave en inject af den. Se eks HomeView.
@@ -86,22 +91,16 @@ export default {
     };
   },
   methods: {
-    handleLogin(username) {
-      this.siteInfo.loggedIn = true;
-      this.siteInfo.username = username;
-    },
     handleLogout() {
-      this.siteInfo.loggedIn = false;
-      this.siteInfo.username = "";
-      this.siteInfo.loggedInUser = {};
+      this.loggedInUserStore.clearUser();
       this.redirectToHome();
     },
     redirectToHome() {
-      if (!this.siteInfo.loggedIn && this.$route.name !== "Home") {
+      if (!this.loggedInUser && this.$route.name !== "Home") {
         this.$router.push({ name: "Home" }); // Redirect to home if user is not logged in
       }
     },
-    fetchUsers() {
+    fetchUsers() { // Skal ikke bruges her
       axios
         .get("localhost:8081/users")
         .then((response) => {
@@ -112,7 +111,12 @@ export default {
         });
     },
   },
+  created() {
+    // Køres før komponentet indsættes i DOMen
+    this.loggedInUserStore = useLoggedInUserStore();
+  },
   mounted() {
+    // Køres efter kombonentet er blevet indsat i DOMen
     // Når vores app bliver "mounted", tjek om brugeren er logget ind; hvis ikke omstiller vi til forsiden
     this.redirectToHome();
   },
