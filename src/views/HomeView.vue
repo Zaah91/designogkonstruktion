@@ -1,6 +1,6 @@
 <template>
   <v-main :class="{ mainContent: loggedInUser }"><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
-    <LogIn v-if="!loggedInUser" :siteInfo="siteInfo" />
+    <LogIn v-if="!loggedInUser" />
     <div class="d-block homeWrap pa-4" v-else>
       <v-img
         :src="userImageSrc"
@@ -17,7 +17,7 @@
           v-for="(community, index) in loggedInUser.communities"
           :key="index"
         >
-          <v-btn
+          <v-btn v-if="typeof community?.value == 'undefined' || community.value"
             color="btnPrimary"
             class="d-block mt-8 pa-2"
             :to="{ name: 'Community' }"
@@ -43,7 +43,6 @@ export default {
       tempCommunityUpdated: 0,
     };
   },
-  inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
   components: {
     LogIn,
   },
@@ -69,7 +68,6 @@ export default {
     loggedInUser: {
       immediate: true,
       handler(newUser) {
-        console.log(newUser);
         if (newUser && newUser.userId) {
           this.fetchUserImage(newUser.userId);
         } else {
