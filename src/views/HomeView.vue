@@ -1,5 +1,6 @@
 <template>
-  <v-main :class="{ mainContent: loggedInUser }"><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
+  <v-main :class="{ mainContent: loggedInUser }"
+    ><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
     <LogIn v-if="!loggedInUser" />
     <div class="d-block homeWrap pa-4" v-else>
       <v-img
@@ -17,10 +18,11 @@
           v-for="(community, index) in loggedInUser.communities"
           :key="index"
         >
-          <v-btn v-if="typeof community?.value == 'undefined' || community.value"
+          <v-btn
+            v-if="typeof community?.value == 'undefined' || community.value"
             color="btnPrimary"
             class="d-block mt-8 pa-2"
-            :to="{ name: 'Community' }"
+            :to="{ name: 'Community', params: { id: community.community_id } }"
             >{{ community.community_name }}</v-btn
           >
         </template>
@@ -53,18 +55,20 @@ export default {
     },
   },
   methods: {
+    // Method til at opdatere src attributten til brugerens billede
     async fetchUserImage(userId) {
       try {
         const response = await axiosInstance.get(`/images/${userId}`, {
           responseType: "blob",
         });
-        this.userImageSrc = URL.createObjectURL(response.data);
+        return URL.createObjectURL(response.data);
       } catch (error) {
-        this.userImageSrc = "/images/placeholder.png";
+        return "/images/placeholder.png";
       }
     },
   },
   watch: {
+    // En watcher til at holde øje med, om en bruger logger ind - hvis en bruger logger ind, så forsøg at indlæs brugerens profilbillede
     loggedInUser: {
       immediate: true,
       handler(newUser) {

@@ -7,12 +7,12 @@
           <v-text-field
             label="Fulde navn"
             prepend-icon="mdi-pencil"
-            v-model="loggedInUser.fullname"
+            v-model="editedUserAttributes.user_fullname"
           />
           <v-text-field
             label="Email"
             prepend-icon="mdi-mail"
-            v-model="loggedInUser.email"
+            v-model="editedUserAttributes.user_mail"
           />
         </v-container>
         <div class="d-flex justify-space-evenly">
@@ -69,6 +69,10 @@ export default {
   name: "SettingsView",
   data() {
     return {
+      editedUserAttributes: {
+        user_fullname: null,
+        user_mail: null
+      },
       allCommunities: [],
       userCommunities: [],
       tempCommunityUpdated: false,
@@ -80,6 +84,7 @@ export default {
   },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
   methods: {
+    // Gem en liste af communities i this.allCommunities
     async fetchCommunities() {
       this.isLoading = true;
       try {
@@ -92,6 +97,8 @@ export default {
         this.isLoading = false;
       }
     },
+
+    // Slet eller tilføj community medlemskab
     async updateUserCommunities(community) {
       if (!community.value) {
         this.isLoading = true;
@@ -118,7 +125,20 @@ export default {
         }
       }
     },
+    async updateUser(userId) {
+      this.isLoading = true;
+      try {
+        // const response = await...
+        await axiosInstance.patch(`/users/${userId}`, this.editedUserAttributes);
+        
+      } catch (error) {
+          console.log(error);
+      } finally {
+          this.isLoading = false;
+      }
+    },
 
+    // Tilpasset method fra vores tidligere frontend.
     addMissingCommunitiesAndValuesInTmp() {
       this.tempCommunityUpdated = true;
 
@@ -129,8 +149,8 @@ export default {
         }
       }
 
-      // Bemærk: Vi heter den fulde liste af communities med fetchCommunities
-      // Nu skal vi lige sikre, at alle communities eksistere i det midlertidige community array. Hvis ikke, så tilføjer vi det som mangler..
+      // Bemærk: Vi heter den fulde liste af communities med fetchCommunities i mounted() lifecycle
+      // Nu skal vi lige sikre, at alle communities eksistere i userCommunities (dvs, det array af communities, som brugeren er medlem af i forvejen). Hvis ikke, så tilføjer vi dem som mangler..
       for (let i = 0; i < this.allCommunities.length; i++) {
         // iterer igennem det midlertidige community array
         let foundCommunity = this.userCommunities.find(
@@ -181,6 +201,8 @@ export default {
 
       await this.fetchCommunities();
       this.addMissingCommunitiesAndValuesInTmp();
+      this.editedUserAttributes.user_fullname = this.loggedInUser.fullname;
+      this.editedUserAttributes.user_mail = this.loggedInUser.email;
     }
   },
 };
