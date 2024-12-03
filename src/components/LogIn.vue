@@ -5,15 +5,20 @@
   >
     <v-card class="pa-5" max-width="400" min-height="700" outlined>
       <h1 class="text-h4 mb-5 text-center">Venner For Livet</h1>
-      <p class="text-left pb-8">
-        Indtast din e-mail adresse og dit kodeord for at logge ind:
-      </p>
 
       <div v-if="showLogin">
         <div class="statusMessage">
-          <!-- Indsæt ikke en v-if her, fordi så "hopper" alting, når der kommer statusbeskeder! -->
-          {{ statusMessage }}
+          <v-alert v-if="statusMessage"
+            :text="statusMessage"
+            density="compact"
+            :type="statusType"
+            :icon="'$' + statusType"
+            variant="tonal"
+          ></v-alert>
         </div>
+        <p class="text-left pb-8">
+          Indtast din e-mail adresse og dit kodeord for at logge ind:
+        </p>
         <v-text-field
           label="Indtast email"
           v-model="email"
@@ -98,7 +103,9 @@
           v-model="newUser.user_password"
         ></v-text-field>
 
-        <v-btn color="primary" size="large" elevation="2" @click="registerUser"> Opret </v-btn>
+        <v-btn color="primary" size="large" elevation="2" @click="registerUser">
+          Opret
+        </v-btn>
         <v-divider class="my-4"></v-divider>
         <v-btn
           class="my-4"
@@ -128,6 +135,7 @@ export default {
     return {
       email: "", // Login
       password: "", // Login
+      statusType: "info",
       statusMessage: "",
       showLogin: true,
       newUser: {
@@ -161,19 +169,23 @@ export default {
           })
           .catch((error) => {
             if (error?.response?.data?.message) {
+              this.statusType = "warning";
               this.statusMessage = error.response.data.message;
             } else {
               console.error("Error:", error);
             }
           });
       } else {
-        alert("Indtast venligst et email");
+        this.statusType = "warning";
+        this.statusMessage = "E-mail og Kodeord mangler!";
       }
     },
     basicLogin() {
+      this.statusType = "info";
+      this.statusMessage = "Logger ind med en standardbruger";
       this.email = "jac@vfl.dk";
       this.password = "123456";
-      this.handleLogin();
+      setTimeout(() => this.handleLogin(), 1000);
     },
     toggleView() {
       this.showLogin = !this.showLogin;
@@ -182,8 +194,14 @@ export default {
       try {
         const response = await axiosInstance.post("/users", this.newUser);
         this.statusMessage = response.data.message;
+        this.statusType = "success";
         this.showLogin = true;
+        this.newUser.user_mail = '';
+        this.newUser.user_password = '';
+        this.newUser.user_fullname = '';
       } catch (error) {
+        this.statusType = "warning";
+        this.statusMessage = "Kunne ikke oprette brugeren. Måske findes den allerede!s";
         console.error("Error registering user:", error);
       }
     },
@@ -204,13 +222,15 @@ export default {
             email: response.data.user.email,
             communities: response.data.user.communities,
           });
+          this.statusType = "success";
+          this.statusMessage = "Velkommen!";
         })
         .catch((error) => {
           if (error?.response?.data?.message) {
-              // this.statusMessage = error.response.data.message;
-            } else {
-              console.error("Error:", error);
-            }
+            // this.statusMessage = error.response.data.message;
+          } else {
+            console.error("Error:", error);
+          }
         });
     },
   },
@@ -243,6 +263,6 @@ export default {
   background-color: white;
 }
 .statusMessage {
-  min-height: 2rem;
+  min-height: 6rem;
 }
 </style>
