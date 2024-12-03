@@ -3,14 +3,15 @@
     fluid
     class="bgrnd fill-height d-flex justify-center align-center"
   >
-    <v-card class="pa-5 text-center" max-width="400" min-height="700" outlined>
-      <h1 class="text-h4 mb-5">Venner For Livet</h1>
+    <v-card class="pa-5" max-width="400" min-height="700" outlined>
+      <h1 class="text-h4 mb-5 text-center">Venner For Livet</h1>
       <p class="text-left pb-8">
         Indtast din e-mail adresse og dit kodeord for at logge ind:
       </p>
 
       <div v-if="showLogin">
-        <div class="statusMessage" v-if="statusMessage">
+        <div class="statusMessage">
+          <!-- Indsæt ikke en v-if her, fordi så "hopper" alting, når der kommer statusbeskeder! -->
           {{ statusMessage }}
         </div>
         <v-text-field
@@ -25,28 +26,67 @@
           type="password"
         ></v-text-field>
 
-        <div style="display:flex;justify-content:space-between;">
-          <v-btn class="my-4" min-width="164" color="primary" large @click="handleLogin">
+        <div style="display: flex; justify-content: space-between">
+          <v-btn
+            class="my-4"
+            min-width="164"
+            color="primary"
+            elevation="2"
+            size="large"
+            @click="handleLogin"
+          >
             Log Ind
           </v-btn>
-          <v-btn class="my-4" min-width="164" color="primary" variant="outlined" large @click="toggleView"
-            >Ny bruger</v-btn
+          <v-btn
+            class="my-4"
+            min-width="164"
+            color="primary"
+            variant="outlined"
+            size="large"
+            @click="toggleView"
           >
+            Ny bruger
+          </v-btn>
         </div>
         <v-divider class="my-4"></v-divider>
-        <p class="text-left pb-8">Eller log ind med dit Google- eller Apple ID nedenfor:</p>
+        <p class="text-left pb-8">
+          Eller log ind med dit Google- eller Apple ID nedenfor:
+        </p>
         <div class="loginWith">
-          <button @click="basicLogin" class="goodleId">
-            <img src="@/assets/web_neutral_rd_SI@1x.png" alt="" />
-          </button>
-          <button @click="basicLogin" class="appleId">
-            <img src="@/assets/app-login.png" alt="" />
-          </button>
+          <v-btn
+            class="my-8 goodleId"
+            color="primary"
+            variant="tonal"
+            elevation="2"
+            block
+            size="large"
+            @click="basicLogin"
+          >
+            <template v-slot:prepend>
+              <img src="@/assets/small-g.png" alt="Log ind med Google" />
+            </template>
+            Log ind med Google
+          </v-btn>
+
+          <v-btn
+            class="my-8 appleId"
+            color="primary"
+            variant="tonal"
+            elevation="2"
+            block
+            size="large"
+            @click="basicLogin"
+          >
+            <template v-slot:prepend>
+              <img src="@/assets/small-apple.png" alt="Log ind med Apple" />
+            </template>
+            Log ind med Apple
+          </v-btn>
         </div>
       </div>
 
       <div class="createUser" v-else>
-        <h2>Opret bruger</h2>
+        <h2>Opret en ny bruger</h2>
         <v-text-field
           label="Navn"
           v-model="newUser.user_fullname"
@@ -58,11 +98,18 @@
           v-model="newUser.user_password"
         ></v-text-field>
 
-        <v-btn color="blue darken-3" large @click="registerUser"> Opret </v-btn>
+        <v-btn color="primary" size="large" elevation="2" @click="registerUser"> Opret </v-btn>
         <v-divider class="my-4"></v-divider>
-        <v-btn height="72" min-width="164" variant="text" @click="toggleView"
-          >Tilbage</v-btn
+        <v-btn
+          class="my-4"
+          min-width="164"
+          color="primary"
+          variant="outlined"
+          size="large"
+          @click="toggleView"
         >
+          Tilbage til logind
+        </v-btn>
       </div>
     </v-card>
   </v-container>
@@ -113,10 +160,11 @@ export default {
             });
           })
           .catch((error) => {
-            console.error(
-              "login: Error while communicating with the backend.",
-              error
-            );
+            if (error?.response?.data?.message) {
+              this.statusMessage = error.response.data.message;
+            } else {
+              console.error("Error:", error);
+            }
           });
       } else {
         alert("Indtast venligst et email");
@@ -158,10 +206,11 @@ export default {
           });
         })
         .catch((error) => {
-          console.error(
-            "login: Error while communicating with the backend.",
-            error
-          );
+          if (error?.response?.data?.message) {
+              // this.statusMessage = error.response.data.message;
+            } else {
+              console.error("Error:", error);
+            }
         });
     },
   },
@@ -176,9 +225,9 @@ export default {
   min-width: 300px;
 }
 .loginWith {
-  display: flex;
-  justify-content: space-between;
+  padding: 0.5rem;
 }
+.goodleId img,
 .appleId img {
   height: 2rem;
 }
