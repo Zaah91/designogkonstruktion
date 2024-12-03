@@ -37,7 +37,7 @@
                   <td>#{{ users.user_id }}</td>
                   <td>{{ users.user_fullname }}</td>
                   <td>{{ users.user_mail }}</td>
-                  <td>{{ users.user_admin }}</td>
+                  <td>{{ users.user_admin == 1 ? 'Admin' : 'User' }}</td>
                   <td>
                     <button class="editButton" @click="openEditDialog(users)">Edit</button>
                     <button class="editButton" @click="removeUser(users.user_id)">Remove</button>
@@ -63,9 +63,9 @@
               </div>
               <div>
                 <label for="editRole">Role:</label>
-                <select id="editRole" v-model="editForm.user_admin">
-                  <option value="User">User</option>
-                  <option value="Admin">Admin</option>
+                <select id="editRole" v-model="editForm.user_admin" >
+                  <option :value="true">Admin</option>
+                  <option :value="false">User</option>
                 </select>
               </div>
               <div>
@@ -147,14 +147,22 @@ export default {
     },
     // Metode til at gemme brugeren
     async saveEdit() {
-      this.editForm.user_admin = (this.editForm.user_admin == 'Admin' ? 1 : 0);
-      const response = await axiosInstance.patch("/users/" + this.editForm.user_id, this.editForm);
-      const updatedUser = response.data;
-      const userIndex = this.users.findIndex((u) => u.user_id === this.editForm.user_id);
-      if (userIndex !== -1) {
-        this.users[userIndex] = updatedUser;
+      try {
+        const response = await axiosInstance.patch(this.$apiUrl + `/users/${this.editForm.user_id}`, {
+          user_fullname: this.editForm.user_fullname,
+          user_mail: this.editForm.user_mail,
+          user_admin: this.editForm.user_admin ? 1 : 0,
+        });
+        const updatedUser = response.data;
+        const userIndex = this.users.findIndex((u) => u.user_id === this.editForm.user_id);
+        if (userIndex !== -1) {
+          this.users[userIndex] = updatedUser;
+        }
+        this.fetchUsers();
+        this.closeEditDialog();
+      } catch (error) {
+        console.error('Error updating user data:', error);
       }
-      this.closeEditDialog();
     },
     closeEditDialog() {
       this.isEditDialogOpen = false;

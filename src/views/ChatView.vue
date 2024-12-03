@@ -1,19 +1,30 @@
 <template>
   <v-main class="mainContent">
+    <h2>Chat</h2>
     <div class="pa-4 chatWrap">
-      <h1>Chat</h1>
       <section v-for="(message, index) in messages" :key="index">
         <div class="msgWrap">
-          <v-img
+          <!--<v-img
             :src="message.userImage"
             alt="Eivind"
             rounded="circle"
             class="userPicture"
-          />
-          <p class="msg">{{ message.chat_message }}</p>
+          />-->
           <p class="name">{{ message.user.user_fullname }}</p>
+          <p class="msg">{{ message.chat_message }}</p>
+          
         </div>
       </section>
+    </div>
+    <div class="pa-4 chatInput">
+      <v-text-field
+        v-model="message"
+        label="Skriv en besked"
+        outlined
+        dense
+        @keyup.enter="sendMessage"
+      ></v-text-field>
+      <v-btn color="primary" @click="sendMessage">Send</v-btn>
     </div>
   </v-main>
 </template>
@@ -61,6 +72,25 @@ export default {
         this.isLoading = false;
       }
     },
+    async sendMessage() {
+      if (this.newMessage === "") return;
+
+      const newMessageObj = {
+        user_id: this.loggedInUser.id,
+        chat_message: this.newMessage,
+        user_fullname: this.loggedInUser.user_fullname,
+        userImage: this.loggedInUser.userImage || "/images/placeholder.png",
+      };
+
+      try {
+        await axiosInstance.post("chat/" + this.communityId, newMessageObj);
+        this.messages.push(newMessageObj);
+        this.newMessage = "";
+        this.scrollToBottom();
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    },
   },
   computed: {
     loggedInUser() {
@@ -82,17 +112,28 @@ export default {
 
 <style scoped>
 .chatWrap {
-  display: block;
-}
-section {
   display: flex;
+  flex-direction: column-reverse;
+  position: relative;
+}
+
+.chatInput {
+  position: fixed;
+  bottom: 0;
   width: 100%;
-  padding: 0.5rem;
-  margin: 0.5rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: white
+}
+
+section {
+  width: 100%;
+  margin: 0.5rem 0rem; /* 0.5rem 0rem; betyder 0,5 top/bund og 0 højre/venstre*/
   border-radius: 1rem;
 }
 section p {
   margin: 1rem;
+  font-size: medium;
 }
 section:nth-child(odd) {
   background-color: #e2e2e2;
