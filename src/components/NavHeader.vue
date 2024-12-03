@@ -1,8 +1,7 @@
 <template>
   <header>
-    <v-container v-if="loggedInUser" >
+    <v-container v-if="loggedInUser">
       <v-row class="flex-nowrap headerRow" no-gutters>
-        
         <v-col class="flex-grow-0 flex-shrink-0">
           <div class="d-flex">
             <nav>
@@ -22,7 +21,7 @@
                     </template>
                   </v-tooltip>
                 </li>
-                
+
                 <li>
                   <v-tooltip text="Kontakt">
                     <template #activator="{ props }">
@@ -115,6 +114,7 @@
 <script>
 import { useRoute } from "vue-router";
 import { useLoggedInUserStore } from "../stores/loggedInUser";
+import axiosInstance from "@/api/axiosInstance";
 
 export default {
   name: "NavHeader",
@@ -138,6 +138,14 @@ export default {
   },
   methods: {
     logout() {
+      axiosInstance
+        .post("/logout")
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("login: ", error);
+        });
       this.loggedInUserStore.clearUser();
     },
     goBack() {
@@ -191,7 +199,7 @@ ol {
 @media (max-width: 1024px) {
   header {
     position: sticky;
-    z-index:9998;
+    z-index: 9998;
     width: 100%;
     top: 0;
     height: 5rem;
@@ -210,11 +218,11 @@ ol {
 
   /* This was blocking clicks in Burger on mobile, so this is just a quick-fix. Solve this properly later! */
   .backNavItem {
-    display:block;
-    position:fixed;
-    top:0.8rem;
-    right:0.5rem;
-    padding:0;
+    display: block;
+    position: fixed;
+    top: 0.8rem;
+    right: 0.5rem;
+    padding: 0;
   }
 }
 
