@@ -2,73 +2,16 @@
   <v-main class="mainContent">
     <div class="pa-4 chatWrap">
       <h1>Chat</h1>
-
-      <!-- TODO: dummy beskederne skal flyttes til et array under siteIfor, så vi er forberedt på at få hentet chatten fra en leverandør. Eks. Vores egen database.  -->
-      <section>
+      <section v-for="(message, index) in messages" :key="index">
         <div class="msgWrap">
           <v-img
-            :src="this.findUser('Eivind').photo"
-            :alt="this.findUser('Eivind').username"
+            :src="message.userImage"
+            alt="Eivind"
             rounded="circle"
             class="userPicture"
           />
-          <p class="msg">
-            STOP så begge to! Denne opførsel hører ingen steder hjemme her i
-            gruppen. Jeg forventer, at I viser respekt for hinanden og holder en
-            ordentlig tone. Én gang til, og I bliver begge bandlyst fra chatten!
-            Få det nu løst som voksne mennesker.
-          </p>
-          <p class="name">{{ this.findUser("Eivind").name }}</p>
-        </div>
-      </section>
-      <section>
-        <div class="msgWrap">
-          <v-img
-            :src="this.findUser('Karan').photo"
-            :alt="this.findUser('Karan').username"
-            rounded="circle"
-            class="userPicture"
-          />
-          <p class="msg">
-            Jamen altså, Ulla, det er jo lige netop dét! Din håndskrift er som
-            hieroglyffer – ingen kan læse det! Hvis du skrev tydeligt, ville jeg
-            ikke sidde her og bakse med noget, der ligner en strikket
-            kludedukke!
-          </p>
-          <p class="name">{{ this.findUser("Karan").name }}</p>
-        </div>
-      </section>
-      <section>
-        <div class="msgWrap">
-          <v-img
-            :src="this.findUser('Ulla').photo"
-            :alt="this.findUser('Ulla').username"
-            rounded="circle"
-            class="userPicture"
-          />
-          <p class="msg">
-            Helt ærligt, Karen! Hvis du nu bare fulgte opskriften ORDENTLIGT og
-            ikke fumlede rundt hele tiden, så var du nok færdig nu! Det er altså
-            ikke opskriftens skyld, hvis man ikke læser den ordentligt!
-          </p>
-          <p class="name">{{ this.findUser("Ulla").name }}</p>
-        </div>
-      </section>
-      <section>
-        <div class="msgWrap">
-          <v-img
-            :src="this.findUser('Karan').photo"
-            :alt="this.findUser('Karan').username"
-            rounded="circle"
-            class="userPicture"
-          />
-          <p class="msg">
-            Altså, jeg forstår simpelthen ikke denne opskrift! Har tre gange
-            pillet det op nu, og det ligner stadig alt andet end en sweater.
-            Måske er det min hjerne eller opskriften, men noget går HELT galt
-            her!
-          </p>
-          <p class="name">{{ this.findUser("Karan").name }}</p>
+          <p class="msg">{{ message.chat_message }}</p>
+          <p class="name">{{ message.user.user_fullname }}</p>
         </div>
       </section>
     </div>
@@ -76,21 +19,63 @@
 </template>
 
 <script>
+import axiosInstance from "@/api/axiosInstance";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
 export default {
   name: "ChatView",
-  inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
+  data() {
+    return {
+      messages: {},
+      communityId: null,
+    };
+  },
   methods: {
-    findUser(username) {
-      // Retuner user-objektet for den bruger, som er logget ind
-      const loggedInUser = this.siteInfo.users.find(
-        (user) => user.username === username
-      );
-      if (loggedInUser) {
-        return loggedInUser;
-      } else {
-        return this.siteInfo.users.find((user) => user.username === "Ulla");
+    async fetchChatMessages() {
+      this.isLoading = true;
+      try {
+        const response = await axiosInstance.get("chat/" + this.communityId);
+        const messages = response.data;
+
+        // Vi har brug for at hente bruger-billeder individuelt, så vi nemt kan vise dem i chatten
+        for (const message of messages) {
+          try {
+            const imgResponse = await axiosInstance.get(
+              `/images/${message.user_id}`,
+              {
+                responseType: "blob",
+              }
+            );
+            // Midlertidig "object URL" til indlæsning af billedet
+            message.userImage = URL.createObjectURL(imgResponse.data);
+          } catch (error) {
+            // Hvis billedet ikke blev indlæst, brug en almindelig URL til vores profil-placeholder billede
+            message.userImage = "/images/placeholder.png";
+          }
+        }
+
+        this.messages = messages;
+      } catch (error) {
+        this.statusMessage =
+          error.message || "Kunne ikke indlæse fællesskaber.";
+      } finally {
+        this.isLoading = false;
       }
     },
+  },
+  computed: {
+    loggedInUser() {
+      // Vi kan eksempelvis bruge det til, at fremhæve den indloggede bruger i chatten
+      // Retuner user-objektet for den bruger, som er logget ind
+      return useLoggedInUserStore().user;
+    },
+  },
+  created() {
+    this.communityId = this.$route.params.id;
+    console.log("idi:" + this.$route.params.id);
+  },
+  mounted() {
+    this.fetchChatMessages();
+    console.log(this.messages);
   },
 };
 </script>
