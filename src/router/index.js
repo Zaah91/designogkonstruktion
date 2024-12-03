@@ -32,12 +32,12 @@ const routes = [
     component: SupportView,
   },
   {
-    path: '/community',
+    path: '/community/:id',
     name: 'Community',
     component: CommunityView,
   },
   {
-    path: '/chat',
+    path: '/chat/:id',
     name: 'Chat',
     component: ChatView,
   },
