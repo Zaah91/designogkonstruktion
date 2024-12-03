@@ -130,7 +130,8 @@ export default {
     async registerUser() {
       try {
         const response = await axiosInstance.post("/users", this.newUser);
-        console.log("User registered successfully:", response.data);
+        this.statusMessage = response.data.message;
+        this.showLogin = true;
       } catch (error) {
         console.error("Error registering user:", error);
       }

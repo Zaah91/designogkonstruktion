@@ -82,7 +82,8 @@
 
   
 <script>
-import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
+
 export default {
   data() {
     return {
@@ -118,7 +119,7 @@ export default {
       this.isLoading = true;
       this.isError = false;
       try {
-        const response = await axios.get(this.$apiUrl + "/users");
+        const response = await axiosInstance.get(this.$apiUrl + "/users");
         this.users = response.data;
       } catch (error) {
         this.isError = true;
@@ -134,7 +135,7 @@ export default {
     },
     async fetchUserData(userId) {
       try {
-        const response = await axios.get(this.$apiUrl + `/users/${userId}`);
+        const response = await axiosInstance.get("/users/" + userId);
         const userData = response.data;
         this.editForm.user_id = userData.user_id;
         this.editForm.user_fullname = userData.user_fullname;
@@ -147,7 +148,7 @@ export default {
     // Metode til at gemme brugeren
     async saveEdit() {
       try {
-        const response = await axios.patch(this.$apiUrl + `/users/${this.editForm.user_id}`, {
+        const response = await axiosInstance.patch(this.$apiUrl + `/users/${this.editForm.user_id}`, {
           user_fullname: this.editForm.user_fullname,
           user_mail: this.editForm.user_mail,
           user_admin: this.editForm.user_admin ? 1 : 0,
@@ -170,7 +171,7 @@ export default {
     // Metode til at slette en bruger fra databasen
     async removeUser(userId) {
       try {
-        await axios.delete(this.$apiUrl + `/users/${userId}`);
+        await axiosInstance.delete("/users/" + userId);
         this.fetchUsers();
       } catch (error) {
         console.error("Failed to remove user:", error.message);
