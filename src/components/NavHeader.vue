@@ -52,7 +52,7 @@
                     </template>
                   </v-tooltip>
                 </li>
-                <li>
+                <li v-if="loggedInUser.admin">
                   <v-tooltip text="Admin">
                     <template #activator="{ props }">
                       <v-btn
