@@ -143,8 +143,8 @@ export default {
         .then((response) => {
           console.log(response.data);
         })
-        .catch((error) => {
-          console.error("login: ", error);
+        .catch(() => {
+          // console.error("login: ", error); // Lad os undgå at skrive fejl i loggen, når vi ikke debugger
         });
       this.loggedInUserStore.clearUser();
     },
