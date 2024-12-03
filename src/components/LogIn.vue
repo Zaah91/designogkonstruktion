@@ -4,7 +4,11 @@
     class="bgrnd fill-height d-flex justify-center align-center"
   >
     <v-card class="pa-5 text-center" max-width="400" min-height="700" outlined>
-      <h1 class="text-h4 mb-5">Velkommen til Venner for Livet</h1>
+      <h1 class="text-h4 mb-5">Venner For Livet</h1>
+      <p class="text-left pb-8">
+        Indtast din e-mail adresse og dit kodeord for at logge ind:
+      </p>
+
       <div v-if="showLogin">
         <div class="statusMessage" v-if="statusMessage">
           {{ statusMessage }}
@@ -21,26 +25,27 @@
           type="password"
         ></v-text-field>
 
-        <v-btn class="my-4" color="primary" large @click="handleLogin">
-          Log Ind
-        </v-btn>
-
+        <div style="display:flex;justify-content:space-between;">
+          <v-btn class="my-4" min-width="164" color="primary" large @click="handleLogin">
+            Log Ind
+          </v-btn>
+          <v-btn class="my-4" min-width="164" color="primary" variant="outlined" large @click="toggleView"
+            >Ny bruger</v-btn
+          >
+        </div>
         <v-divider class="my-4"></v-divider>
-
-        <div>
-          <button @click="loginAsRandomUser">
+        <p class="text-left pb-8">Eller log ind med dit Google- eller Apple ID nedenfor:</p>
+        <div class="loginWith">
+          <button @click="basicLogin" class="goodleId">
             <img src="@/assets/web_neutral_rd_SI@1x.png" alt="" />
           </button>
-          <button @click="loginAsRandomUser">
+          <button @click="basicLogin" class="appleId">
             <img src="@/assets/app-login.png" alt="" />
           </button>
         </div>
-
-        <v-divider class="my-4"></v-divider>
-        <span class="linkStyle" @click="toggleView">Opret bruger</span>
       </div>
 
-      <div v-else>
+      <div class="createUser" v-else>
         <h2>Opret bruger</h2>
         <v-text-field
           label="Navn"
@@ -53,11 +58,11 @@
           v-model="newUser.user_password"
         ></v-text-field>
 
-        <v-btn color="blue darken-3" large @click="registerUser">
-          Opret bruger
-        </v-btn>
+        <v-btn color="blue darken-3" large @click="registerUser"> Opret </v-btn>
         <v-divider class="my-4"></v-divider>
-        <span class="linkStyle" @click="toggleView">Tilbage til log ind</span>
+        <v-btn height="72" min-width="164" variant="text" @click="toggleView"
+          >Tilbage</v-btn
+        >
       </div>
     </v-card>
   </v-container>
@@ -65,7 +70,7 @@
 
 <script>
 import axiosInstance from "@/api/axiosInstance";
-import { useLoggedInUserStore  } from "../stores/loggedInUser";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
 
 export default {
   name: "LogIn",
@@ -104,9 +109,8 @@ export default {
               fullname: response.data.user.fullname,
               email: response.data.user.email,
               communities: response.data.user.communities,
-              admin: response.data.user.admin
+              admin: response.data.user.admin,
             });
-
           })
           .catch((error) => {
             console.error(
@@ -118,12 +122,10 @@ export default {
         alert("Indtast venligst et email");
       }
     },
-    loginAsRandomUser() {
-      const randomUser =
-        this.siteInfo.users[
-          Math.floor(Math.random() * this.siteInfo.users.length)
-        ];
-      this.$emit("login", randomUser.username);
+    basicLogin() {
+      this.email = "jac@vfl.dk";
+      this.password = "123456";
+      this.handleLogin();
     },
     toggleView() {
       this.showLogin = !this.showLogin;
@@ -140,7 +142,7 @@ export default {
     revalidateLoginToken() {
       const loggedInUserStore = useLoggedInUserStore();
       if (loggedInUserStore.user) {
-         return;
+        return;
       }
 
       // If the user is not logged in, let's check if we can revalidate an existing token
@@ -165,11 +167,21 @@ export default {
   },
   created() {
     this.revalidateLoginToken();
-  }
+  },
 };
 </script>
 
 <style>
+.createUser {
+  min-width: 300px;
+}
+.loginWith {
+  display: flex;
+  justify-content: space-between;
+}
+.appleId img {
+  height: 2rem;
+}
 .linkStyle {
   color: blue;
   cursor: pointer;
