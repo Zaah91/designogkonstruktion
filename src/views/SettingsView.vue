@@ -16,7 +16,7 @@
           />
         </v-container>
         <div class="d-flex justify-space-evenly">
-          <v-btn color="btnPrimary"> Gem </v-btn>
+          <v-btn color="btnPrimary" @click="updateUser()"> Gem </v-btn>
           <v-btn color="red" @click="showOverlay = true"> Slet bruger </v-btn>
         </div>
 
@@ -70,8 +70,8 @@ export default {
   data() {
     return {
       editedUserAttributes: {
-        user_fullname: null,
-        user_mail: null
+        user_fullname: '',
+        user_mail: ''
       },
       allCommunities: [],
       userCommunities: [],
@@ -125,12 +125,13 @@ export default {
         }
       }
     },
-    async updateUser(userId) {
+    async updateUser() {
       this.isLoading = true;
       try {
         // const response = await...
-        await axiosInstance.patch(`/users/${userId}`, this.editedUserAttributes);
-        
+        await axiosInstance.patch("/users/" + this.loggedInUser.userId, this.editedUserAttributes);
+        this.loggedInUser.fullname = this.editedUserAttributes.user_fullname;
+        this.loggedInUser.email = this.editedUserAttributes.user_mail;
       } catch (error) {
           console.log(error);
       } finally {
