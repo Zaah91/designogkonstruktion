@@ -2,6 +2,7 @@
   <v-main class="mainContent">
     <h2>Chat</h2>
     <div class="pa-4 chatWrap">
+      <v-progress-circular v-if="isLoading" indeterminate></v-progress-circular>
       <section v-for="(message, index) in messages" :key="index">
         <div class="msgWrap">
           <!--<v-img
@@ -38,6 +39,7 @@ export default {
     return {
       messages: {},
       communityId: null,
+      isLoading: false
     };
   },
   methods: {
