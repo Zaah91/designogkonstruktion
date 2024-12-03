@@ -103,7 +103,8 @@ export default {
               userId: response.data.user.userId,
               fullname: response.data.user.fullname,
               email: response.data.user.email,
-              communities: response.data.user.communities
+              communities: response.data.user.communities,
+              admin: response.data.user.admin
             });
 
           })
