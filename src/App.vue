@@ -10,8 +10,7 @@
 // Komponenter
 import NavHeader from "@/components/NavHeader.vue";
 import BurgerMenu from "@/components/BurgerMenuNav.vue";
-import axios from "axios";
-import { useLoggedInUserStore } from './stores/loggedInUser';
+
 
 export default {
   name: "App",
@@ -22,6 +21,7 @@ export default {
   data() {
     return {
       route: null,
+      authToken: null,
       siteInfo: {
         sitename: "Venner for Livet",
         logo: require("@/assets/gammelchat-logo.webp"),
@@ -78,11 +78,6 @@ export default {
       },
     };
   },
-  computed: {
-    loggedInUser() {
-      return this.loggedInUserStore.user;
-    }
-  },
   provide() {
     // Fordi siteInfo ikke er direkte tilgængelig i vores views, bliver vi nødt til at dele den først via provide
     // Inde i de views, som skal bruge den, skal vi huske at lave en inject af den. Se eks HomeView.
@@ -99,21 +94,7 @@ export default {
       if (!this.loggedInUser && this.$route.name !== "Home") {
         this.$router.push({ name: "Home" }); // Redirect to home if user is not logged in
       }
-    },
-    fetchUsers() { // Skal ikke bruges her
-      axios
-        .get("localhost:8081/users")
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("fetchUsers: Error while communicating with the backend.", error);
-        });
-    },
-  },
-  created() {
-    // Køres før komponentet indsættes i DOMen
-    this.loggedInUserStore = useLoggedInUserStore();
+    }
   },
   mounted() {
     // Køres efter kombonentet er blevet indsat i DOMen

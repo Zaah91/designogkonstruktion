@@ -135,7 +135,35 @@ export default {
         console.error("Error registering user:", error);
       }
     },
+    revalidateLoginToken() {
+      const loggedInUserStore = useLoggedInUserStore();
+      if (loggedInUserStore.user) {
+         return;
+      }
+
+      // If the user is not logged in, let's check if we can revalidate an existing token
+      axiosInstance
+        .get("/handshake")
+        .then((response) => {
+          // Indsæt dataerne for den indloggede bruger i loggedInUserStore
+          loggedInUserStore.setUser({
+            userId: response.data.user.userId,
+            fullname: response.data.user.fullname,
+            email: response.data.user.email,
+            communities: response.data.user.communities,
+          });
+        })
+        .catch((error) => {
+          console.error(
+            "login: Error while communicating with the backend.",
+            error
+          );
+        });
+    },
   },
+  created() {
+    this.revalidateLoginToken();
+  }
 };
 </script>
 
