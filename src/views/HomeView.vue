@@ -1,10 +1,11 @@
 <template>
-  <v-main :class="{ mainContent: siteInfo.loggedIn }">
-    <LogIn v-if="!siteInfo.loggedIn" :siteInfo="siteInfo" @login="handleLogin" />
+  <v-main :class="{ mainContent: loggedInUser }"
+    ><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
+    <LogIn v-if="!loggedInUser" />
     <div class="d-block homeWrap pa-4" v-else>
       <v-img
-        :src="loggedInUser.photo"
-        :alt="loggedInUser.username"
+        :src="userImageSrc"
+        :alt="loggedInUser.fullname"
         rounded="circle"
         class="userPicture"
       />
@@ -17,7 +18,13 @@
           v-for="(community, index) in loggedInUser.communities"
           :key="index"
         >
-          <v-btn v-if="loggedInUser.communities[index].value !== false" color="btnPrimary" class="d-block mt-8 pa-2" :to="{ name: 'Community' }">{{ community.name }}</v-btn>
+          <v-btn
+            v-if="typeof community?.value == 'undefined' || community.value"
+            color="btnPrimary"
+            class="d-block mt-8 pa-2"
+            :to="{ name: 'Community', params: { id: community.community_id } }"
+            >{{ community.community_name }}</v-btn
+          >
         </template>
       </template>
     </div>
@@ -26,43 +33,53 @@
 
 <script>
 import LogIn from "@/components/LogIn.vue"; // Bare et hurtigt eksempel (se næste kommentar)
-//import NewUser from "@/components/NewUser.vue";
+import axiosInstance from "@/api/axiosInstance";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
 
 export default {
   name: "HomeView",
   data() {
     return {
+      userImageSrc: null,
       selectedUser: false,
-      tempCommunityUpdated: 0
+      tempCommunityUpdated: 0,
     };
   },
-  inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
   components: {
     LogIn,
-  },
-  /*inject: ["siteInfo"], // Test
-  components: {
-    NewUser,
-  },*/
-  methods: {
-    handleLogin(username) {
-      this.siteInfo.loggedIn = true;
-      this.siteInfo.username = username;
-    },
   },
   computed: {
     loggedInUser() {
       // Retuner user-objektet for den bruger, som er logget ind
-      const loggedInUser = this.siteInfo.users.find(
-        (user) => user.username === this.siteInfo.username
-      );
-      if (loggedInUser) {
-        return loggedInUser;
-      } else {
-        return this.siteInfo.users.find((user) => user.username === "Ulla");
+      return useLoggedInUserStore().user;
+    },
+  },
+  methods: {
+    // Method til at opdatere src attributten til brugerens billede
+    async fetchUserImage(userId) {
+      try {
+        const response = await axiosInstance.get(`/images/${userId}`, {
+          responseType: "blob",
+        });
+        return URL.createObjectURL(response.data);
+      } catch (error) {
+        return "/images/placeholder.png";
       }
     },
-  }
+  },
+  watch: {
+    // En watcher til at holde øje med, om en bruger logger ind - hvis en bruger logger ind, så forsøg at indlæs brugerens profilbillede
+    loggedInUser: {
+      immediate: true,
+      handler(newUser) {
+        if (newUser && newUser.userId) {
+          this.fetchUserImage(newUser.userId);
+        } else {
+          this.userImageSrc = "/images/placeholder.png";
+        }
+      },
+    },
+  },
 };
 </script>
 

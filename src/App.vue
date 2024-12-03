@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <BurgerMenu :siteInfo="siteInfo" v-if="siteInfo.loggedIn" @logout="handleLogout" />
-    <NavHeader :siteInfo="siteInfo" @logout="handleLogout" />
+    <BurgerMenu :siteInfo="siteInfo" v-if="loggedInUser" />
+    <NavHeader :siteInfo="siteInfo" />
     <router-view :siteInfo="siteInfo" />
   </v-app>
 </template>
@@ -10,7 +10,7 @@
 // Komponenter
 import NavHeader from "@/components/NavHeader.vue";
 import BurgerMenu from "@/components/BurgerMenuNav.vue";
-import axios from "axios";
+
 
 export default {
   name: "App",
@@ -21,14 +21,14 @@ export default {
   data() {
     return {
       route: null,
+      authToken: null,
       siteInfo: {
         sitename: "Venner for Livet",
         logo: require("@/assets/gammelchat-logo.webp"),
         loggedIn: false,
-        loggedInUser: {},
         users: [
           {
-            username: "Eivind",
+            username: "eivind@example.com",
             name: "Eivind Johannes Goldenstein Hansen",
             email: "eivind@example.com",
             photo: require("@/assets/eivind.webp"),
@@ -42,7 +42,7 @@ export default {
             ],
           },
           {
-            username: "Karen",
+            username: "karen@example.com",
             name: "Karen Elisabeth Johannesson",
             email: "karen@example.com",
             photo: require("@/assets/karan.webp"),
@@ -53,7 +53,7 @@ export default {
             ],
           },
           {
-            username: "Ulla",
+            username: "ulla@example.com",
             name: "Ulla Hansen",
             email: "ulla@example.com",
             photo: require("@/assets/ulla.webp"),
@@ -86,33 +86,18 @@ export default {
     };
   },
   methods: {
-    handleLogin(username) {
-      this.siteInfo.loggedIn = true;
-      this.siteInfo.username = username;
-    },
     handleLogout() {
-      this.siteInfo.loggedIn = false;
-      this.siteInfo.username = "";
-      this.siteInfo.loggedInUser = {};
+      this.loggedInUserStore.clearUser();
       this.redirectToHome();
     },
     redirectToHome() {
-      if (!this.siteInfo.loggedIn && this.$route.name !== "Home") {
+      if (!this.loggedInUser && this.$route.name !== "Home") {
         this.$router.push({ name: "Home" }); // Redirect to home if user is not logged in
       }
-    },
-    fetchUsers() {
-      axios
-        .get("localhost:8081/users")
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("fetchUsers: Error while communicating with the backend.", error);
-        });
-    },
+    }
   },
   mounted() {
+    // Køres efter kombonentet er blevet indsat i DOMen
     // Når vores app bliver "mounted", tjek om brugeren er logget ind; hvis ikke omstiller vi til forsiden
     this.redirectToHome();
   },

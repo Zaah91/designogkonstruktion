@@ -2,12 +2,14 @@
   <v-main v-if="this.siteInfo.loggedIn" class="mainContent">
     <div class="pa-4">
       <h1>Video</h1>
-      <video ref="webcam" autoplay playsinline class="webcamVideo"></video>
+      <div class="d-flex justify-center align-center flex-column videoContainer" background: black>
+        <video ref="webcam" autoplay playsinline class="webcamVideo"></video>
+      </div>
     </div>
   </v-main>
 </template>
 
-<script>
+<script> 
 export default {
   name: "VideoView",
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
@@ -45,7 +47,11 @@ export default {
 }
 .webcamVideo {
   width: 100%;
-  max-width: 20rem;
   height: auto;
+}
+.videoContainer {
+  background: black;
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 </style>

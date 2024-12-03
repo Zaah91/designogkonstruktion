@@ -1,6 +1,6 @@
 <template>
   <header>
-    <v-container v-if="siteInfo.loggedIn" >
+    <v-container v-if="loggedInUser" >
       <v-row class="flex-nowrap headerRow" no-gutters>
         
         <v-col class="flex-grow-0 flex-shrink-0">
@@ -114,6 +114,7 @@
 
 <script>
 import { useRoute } from "vue-router";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
 
 export default {
   name: "NavHeader",
@@ -130,40 +131,21 @@ export default {
     },
   },
   computed: {
-    isLoggedIn() {
-      // Tjek om vi er logget ind (meget simpelt tjek, fordi vi ved ikke, om vi når at lave login)
-      // Skal dog have noget, så vi kan vise login-forsiden
-      return this.siteInfo.loggedIn;
-    },
-    orderedUsers() {
-      return this.siteInfo.users.slice().sort((user) => {
-        if (user.username === this.siteInfo.username) {
-          return -1; // Flyt forrest hvis logget ind
-        }
-        return 1;
-      });
-    },
     loggedInUser() {
       // Retuner user-objektet for den bruger, som er logget ind
-      const loggedInUser = this.siteInfo.users.find(
-        (user) => user.username === this.siteInfo.username
-      );
-      if (loggedInUser) {
-        return loggedInUser;
-      } else {
-        return this.siteInfo.users.find((user) => user.username === "Ulla");
-      }
+      return this.loggedInUserStore.user;
     },
   },
   methods: {
     logout() {
-      this.$emit("logout");
+      this.loggedInUserStore.clearUser();
     },
     goBack() {
       this.$router.go(-1); // Tilbage til forrige side
     },
   },
   created() {
+    this.loggedInUserStore = useLoggedInUserStore();
     this.route = useRoute();
   },
 };

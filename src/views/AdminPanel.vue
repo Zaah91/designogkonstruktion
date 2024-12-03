@@ -101,33 +101,33 @@ export default {
     };
   },
   computed: {
+    // Filtrer brugerlisten baseret på input i søgefeltet
     filteredUsers() {
       return this.users.filter((users) =>
         `${users.user_fullname} ${users.user_mail} ${users.user_admin}`
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase())
       );
-    },
-
+    }
   },
   methods: {
-    // Fetch users from the API
+    // Hent en liste af brugere fra vores backend.
+    // Bemærk: det her er absolut ikke optimalt, fordi vi henter ALLE brugerne ud.
+    //         Det kan være meget tungt, hvis der er mange brugere, og bør derfor deles op i "batches" og noget "pagination" af en art..
     async fetchUsers() {
       this.isLoading = true;
       this.isError = false;
       try {
         const response = await axios.get(this.$apiUrl + "/users");
         this.users = response.data;
-        // console.log(response.data);
       } catch (error) {
-        console.log(error);
         this.isError = true;
         this.statusMessage = error.message || "Kunne ikke indlæse brugere.";
       } finally {
         this.isLoading = false;
       }
     },
-    // Open the edit dialog and populate the form
+    // Metode til at åbne dialogboksen til at editere en bruger
     openEditDialog(user_id) {
       this.isEditDialogOpen = true;
       this.editForm = { ...user_id };
@@ -144,7 +144,7 @@ export default {
         console.error('Error fetching user data:', error);
       }
     },
-    // Save the edits and update the table
+    // Metode til at gemme brugeren
     async saveEdit() {
       try {
         const response = await axios.patch(this.$apiUrl + `/users/${this.editForm.user_id}`, {
@@ -163,12 +163,11 @@ export default {
         console.error('Error updating user data:', error);
       }
     },
-    // Close the edit dialog
     closeEditDialog() {
       this.isEditDialogOpen = false;
       this.editForm = { user_id: null, user_fullname: "", user_mail: "", user_admin: "" };
     },
-    // Remove a user
+    // Metode til at slette en bruger fra databasen
     async removeUser(userId) {
       try {
         await axios.delete(this.$apiUrl + `/users/${userId}`);
@@ -179,26 +178,25 @@ export default {
     },
   },
   async mounted() {
-    await this.fetchUsers(); // Fetch the data when the component is mounted
+    await this.fetchUsers(); // Hent en liste af brugere, når vi har mounted appen
   },
 };
 </script>
 
   
   <style>
-  
   .table-container {
-    height: 660px; /* Set the height you want for the scrollable area */
-    overflow: hidden; /* Hide overflow to prevent scrollbars on the container */
+    height: 660px;
+    overflow: hidden; 
     border: black;
     border-style: solid;
     border-radius: 8px;
-    margin-top: -20px; /* Negative margin to compensate for the input details height */
+    margin-top: -20px;
   }
   
   .user-table {
-    width: 100%; /* Ensure the table takes full width */
-    border-collapse: collapse; /* Collapse borders for better alignment */
+    width: 100%;
+    border-collapse: collapse;
   }
   
   thead {
@@ -212,40 +210,40 @@ export default {
   }
   
   .even-row {
-    background-color: #efefef; /* Change this to your desired color */
+    background-color: #efefef;
   }
 
   th,td {
-    padding: 8px; /* Add padding for both th and td */
-    text-align: left; /* Align text to the left for better readability */
+    padding: 8px; 
+    text-align: left; 
     padding-left: 14px;
     font-size: 16px;
   }
   
   .table-scroll {
-    display: block; /* Allow the body to scroll */
-    max-height: 660px; /* Set a fixed height for the scrollable body */
-    overflow-y: auto; /* Enable vertical scrolling for the body */
+    display: block;
+    max-height: 660px;
+    overflow-y: auto;
   }
   
   tbody {
-    display: block; /* Allow the tbody to behave as a block */
-    width: 100%; /* Ensure tbody takes full width */
-    overflow-y: auto; /* Enable vertical scrolling for the body */
+    display: block;
+    width: 100%;
+    overflow-y: auto;
   }
   
   tr {
-    display: table; /* Ensure rows behave like table rows */
-    width: 100%; /* Ensure rows take full width */
-    table-layout: fixed; /* Prevent rows from resizing */
+    display: table;
+    width: 100%;
+    table-layout: fixed;
   }
   
   td {
-    border-top: 1px solid #ccc; /* Optional: Add a border to the top of each cell */
+    border-top: 1px solid #ccc;
   }
   
   td:nth-child(2) {
-    white-space: nowrap; /* Prevent names from wrapping */
+    white-space: nowrap;
   }
   
   .editButton {

@@ -10,14 +10,18 @@
           {{ statusMessage }}
         </div>
         <v-text-field
-          label="Indtast brugernavn"
-          v-model="username"
+          label="Indtast email"
+          v-model="email"
           outlined
-          @keyup.enter="storeUsername"
+          @keyup.enter="handleLogin"
         ></v-text-field>
-        <v-text-field label="Indtast kodeord" type="password"></v-text-field>
+        <v-text-field
+          label="Indtast kodeord"
+          v-model="password"
+          type="password"
+        ></v-text-field>
 
-        <v-btn class="my-4" color="primary" large @click="storeUsername">
+        <v-btn class="my-4" color="primary" large @click="handleLogin">
           Log Ind
         </v-btn>
 
@@ -38,9 +42,13 @@
 
       <div v-else>
         <h2>Opret bruger</h2>
-        <v-text-field label="Navn" v-model="newUser.user_fullname"></v-text-field>
+        <v-text-field
+          label="Navn"
+          v-model="newUser.user_fullname"
+        ></v-text-field>
         <v-text-field label="E-mail" v-model="newUser.user_mail"></v-text-field>
-        <v-text-field type="password"
+        <v-text-field
+          type="password"
           label="Kodeord"
           v-model="newUser.user_password"
         ></v-text-field>
@@ -56,50 +64,107 @@
 </template>
 
 <script>
-import axios from "axios";
-export default {
-    name: 'LogIn',
-    props: {
-        siteInfo: Object,
-    },
-    data() {
-        return {
-            username: '',
-            showLogin: true,
-            newUser: {
-                user_fullname: '',
-                user_mail: '',
-                user_password: '',
-                user_admin: false
-            }
-        }
-    },
-    methods: {
-        storeUsername() {
-            if (this.username) {
-                this.$emit('login', this.username)
-            } else {
-                alert('Indtast venligst et brugernavn')
-            }
-        },
-        loginAsRandomUser() {
-            const randomUser = this.siteInfo.users[Math.floor(Math.random() * this.siteInfo.users.length)];
-            this.$emit('login', randomUser.username);
-        },
-        toggleView() {
-            this.showLogin = !this.showLogin;
-        },
-        async registerUser() {
-          try {
-            const response = await axios.post('http://localhost:8081/users', this.newUser);
-            console.log('User registered successfully:', response.data);
-          } catch (error) {
-            console.error('Error registering user:', error);
-          }
-        }
-    }
-}
+import axiosInstance from "@/api/axiosInstance";
+import { useLoggedInUserStore  } from "../stores/loggedInUser";
 
+export default {
+  name: "LogIn",
+  props: {
+    siteInfo: Object,
+  },
+  data() {
+    return {
+      email: "", // Login
+      password: "", // Login
+      statusMessage: "",
+      showLogin: true,
+      newUser: {
+        // New user details
+        user_fullname: "",
+        user_mail: "",
+        user_password: "",
+        user_admin: false,
+      },
+    };
+  },
+  methods: {
+    handleLogin() {
+      if (this.email) {
+        axiosInstance
+          .post("/login", {
+            user_mail: this.email,
+            user_password: this.password,
+          })
+          .then((response) => {
+            const loggedInUserStore = useLoggedInUserStore();
+
+            // Indsæt dataerne for den indloggede bruger i loggedInUserStore
+            loggedInUserStore.setUser({
+              userId: response.data.user.userId,
+              fullname: response.data.user.fullname,
+              email: response.data.user.email,
+              communities: response.data.user.communities
+            });
+
+          })
+          .catch((error) => {
+            console.error(
+              "login: Error while communicating with the backend.",
+              error
+            );
+          });
+      } else {
+        alert("Indtast venligst et email");
+      }
+    },
+    loginAsRandomUser() {
+      const randomUser =
+        this.siteInfo.users[
+          Math.floor(Math.random() * this.siteInfo.users.length)
+        ];
+      this.$emit("login", randomUser.username);
+    },
+    toggleView() {
+      this.showLogin = !this.showLogin;
+    },
+    async registerUser() {
+      try {
+        const response = await axiosInstance.post("/users", this.newUser);
+        console.log("User registered successfully:", response.data);
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
+    },
+    revalidateLoginToken() {
+      const loggedInUserStore = useLoggedInUserStore();
+      if (loggedInUserStore.user) {
+         return;
+      }
+
+      // If the user is not logged in, let's check if we can revalidate an existing token
+      axiosInstance
+        .get("/handshake")
+        .then((response) => {
+          // Indsæt dataerne for den indloggede bruger i loggedInUserStore
+          loggedInUserStore.setUser({
+            userId: response.data.user.userId,
+            fullname: response.data.user.fullname,
+            email: response.data.user.email,
+            communities: response.data.user.communities,
+          });
+        })
+        .catch((error) => {
+          console.error(
+            "login: Error while communicating with the backend.",
+            error
+          );
+        });
+    },
+  },
+  created() {
+    this.revalidateLoginToken();
+  }
+};
 </script>
 
 <style>
