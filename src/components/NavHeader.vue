@@ -141,12 +141,15 @@ export default {
       axiosInstance
         .post("/logout")
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
+          if (response?.data?.message) {
+            this.loggedInUserStore.clearUser();
+            this.loggedInUserStore.loggedOut = "Du er nu logget ud.";
+          }
         })
         .catch(() => {
           // console.error("login: ", error); // Lad os undgå at skrive fejl i loggen, når vi ikke debugger
         });
-      this.loggedInUserStore.clearUser();
     },
     goBack() {
       this.$router.go(-1); // Tilbage til forrige side

@@ -235,7 +235,15 @@ export default {
     },
   },
   created() {
-    this.revalidateLoginToken();
+    const loggedInUserStore = useLoggedInUserStore();
+    if (!loggedInUserStore?.loggedOut) {
+      this.revalidateLoginToken();
+    } else {
+      this.statusMessage = loggedInUserStore.loggedOut;
+      this.statusType = "success";
+      loggedInUserStore.loggedOut = null;
+
+    }
   },
 };
 </script>
