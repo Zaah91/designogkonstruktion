@@ -3,7 +3,7 @@
     ><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
     <LogIn v-if="!loggedInUser" />
     <div class="d-block homeWrap pa-4" v-else>
-      <v-progress-circular v-if="isLoading" :size="100" indeterminate></v-progress-circular>
+      <v-progress-circular class="vflspinner" v-if="isLoading" :size="100" indeterminate></v-progress-circular>
 
       <template v-if="!isLoading">
         <v-img
@@ -12,7 +12,6 @@
           class="userPicture"
         />
         <p class="text-h5 mt-4 mb-16 text-left">
-          {{ loggedInUser.fullname }}
 
           <v-icon
             aria-label="Admin"
@@ -20,6 +19,14 @@
             aria-hidden="false"
             v-if="loggedInUser.admin"
           />
+          <v-icon
+            aria-label="Admin"
+            icon="mdi-account-circle"
+            aria-hidden="false"
+            v-else
+          />
+          {{ loggedInUser.fullname }}
+          <span class="isAdmin">{{loggedInUser.admin ? 'Admin' : 'Bruger' }}</span>
         </p>
         <h1>Dine fællesskaber</h1>
         <template v-if="loggedInUser.communities">
@@ -103,6 +110,10 @@ export default {
 </script>
 
 <style scoped>
+.isAdmin {
+  display:block;
+  font-size: 1.2rem;
+}
 @media (max-width: 1024px) {
   .homeWrap {
     margin: 0 auto;

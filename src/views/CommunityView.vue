@@ -54,12 +54,10 @@ export default {
       }
     },
   },
-  created() {
-    this.communityId = this.$route.params.id;
-  },
   mounted() {
+    this.communityId = this.$route.params.id;
     this.fetchCommunity();
-  },
+  }
 };
 </script>
 
