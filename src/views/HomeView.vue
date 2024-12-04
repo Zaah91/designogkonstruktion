@@ -6,11 +6,10 @@
       <v-img
         :src="userImageSrc"
         :alt="loggedInUser.fullname"
-        rounded="circle"
         class="userPicture"
       />
-      <p class="text-subtitle-2 mt-4 mb-16 text-center">
-        {{ loggedInUser.name }}
+      <p class="text-h5 mt-4 mb-16 text-left">
+        {{ loggedInUser.fullname }}
       </p>
       <h1>Dine fællesskaber</h1>
       <template v-if="loggedInUser.communities">
@@ -43,6 +42,7 @@ export default {
       userImageSrc: null,
       selectedUser: false,
       tempCommunityUpdated: 0,
+      isLoading: false,
     };
   },
   components: {
@@ -57,13 +57,16 @@ export default {
   methods: {
     // Method til at opdatere src attributten til brugerens billede
     async fetchUserImage(userId) {
+      let imageSrc = "/images/placeholder.png";
       try {
-        const response = await axiosInstance.get(`/images/${userId}`, {
+        const response = await axiosInstance.get("/images/" + userId, {
           responseType: "blob",
         });
-        return URL.createObjectURL(response.data);
+        imageSrc = URL.createObjectURL(response.data);
       } catch (error) {
-        return "/images/placeholder.png";
+        // Optional: Handle specific error logging or actions here
+      } finally {
+        this.userImageSrc = imageSrc;
       }
     },
   },

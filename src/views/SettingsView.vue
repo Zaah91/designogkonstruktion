@@ -179,7 +179,6 @@ export default {
     loggedInUser: {
       immediate: true,
       handler(newUser) {
-        console.log(newUser);
         if (newUser && newUser.userId) {
           this.fetchUserImage(newUser.userId);
         } else {
