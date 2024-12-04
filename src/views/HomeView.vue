@@ -3,28 +3,48 @@
     ><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
     <LogIn v-if="!loggedInUser" />
     <div class="d-block homeWrap pa-4" v-else>
-      <v-img
-        :src="userImageSrc"
-        :alt="loggedInUser.fullname"
-        rounded="circle"
-        class="userPicture"
-      />
-      <p class="text-subtitle-2 mt-4 mb-16 text-center">
-        {{ loggedInUser.name }}
-      </p>
-      <h1>Dine fællesskaber</h1>
-      <template v-if="loggedInUser.communities">
-        <template
-          v-for="(community, index) in loggedInUser.communities"
-          :key="index"
-        >
-          <v-btn
-            v-if="typeof community?.value == 'undefined' || community.value"
-            color="btnPrimary"
-            class="d-block mt-8 pa-2"
-            :to="{ name: 'Community', params: { id: community.community_id } }"
-            >{{ community.community_name }}</v-btn
+      <v-progress-circular class="vflspinner" v-if="isLoading" :size="100" indeterminate></v-progress-circular>
+
+      <template v-if="!isLoading">
+        <v-img
+          :src="userImageSrc"
+          :alt="loggedInUser.fullname"
+          class="userPicture"
+        />
+        <p class="text-h5 mt-4 mb-16 text-left">
+
+          <v-icon
+            aria-label="Admin"
+            icon="mdi-crown-circle"
+            aria-hidden="false"
+            v-if="loggedInUser.admin"
+          />
+          <v-icon
+            aria-label="Admin"
+            icon="mdi-account-circle"
+            aria-hidden="false"
+            v-else
+          />
+          {{ loggedInUser.fullname }}
+          <span class="isAdmin">{{loggedInUser.admin ? 'Admin' : 'Bruger' }}</span>
+        </p>
+        <h1>Dine fællesskaber</h1>
+        <template v-if="loggedInUser.communities">
+          <template
+            v-for="(community, index) in loggedInUser.communities"
+            :key="index"
           >
+            <v-btn
+              v-if="typeof community?.value == 'undefined' || community.value"
+              color="btnPrimary"
+              class="d-block mt-8 pa-2"
+              :to="{
+                name: 'Community',
+                params: { id: community.community_id },
+              }"
+              >{{ community.community_name }}</v-btn
+            >
+          </template>
         </template>
       </template>
     </div>
@@ -43,6 +63,7 @@ export default {
       userImageSrc: null,
       selectedUser: false,
       tempCommunityUpdated: 0,
+      isLoading: false,
     };
   },
   components: {
@@ -57,13 +78,18 @@ export default {
   methods: {
     // Method til at opdatere src attributten til brugerens billede
     async fetchUserImage(userId) {
+      let imageSrc = "/images/placeholder.png";
+      this.isLoading = true;
       try {
-        const response = await axiosInstance.get(`/images/${userId}`, {
+        const response = await axiosInstance.get("/images/" + userId, {
           responseType: "blob",
         });
-        return URL.createObjectURL(response.data);
+        imageSrc = URL.createObjectURL(response.data);
       } catch (error) {
-        return "/images/placeholder.png";
+        // Optional: Handle specific error logging or actions here
+      } finally {
+        this.isLoading = false;
+        this.userImageSrc = imageSrc;
       }
     },
   },
@@ -84,6 +110,10 @@ export default {
 </script>
 
 <style scoped>
+.isAdmin {
+  display:block;
+  font-size: 1.2rem;
+}
 @media (max-width: 1024px) {
   .homeWrap {
     margin: 0 auto;

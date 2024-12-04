@@ -29,6 +29,7 @@
           label="Indtast kodeord"
           v-model="password"
           type="password"
+          @keyup.enter="handleLogin"
         ></v-text-field>
 
         <div style="display: flex; justify-content: space-between">
@@ -221,6 +222,7 @@ export default {
             fullname: response.data.user.fullname,
             email: response.data.user.email,
             communities: response.data.user.communities,
+            admin: response.data.user.admin
           });
           this.statusType = "success";
           this.statusMessage = "Velkommen!";
@@ -235,7 +237,15 @@ export default {
     },
   },
   created() {
-    this.revalidateLoginToken();
+    const loggedInUserStore = useLoggedInUserStore();
+    if (!loggedInUserStore?.loggedOut) {
+      this.revalidateLoginToken();
+    } else {
+      this.statusMessage = loggedInUserStore.loggedOut;
+      this.statusType = "success";
+      loggedInUserStore.loggedOut = null;
+
+    }
   },
 };
 </script>
