@@ -37,25 +37,31 @@
         </v-dialog>
       </div>
       <div class="flex-grow-1 flex-shrink-1 pt-4">
-        <v-img
-          :src="userImageSrc"
-          :alt="loggedInUser.fullname"
-          class="d-flex justify-center userPicture"
-        />
-        <v-container class="pa-0">
-          <h2>Interesser</h2>
-          <template v-for="(community, index) in userCommunities" :key="index">
-            <template v-if="this.userCommunities">
-              <v-checkbox
-                color="btnPrimary"
-                class="ma-0 pa-0"
-                :label="community.community_name"
-                v-model="userCommunities[index].value"
-                @click="updateUserCommunities(userCommunities[index])"
-              ></v-checkbox>
+        <v-progress-circular class="vflspinner" v-if="isLoading" :size="100" indeterminate></v-progress-circular>
+        <template v-if="!isLoading">
+          <v-img
+            :src="userImageSrc"
+            :alt="loggedInUser.fullname"
+            class="d-flex justify-center userPicture"
+          />
+          <v-container class="pa-0">
+            <h2>Interesser</h2>
+            <template
+              v-for="(community, index) in userCommunities"
+              :key="index"
+            >
+              <template v-if="this.userCommunities">
+                <v-checkbox
+                  color="btnPrimary"
+                  class="ma-0 pa-0"
+                  :label="community.community_name"
+                  v-model="userCommunities[index].value"
+                  @click="updateUserCommunities(userCommunities[index])"
+                ></v-checkbox>
+              </template>
             </template>
-          </template>
-        </v-container>
+          </v-container>
+        </template>
       </div>
     </div>
   </v-main>
@@ -70,8 +76,8 @@ export default {
   data() {
     return {
       editedUserAttributes: {
-        user_fullname: '',
-        user_mail: ''
+        user_fullname: "",
+        user_mail: "",
       },
       allCommunities: [],
       userCommunities: [],
@@ -116,7 +122,12 @@ export default {
       } else {
         this.isLoading = true;
         try {
-          await axiosInstance.delete("/memberships/" + this.loggedInUser.userId + '/' + community.community_id);
+          await axiosInstance.delete(
+            "/memberships/" +
+              this.loggedInUser.userId +
+              "/" +
+              community.community_id
+          );
         } catch (error) {
           this.statusMessage =
             error.message || "Kunne ikke tilføje dit medlemskab.";
@@ -129,13 +140,16 @@ export default {
       this.isLoading = true;
       try {
         // const response = await...
-        await axiosInstance.patch("/users/" + this.loggedInUser.userId, this.editedUserAttributes);
+        await axiosInstance.patch(
+          "/users/" + this.loggedInUser.userId,
+          this.editedUserAttributes
+        );
         this.loggedInUser.fullname = this.editedUserAttributes.user_fullname;
         this.loggedInUser.email = this.editedUserAttributes.user_mail;
       } catch (error) {
-          console.log(error);
+        console.log(error);
       } finally {
-          this.isLoading = false;
+        this.isLoading = false;
       }
     },
 
@@ -194,7 +208,8 @@ export default {
     },
   },
   async mounted() {
-    if (!this.tempCommunityUpdated) { // Tjek at vi ikke allerede har kørt funktionerne, fordi vi skal kun køre dem på første visning
+    if (!this.tempCommunityUpdated) {
+      // Tjek at vi ikke allerede har kørt funktionerne, fordi vi skal kun køre dem på første visning
 
       // Lav en direkte reference til communities i vores loggedInUser store
       this.userCommunities = this.loggedInUser.communities;

@@ -3,27 +3,41 @@
     ><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
     <LogIn v-if="!loggedInUser" />
     <div class="d-block homeWrap pa-4" v-else>
-      <v-img
-        :src="userImageSrc"
-        :alt="loggedInUser.fullname"
-        class="userPicture"
-      />
-      <p class="text-h5 mt-4 mb-16 text-left">
-        {{ loggedInUser.fullname }}
-      </p>
-      <h1>Dine fællesskaber</h1>
-      <template v-if="loggedInUser.communities">
-        <template
-          v-for="(community, index) in loggedInUser.communities"
-          :key="index"
-        >
-          <v-btn
-            v-if="typeof community?.value == 'undefined' || community.value"
-            color="btnPrimary"
-            class="d-block mt-8 pa-2"
-            :to="{ name: 'Community', params: { id: community.community_id } }"
-            >{{ community.community_name }}</v-btn
+      <v-progress-circular v-if="isLoading" :size="100" indeterminate></v-progress-circular>
+
+      <template v-if="!isLoading">
+        <v-img
+          :src="userImageSrc"
+          :alt="loggedInUser.fullname"
+          class="userPicture"
+        />
+        <p class="text-h5 mt-4 mb-16 text-left">
+          {{ loggedInUser.fullname }}
+
+          <v-icon
+            aria-label="Admin"
+            icon="mdi-crown-circle"
+            aria-hidden="false"
+            v-if="loggedInUser.admin"
+          />
+        </p>
+        <h1>Dine fællesskaber</h1>
+        <template v-if="loggedInUser.communities">
+          <template
+            v-for="(community, index) in loggedInUser.communities"
+            :key="index"
           >
+            <v-btn
+              v-if="typeof community?.value == 'undefined' || community.value"
+              color="btnPrimary"
+              class="d-block mt-8 pa-2"
+              :to="{
+                name: 'Community',
+                params: { id: community.community_id },
+              }"
+              >{{ community.community_name }}</v-btn
+            >
+          </template>
         </template>
       </template>
     </div>
@@ -58,6 +72,7 @@ export default {
     // Method til at opdatere src attributten til brugerens billede
     async fetchUserImage(userId) {
       let imageSrc = "/images/placeholder.png";
+      this.isLoading = true;
       try {
         const response = await axiosInstance.get("/images/" + userId, {
           responseType: "blob",
@@ -66,6 +81,7 @@ export default {
       } catch (error) {
         // Optional: Handle specific error logging or actions here
       } finally {
+        this.isLoading = false;
         this.userImageSrc = imageSrc;
       }
     },
