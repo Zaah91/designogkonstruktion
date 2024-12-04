@@ -145,6 +145,9 @@ export default {
           if (response?.data?.message) {
             this.loggedInUserStore.clearUser();
             this.loggedInUserStore.loggedOut = "Du er nu logget ud.";
+            if (!this.loggedInUser && this.$route.name !== "Home") {
+              this.$router.push({ name: "Home" }); // Redirect til home
+            }
           }
         })
         .catch(() => {
