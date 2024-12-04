@@ -3,7 +3,12 @@
     ><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
     <LogIn v-if="!loggedInUser" />
     <div class="d-block homeWrap pa-4" v-else>
-      <v-progress-circular class="vflspinner" v-if="isLoading" :size="100" indeterminate></v-progress-circular>
+      <v-progress-circular
+        class="vflspinner"
+        v-if="isLoading"
+        :size="100"
+        indeterminate
+      ></v-progress-circular>
 
       <template v-if="!isLoading">
         <v-img
@@ -12,7 +17,6 @@
           class="userPicture"
         />
         <p class="text-h5 mt-4 mb-16 text-left">
-
           <v-icon
             aria-label="Admin"
             icon="mdi-crown-circle"
@@ -26,7 +30,9 @@
             v-else
           />
           {{ loggedInUser.fullname }}
-          <span class="isAdmin">{{loggedInUser.admin ? 'Admin' : 'Bruger' }}</span>
+          <span class="isAdmin">{{
+            loggedInUser.admin ? "Admin" : "Bruger"
+          }}</span>
         </p>
         <h1>Dine fællesskaber</h1>
         <template v-if="loggedInUser.communities">
@@ -37,13 +43,17 @@
             <v-btn
               v-if="typeof community?.value == 'undefined' || community.value"
               color="btnPrimary"
-              class="d-block mt-8 pa-2"
+              class="d-block mt-8 pa-2 communityBtn"
               :to="{
                 name: 'Community',
                 params: { id: community.community_id },
               }"
-              >{{ community.community_name }}</v-btn
+              elevation="2"
+              block
+              size="large"
             >
+              {{ community.community_name }}
+            </v-btn>
           </template>
         </template>
       </template>
@@ -109,9 +119,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.communityBtn span {
+  padding:0.2rem;
+}
 .isAdmin {
-  display:block;
+  display: block;
   font-size: 1.2rem;
 }
 @media (max-width: 1024px) {

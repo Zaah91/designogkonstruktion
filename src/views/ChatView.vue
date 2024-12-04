@@ -9,12 +9,11 @@
       ></v-progress-circular>
       <section v-for="(message, index) in messages" :key="index">
         <div class="msgWrap">
-          <!--<v-img
+          <v-img
             :src="message.userImage"
             alt="Eivind"
-            rounded="circle"
             class="userPicture"
-          />-->
+          />
           <p class="name">{{ message.user.user_fullname }}</p>
           <p class="msg">{{ message.chat_message }}</p>
         </div>
@@ -47,6 +46,22 @@ export default {
     };
   },
   methods: {
+    async loadLatest() {
+      const lastItem = this.messages[this.messages.length - 1];
+      try {
+            const imgResponse = await axiosInstance.get(
+              "/images/" + lastItem.user_id,
+              {
+                responseType: "blob",
+              }
+            );
+            // Midlertidig "object URL" til indlæsning af billedet
+            lastItem.userImage = URL.createObjectURL(imgResponse.data);
+          } catch (error) {
+            // Hvis billedet ikke blev indlæst, brug en almindelig URL til vores profil-placeholder billede
+            lastItem.userImage = "/images/placeholder.png";
+          }
+    },
     async fetchChatMessages() {
       this.isLoading = true;
       try {
@@ -91,6 +106,7 @@ export default {
         newMessageObj.user = {}
         newMessageObj.user.user_fullname = this.loggedInUser.fullname;
         this.messages.push(newMessageObj);
+        this.loadLatest();
         this.chatMessage = "";
       } catch (error) {
         console.error("Error sending message:", error);
@@ -104,13 +120,9 @@ export default {
       return useLoggedInUserStore().user;
     },
   },
-  created() {
-    this.communityId = this.$route.params.id;
-    console.log("idi:" + this.$route.params.id);
-  },
   mounted() {
+    this.communityId = this.$route.params.id;
     this.fetchChatMessages();
-    console.log(this.messages);
   },
 };
 </script>
