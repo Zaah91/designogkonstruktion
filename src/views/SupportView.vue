@@ -9,8 +9,8 @@
         <p>Har du spørgsmål eller brug for hjælp?</p>
         <p>Ring på tlf: <b>123 123 11</b></p>
 
-        <h2>Åbningstider</h2>
         <v-table class="py-4 text-left">
+          <tr><th>Åbningstider</th></tr>
           <tr v-for="item in openings" :key="item.name">
             <td>{{ item.name }}</td>
             <td>{{ item.time }}</td>
