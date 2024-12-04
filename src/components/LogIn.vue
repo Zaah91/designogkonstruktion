@@ -202,7 +202,7 @@ export default {
         this.newUser.user_fullname = '';
       } catch (error) {
         this.statusType = "warning";
-        this.statusMessage = "Kunne ikke oprette brugeren. Måske findes den allerede!s";
+        this.statusMessage = "Kunne ikke oprette brugeren. Måske findes den allerede!";
         console.error("Error registering user:", error);
       }
     },
@@ -256,6 +256,10 @@ export default {
 }
 .loginWith {
   padding: 0.5rem;
+}
+.loginWith button {
+  justify-content: left;
+  text-transform: none;
 }
 .goodleId img,
 .appleId img {
