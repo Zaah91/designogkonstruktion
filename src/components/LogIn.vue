@@ -222,7 +222,7 @@ export default {
             fullname: response.data.user.fullname,
             email: response.data.user.email,
             communities: response.data.user.communities,
-            admin: response.data.user.user_admin
+            admin: response.data.user.admin
           });
           this.statusType = "success";
           this.statusMessage = "Velkommen!";
