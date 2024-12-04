@@ -38,12 +38,13 @@
       </div>
       <div class="flex-grow-1 flex-shrink-1 pt-4">
         <v-progress-circular class="vflspinner" v-if="isLoading" :size="100" indeterminate></v-progress-circular>
-        <template v-if="!isLoading">
+        <template v-if="!imgIsLoading">
           <v-img
             :src="userImageSrc"
             :alt="loggedInUser.fullname"
             class="d-flex justify-center userPicture"
           />
+        </template>
           <v-container class="pa-0">
             <h2>Interesser</h2>
             <template
@@ -61,7 +62,6 @@
               </template>
             </template>
           </v-container>
-        </template>
       </div>
     </div>
   </v-main>
@@ -86,6 +86,7 @@ export default {
       showOverlay: false,
       statusMessage: "",
       isLoading: false,
+      imgIsLoading: false
     };
   },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
@@ -164,7 +165,7 @@ export default {
         }
       }
 
-      // Bemærk: Vi heter den fulde liste af communities med fetchCommunities i mounted() lifecycle
+      // Bemærk: Vi henter den fulde liste af communities med fetchCommunities i mounted() lifecycle
       // Nu skal vi lige sikre, at alle communities eksistere i userCommunities (dvs, det array af communities, som brugeren er medlem af i forvejen). Hvis ikke, så tilføjer vi dem som mangler..
       for (let i = 0; i < this.allCommunities.length; i++) {
         // iterer igennem det midlertidige community array
@@ -179,6 +180,7 @@ export default {
       }
     },
     async fetchUserImage(userId) {
+      this.imgIsLoading = true;
       try {
         const response = await axiosInstance.get(`/images/${userId}`, {
           responseType: "blob",
@@ -186,6 +188,8 @@ export default {
         this.userImageSrc = URL.createObjectURL(response.data);
       } catch (error) {
         this.userImageSrc = "/images/placeholder.png";
+      } finally {
+        this.imgIsLoading = false;
       }
     },
   },
