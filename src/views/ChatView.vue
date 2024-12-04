@@ -2,7 +2,11 @@
   <v-main class="mainContent">
     <h2>Chat</h2>
     <div class="pa-4 chatWrap">
-      <v-progress-circular v-if="isLoading" :size="100" indeterminate></v-progress-circular>
+      <v-progress-circular
+        v-if="isLoading"
+        :size="100"
+        indeterminate
+      ></v-progress-circular>
       <section v-for="(message, index) in messages" :key="index">
         <div class="msgWrap">
           <!--<v-img
@@ -13,13 +17,12 @@
           />-->
           <p class="name">{{ message.user.user_fullname }}</p>
           <p class="msg">{{ message.chat_message }}</p>
-          
         </div>
       </section>
     </div>
     <div class="pa-4 chatInput">
       <v-text-field
-        v-model="message"
+        v-model="chatMessage"
         label="Skriv en besked"
         outlined
         dense
@@ -38,8 +41,9 @@ export default {
   data() {
     return {
       messages: {},
+      chatMessage: '',
       communityId: null,
-      isLoading: false
+      isLoading: false,
     };
   },
   methods: {
@@ -75,20 +79,19 @@ export default {
       }
     },
     async sendMessage() {
-      if (this.newMessage === "") return;
+      if (this.chatMessage === "") return;
 
       const newMessageObj = {
-        user_id: this.loggedInUser.id,
-        chat_message: this.newMessage,
-        user_fullname: this.loggedInUser.user_fullname,
-        userImage: this.loggedInUser.userImage || "/images/placeholder.png",
+        user_id: this.loggedInUser.userId,
+        chat_message: this.chatMessage,
       };
 
       try {
         await axiosInstance.post("chat/" + this.communityId, newMessageObj);
+        newMessageObj.user = {}
+        newMessageObj.user.user_fullname = this.loggedInUser.fullname;
         this.messages.push(newMessageObj);
-        this.newMessage = "";
-        this.scrollToBottom();
+        this.chatMessage = "";
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -125,7 +128,7 @@ export default {
   width: 100%;
   padding: 1rem;
   box-sizing: border-box;
-  background-color: white
+  background-color: white;
 }
 
 section {
