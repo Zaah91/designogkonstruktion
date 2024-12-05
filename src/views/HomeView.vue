@@ -17,22 +17,18 @@
           class="userPicture"
         />
         <p class="text-h5 mt-4 mb-16 text-left">
+          {{ loggedInUser.fullname }}
+          <span class="isAdmin">{{
+            loggedInUser.admin ? "Admin" : "Bruger"
+          }}
           <v-icon
             aria-label="Admin"
             icon="mdi-crown-circle"
             aria-hidden="false"
             v-if="loggedInUser.admin"
           />
-          <v-icon
-            aria-label="Admin"
-            icon="mdi-account-circle"
-            aria-hidden="false"
-            v-else
-          />
-          {{ loggedInUser.fullname }}
-          <span class="isAdmin">{{
-            loggedInUser.admin ? "Admin" : "Bruger"
-          }}</span>
+        </span>        
+          
         </p>
         <h1>Dine fællesskaber</h1>
         <template v-if="loggedInUser.communities">
@@ -45,7 +41,7 @@
               color="btnPrimary"
               class="d-block mt-8 pa-2 communityBtn"
               :to="{
-                name: 'Community',
+                name: 'Chat',
                 params: { id: community.community_id },
               }"
               elevation="2"

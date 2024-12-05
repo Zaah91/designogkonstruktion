@@ -114,7 +114,7 @@ export default {
   methods: {
     // Hent en liste af brugere fra vores backend.
     // Bemærk: det her er absolut ikke optimalt, fordi vi henter ALLE brugerne ud.
-    //         Det kan være meget tungt, hvis der er mange brugere, og bør derfor deles op i "batches" og noget "pagination" af en art..
+    // Det kan være meget tungt, hvis der er mange brugere, og bør derfor deles op i "batches" og noget "pagination" af en art..
     async fetchUsers() {
       this.isLoading = true;
       this.isError = false;
