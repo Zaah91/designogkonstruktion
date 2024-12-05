@@ -27,55 +27,6 @@ export default {
         sitename: "Venner for Livet",
         logo: require("@/assets/gammelchat-logo.webp"),
         loggedIn: false,
-        users: [
-          {
-            username: "eivind@example.com",
-            name: "Eivind Johannes Goldenstein Hansen",
-            email: "eivind@example.com",
-            photo: require("@/assets/eivind.webp"),
-            communities: [
-              {
-                name: "Fiskehjørnet",
-              },
-              {
-                name: "Lotusklubben",
-              },
-            ],
-          },
-          {
-            username: "karen@example.com",
-            name: "Karen Elisabeth Johannesson",
-            email: "karen@example.com",
-            photo: require("@/assets/karan.webp"),
-            communities: [
-              {
-                name: "Strikkeklubben",
-              },
-            ],
-          },
-          {
-            username: "ulla@example.com",
-            name: "Ulla Hansen",
-            email: "ulla@example.com",
-            photo: require("@/assets/ulla.webp"),
-            communities: [
-              {
-                name: "Strikkeklubben",
-              },
-            ],
-          },
-        ],
-        communities: [
-          {
-            name: "Strikkeklubben",
-          },
-          {
-            name: "Lotusklubben",
-          },
-          {
-            name: "Fiskehjørnet",
-          },
-        ],
       },
     };
   },
