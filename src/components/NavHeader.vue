@@ -52,7 +52,7 @@
                     </template>
                   </v-tooltip>
                 </li>
-                <li>
+                <li v-if="loggedInUser.admin">
                   <v-tooltip text="Admin">
                     <template #activator="{ props }">
                       <v-btn
@@ -141,12 +141,18 @@ export default {
       axiosInstance
         .post("/logout")
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
+          if (response?.data?.message) {
+            this.loggedInUserStore.clearUser();
+            this.loggedInUserStore.loggedOut = "Du er nu logget ud.";
+            if (!this.loggedInUser && this.$route.name !== "Home") {
+              this.$router.push({ name: "Home" }); // Redirect til home
+            }
+          }
         })
-        .catch((error) => {
-          console.error("login: ", error);
+        .catch(() => {
+          // console.error("login: ", error); // Lad os undgå at skrive fejl i loggen, når vi ikke debugger
         });
-      this.loggedInUserStore.clearUser();
     },
     goBack() {
       this.$router.go(-1); // Tilbage til forrige side

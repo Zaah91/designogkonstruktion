@@ -7,12 +7,13 @@ h1,h2 {
   color: #000000;
 }
 .userPicture {
-  border-radius: 9999px;
+  border-radius: 1rem;
   display: block;
 }
 .mainContent {
   margin-left:26vw;
 }
+.vflspinner {margin:0 auto;display:block;}
 
 @media (max-width: 1024px) {
   .mainContent {

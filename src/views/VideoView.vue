@@ -1,5 +1,5 @@
 <template>
-  <v-main v-if="this.siteInfo.loggedIn" class="mainContent">
+  <v-main v-if="loggedInUser" class="mainContent">
     <div class="pa-4">
       <h1>Video</h1>
       <div class="d-flex justify-center align-center flex-column videoContainer" background: black>
@@ -10,6 +10,8 @@
 </template>
 
 <script> 
+import { useLoggedInUserStore } from "../stores/loggedInUser";
+
 export default {
   name: "VideoView",
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
@@ -37,6 +39,12 @@ export default {
     this.webcam = this.$refs.webcam;
     this.startWebcam();
   },
+  computed: {
+    loggedInUser() {
+      // Retuner user-objektet for den bruger, som er logget ind
+      return useLoggedInUserStore().user;
+    },
+  },
 };
 </script>
 
@@ -48,6 +56,7 @@ export default {
 .webcamVideo {
   width: 100%;
   height: auto;
+  max-height: 50vh;
 }
 .videoContainer {
   background: black;

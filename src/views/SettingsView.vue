@@ -16,7 +16,7 @@
           />
         </v-container>
         <div class="d-flex justify-space-evenly">
-          <v-btn color="btnPrimary"> Gem </v-btn>
+          <v-btn color="btnPrimary" @click="updateUser()"> Gem </v-btn>
           <v-btn color="red" @click="showOverlay = true"> Slet bruger </v-btn>
         </div>
 
@@ -37,25 +37,31 @@
         </v-dialog>
       </div>
       <div class="flex-grow-1 flex-shrink-1 pt-4">
-        <v-img
-          :src="userImageSrc"
-          :alt="loggedInUser.fullname"
-          class="d-flex justify-center userPicture"
-        />
-        <v-container class="pa-0">
-          <h2>Interesser</h2>
-          <template v-for="(community, index) in userCommunities" :key="index">
-            <template v-if="this.userCommunities">
-              <v-checkbox
-                color="btnPrimary"
-                class="ma-0 pa-0"
-                :label="community.community_name"
-                v-model="userCommunities[index].value"
-                @click="updateUserCommunities(userCommunities[index])"
-              ></v-checkbox>
+        <v-progress-circular class="vflspinner" v-if="isLoading" :size="100" indeterminate></v-progress-circular>
+        <template v-if="!imgIsLoading">
+          <v-img
+            :src="userImageSrc"
+            :alt="loggedInUser.fullname"
+            class="d-flex justify-center userPicture"
+          />
+        </template>
+          <v-container class="pa-0">
+            <h2>Interesser</h2>
+            <template
+              v-for="(community, index) in userCommunities"
+              :key="index"
+            >
+              <template v-if="this.userCommunities">
+                <v-checkbox
+                  color="btnPrimary"
+                  class="ma-0 pa-0"
+                  :label="community.community_name"
+                  v-model="userCommunities[index].value"
+                  @click="updateUserCommunities(userCommunities[index])"
+                ></v-checkbox>
+              </template>
             </template>
-          </template>
-        </v-container>
+          </v-container>
       </div>
     </div>
   </v-main>
@@ -70,8 +76,8 @@ export default {
   data() {
     return {
       editedUserAttributes: {
-        user_fullname: null,
-        user_mail: null
+        user_fullname: "",
+        user_mail: "",
       },
       allCommunities: [],
       userCommunities: [],
@@ -80,6 +86,7 @@ export default {
       showOverlay: false,
       statusMessage: "",
       isLoading: false,
+      imgIsLoading: false
     };
   },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
@@ -116,7 +123,12 @@ export default {
       } else {
         this.isLoading = true;
         try {
-          await axiosInstance.delete("/memberships/" + this.loggedInUser.userId + '/' + community.community_id);
+          await axiosInstance.delete(
+            "/memberships/" +
+              this.loggedInUser.userId +
+              "/" +
+              community.community_id
+          );
         } catch (error) {
           this.statusMessage =
             error.message || "Kunne ikke tilføje dit medlemskab.";
@@ -125,16 +137,20 @@ export default {
         }
       }
     },
-    async updateUser(userId) {
+    async updateUser() {
       this.isLoading = true;
       try {
         // const response = await...
-        await axiosInstance.patch(`/users/${userId}`, this.editedUserAttributes);
-        
+        await axiosInstance.patch(
+          "/users/" + this.loggedInUser.userId,
+          this.editedUserAttributes
+        );
+        this.loggedInUser.fullname = this.editedUserAttributes.user_fullname;
+        this.loggedInUser.email = this.editedUserAttributes.user_mail;
       } catch (error) {
-          console.log(error);
+        console.log(error);
       } finally {
-          this.isLoading = false;
+        this.isLoading = false;
       }
     },
 
@@ -149,7 +165,7 @@ export default {
         }
       }
 
-      // Bemærk: Vi heter den fulde liste af communities med fetchCommunities i mounted() lifecycle
+      // Bemærk: Vi henter den fulde liste af communities med fetchCommunities i mounted() lifecycle
       // Nu skal vi lige sikre, at alle communities eksistere i userCommunities (dvs, det array af communities, som brugeren er medlem af i forvejen). Hvis ikke, så tilføjer vi dem som mangler..
       for (let i = 0; i < this.allCommunities.length; i++) {
         // iterer igennem det midlertidige community array
@@ -164,6 +180,7 @@ export default {
       }
     },
     async fetchUserImage(userId) {
+      this.imgIsLoading = true;
       try {
         const response = await axiosInstance.get(`/images/${userId}`, {
           responseType: "blob",
@@ -171,6 +188,8 @@ export default {
         this.userImageSrc = URL.createObjectURL(response.data);
       } catch (error) {
         this.userImageSrc = "/images/placeholder.png";
+      } finally {
+        this.imgIsLoading = false;
       }
     },
   },
@@ -178,7 +197,6 @@ export default {
     loggedInUser: {
       immediate: true,
       handler(newUser) {
-        console.log(newUser);
         if (newUser && newUser.userId) {
           this.fetchUserImage(newUser.userId);
         } else {
@@ -194,7 +212,8 @@ export default {
     },
   },
   async mounted() {
-    if (!this.tempCommunityUpdated) { // Tjek at vi ikke allerede har kørt funktionerne, fordi vi skal kun køre dem på første visning
+    if (!this.tempCommunityUpdated) {
+      // Tjek at vi ikke allerede har kørt funktionerne, fordi vi skal kun køre dem på første visning
 
       // Lav en direkte reference til communities i vores loggedInUser store
       this.userCommunities = this.loggedInUser.communities;
