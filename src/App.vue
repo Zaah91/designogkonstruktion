@@ -25,7 +25,6 @@ export default {
       authToken: null,
       siteInfo: {
         sitename: "Venner for Livet",
-        logo: require("@/assets/gammelchat-logo.webp"),
         loggedIn: false,
       },
     };
