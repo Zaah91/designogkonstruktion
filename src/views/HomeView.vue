@@ -27,7 +27,8 @@
             aria-hidden="false"
             v-if="loggedInUser.admin"
           />
-        </span>
+        </span>        
+
         </p>
         <h1>Dine fællesskaber</h1>
         <template v-if="loggedInUser.communities">
