@@ -9,11 +9,11 @@
       ></v-progress-circular>
       <section v-for="(message, index) in messages" :key="index">
         <div class="msgWrap">
-          <v-img
+          <!--<v-img
             :src="message.userImage"
             alt="Eivind"
             class="userPicture"
-          />
+          />-->
           <p class="name">{{ message.user.user_fullname }}</p>
           <p class="msg">{{ message.chat_message }}</p>
         </div>
