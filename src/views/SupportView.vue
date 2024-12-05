@@ -84,7 +84,7 @@ export default {
   },
   computed: {
     username() {
-      return this.siteInfo.username || "User";
+      return this.loggedInUser.fullname || "User";
     },
     loggedInUser() {
       // Retuner user-objektet for den bruger, som er logget ind
