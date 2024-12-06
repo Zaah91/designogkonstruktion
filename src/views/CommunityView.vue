@@ -10,8 +10,8 @@
       <v-btn
         color="secondary"
         class="d-block pa-2"
-        :to="{ name: 'Chat', params: { id: communityId } }"
-        >Chat</v-btn
+        :to="{ name: 'Forum', params: { id: communityId } }"
+        >Forum</v-btn
       >
       <v-btn
         color="secondary"

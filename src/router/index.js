@@ -3,8 +3,8 @@ import HomeView from '@/views/HomeView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import SupportView from '@/views/SupportView.vue';
 import CommunityView from '@/views/CommunityView.vue';
-import ChatView from '@/views/ChatView.vue';
 import ForumView from '@/views/ForumView.vue';
+//import ForumView from '@/views/ForumView.vue';
 import VideoView from '@/views/VideoView.vue';
 import AdminPanel from '@/views/AdminPanel.vue';
 
@@ -31,12 +31,7 @@ const routes = [
     component: CommunityView,
   },
   {
-    path: '/chat/:id',
-    name: 'Chat',
-    component: ChatView,
-  },
-  {
-    path: '/forum',
+    path: '/forum/:id',
     name: 'Forum',
     component: ForumView,
   },
