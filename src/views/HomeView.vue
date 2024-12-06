@@ -41,7 +41,7 @@
               color="btnPrimary"
               class="d-block mt-8 pa-2 communityBtn"
               :to="{
-                name: 'Chat',
+                name: 'Forum',
                 params: { id: community.community_id },
               }"
               elevation="2"
