@@ -4,8 +4,7 @@ import SettingsView from '@/views/SettingsView.vue';
 import SupportView from '@/views/SupportView.vue';
 import CommunityView from '@/views/CommunityView.vue';
 import ForumView from '@/views/ForumView.vue';
-//import ForumView from '@/views/ForumView.vue';
-import VideoView from '@/views/VideoView.vue';
+
 import AdminPanel from '@/views/AdminPanel.vue';
 
 
@@ -34,11 +33,6 @@ const routes = [
     path: '/forum/:id',
     name: 'Forum',
     component: ForumView,
-  },
-  {
-    path: '/video',
-    name: 'Video',
-    component: VideoView,
   },
   {
     path: '/admin',
