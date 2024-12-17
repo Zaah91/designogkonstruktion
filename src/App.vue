@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <BurgerMenu :siteInfo="siteInfo" v-if="loggedInUser" />
-    <NavHeader :siteInfo="siteInfo" />
+    <NavHeader :siteInfo="siteInfo" v-if="loggedInUser " />
     <router-view :siteInfo="siteInfo" />
   </v-app>
 </template>
