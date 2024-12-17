@@ -4,11 +4,13 @@
       <v-col>
         <h1>Indstillinger</h1>
         <v-text-field
+          variant="outlined"
           label="Fulde navn"
           prepend-icon="mdi-pencil"
           v-model="editedUserAttributes.user_fullname"
         />
         <v-text-field
+          variant="outlined"
           label="Email"
           prepend-icon="mdi-mail"
           v-model="editedUserAttributes.user_mail"
