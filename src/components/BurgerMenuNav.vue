@@ -33,7 +33,7 @@
         title="Indstillinger"
         :to="{ name: 'Settings' }"
       ></v-list-item>
-      <v-list-item
+      <v-list-item v-if="loggedInUser.admin"
         color="#000"
         prepend-icon="mdi-security"
         title="Admin"
@@ -55,30 +55,52 @@
 </template>
 
 <script>
+import { useRoute } from "vue-router";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
+import axiosInstance from "@/api/axiosInstance";
+
 export default {
   name: "BurgerMenuNav",
   data() {
     return {
       drawer: false,
-      isMobile: false
+      isMobile: false,
+      route: null
     };
   },
-  props: {
-    // Vi skal bruge en prop for at dele siteInfo objektet fra App.vue meed NavHeader
-    siteInfo: {
-      type: Object,
-      required: true
+  computed: {
+    loggedInUser() {
+      // Retuner user-objektet for den bruger, som er logget ind
+      return this.loggedInUserStore.user;
     },
   },
   methods: {
     logout() {
-      this.$emit("logout");
-    }
+      axiosInstance
+        .post("/logout")
+        .then((response) => {
+          // console.log(response.data);
+          if (response?.data?.message) {
+            this.loggedInUserStore.clearUser();
+            this.loggedInUserStore.loggedOut = "Du er nu logget ud.";
+            if (!this.loggedInUser && this.$route.name !== "Home") {
+              this.$router.push({ name: "Home" }); // Redirect til home
+            }
+          }
+        })
+        .catch(() => {
+          // console.error("login: ", error); // Lad os undgå at skrive fejl i loggen, når vi ikke debugger
+        });
+    },
   },
   watch: {
     "$vuetify.breakpoint.width"(newWidth) {
       this.drawer = this.isMobile = newWidth <= 1024;
     }
+  },
+  created() {
+    this.loggedInUserStore = useLoggedInUserStore();
+    this.route = useRoute();
   },
   emits: ["logout"],
 };
@@ -88,7 +110,7 @@ export default {
 #burgerMenu {
   position: fixed;
   top: 0.9rem;
-  left: 7rem;
+  left: 1rem;
   z-index: 9999;
   font-size:1.7rem;
   width: 3rem;
