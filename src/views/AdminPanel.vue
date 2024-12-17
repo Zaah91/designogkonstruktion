@@ -13,11 +13,11 @@
 
           <div v-if="isLoading">Loading users...</div>
           
-          <div v-if="isError" class="statusMessage">
+          <div class="statusMessage">
             {{ statusMessage }}
           </div>
 
-          <div v-if="!isLoading && !isError" class="table-container">
+          <div v-if="!isLoading" class="table-container">
             <table class="users-table">
               <thead>
                 <tr>
@@ -89,7 +89,6 @@ export default {
     return {
       users: [],
       isLoading: false,
-      isError: false,
       statusMessage: "",
       isEditDialogOpen: false,
       editForm: {
@@ -117,12 +116,10 @@ export default {
     // Det kan være meget tungt, hvis der er mange brugere, og bør derfor deles op i "batches" og noget "pagination" af en art..
     async fetchUsers() {
       this.isLoading = true;
-      this.isError = false;
       try {
         const response = await axiosInstance.get(this.$apiUrl + "/users");
         this.users = response.data;
       } catch (error) {
-        this.isError = true;
         this.statusMessage = error.message || "Kunne ikke indlæse brugere.";
       } finally {
         this.isLoading = false;
