@@ -1,15 +1,37 @@
 <template>
-  <div>
-    <v-btn
-      text
-      icon
-      @click="drawer = !drawer"
-      id="burgerMenu"
-      color="secondary"
-    >
-      <v-icon :icon="drawer ? 'mdi-close' : 'mdi-menu'"></v-icon>
-    </v-btn>
-  </div>
+  <v-row id="burgerMenu">
+    <v-col>
+      <v-tooltip text="Menu">
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            text
+            icon
+            @click="drawer = !drawer"
+            color="secondary"
+            class="navBtn"
+          >
+            <v-icon :icon="drawer ? 'mdi-close' : 'mdi-menu'"></v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+    </v-col>
+    <v-col>
+      <v-tooltip v-if="route.name != 'Home'" text="Tilbage">
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            text
+            icon
+            color="secondary"
+            class="navBtn backBtn"
+            @click="goBack"
+            ><v-icon color="actionTxt" icon="mdi-arrow-left"
+          /></v-btn>
+        </template>
+      </v-tooltip>
+    </v-col>
+  </v-row>
 
   <v-navigation-drawer
     v-if="!isMobile"
@@ -33,7 +55,8 @@
         title="Indstillinger"
         :to="{ name: 'Settings' }"
       ></v-list-item>
-      <v-list-item v-if="loggedInUser.admin"
+      <v-list-item
+        v-if="loggedInUser.admin"
         color="#000"
         prepend-icon="mdi-security"
         title="Admin"
@@ -65,7 +88,7 @@ export default {
     return {
       drawer: false,
       isMobile: false,
-      route: null
+      route: null,
     };
   },
   computed: {
@@ -92,11 +115,14 @@ export default {
           // console.error("login: ", error); // Lad os undgå at skrive fejl i loggen, når vi ikke debugger
         });
     },
+    goBack() {
+      this.$router.go(-1); // Tilbage til forrige side
+    },
   },
   watch: {
     "$vuetify.breakpoint.width"(newWidth) {
       this.drawer = this.isMobile = newWidth <= 1024;
-    }
+    },
   },
   created() {
     this.loggedInUserStore = useLoggedInUserStore();
@@ -112,16 +138,18 @@ export default {
   top: 0.9rem;
   left: 1rem;
   z-index: 9999;
-  font-size:1.7rem;
-  width: 3rem;
-  height: 3rem;
+}
+.navBtn {
+  font-size: 1.5rem;
+  padding:0.2rem;
+  box-sizing: content-box;
 }
 .drawerMobile {
   padding-top: 7rem;
 }
 .drawerMobile .v-list-item {
-  position:relative;
-  z-index:9999;
+  position: relative;
+  z-index: 9999;
 }
 
 @media (min-width: 1024px) {

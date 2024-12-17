@@ -2,7 +2,7 @@
   <header>
     <v-container class="navWrap" v-if="loggedInUser">
       <v-row>
-        <v-col cols="6">
+        <v-col>
           <nav>
             <ol class="headerNavigation">
               <li>
