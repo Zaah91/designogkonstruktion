@@ -6,6 +6,7 @@
           <!-- Search Bar -->
           <v-text-field
             :disabled="fullListLoading || isLoading"
+            variant="outlined"
             label="Search users"
             v-model="searchQuery"
             outlined
@@ -31,7 +32,7 @@
                       :disabled="isLoading"
                       @click="openEditDialog(item)"
                       prepend-icon="mdi-human-edit"
-                      density="compact"
+                      density="comfortable"
                       >Rediger</v-btn
                     >
                   </v-col>
@@ -43,7 +44,7 @@
                       :disabled="isLoading"
                       @click="removeUser(item.user_id)"
                       prepend-icon="mdi-delete"
-                      density="compact"
+                      density="comfortable"
                       >Slet</v-btn
                     >
                   </v-col>
@@ -76,6 +77,7 @@
           <v-card class="px-4">
             <h3 class="pb-4">Rediger bruger</h3>
             <v-text-field
+              variant="outlined"
               :disabled="isLoading"
               append-icon="mdi-pencil"
               label="Navn"
@@ -84,6 +86,7 @@
             ></v-text-field>
 
             <v-text-field
+              variant="outlined"
               :disabled="isLoading"
               append-icon="mdi-mail"
               label="E-mail"
@@ -91,6 +94,7 @@
               outlined
             ></v-text-field>
             <v-select
+              variant="outlined"
               v-model="editForm.user_admin"
               append-icon="mdi-crown-circle"
               :hint="`${roleTitle} er valgt`"
@@ -109,7 +113,7 @@
                     color="btnPrimary"
                     variant="flat"
                     prepend-icon="mdi-content-save"
-                    density="compact"
+                    density="comfortable"
                     @click="saveEdit"
                     >Gem</v-btn
                   >
@@ -118,7 +122,7 @@
                     color="btnPrimary"
                     variant="flat"
                     prepend-icon="mdi-close"
-                    density="compact"
+                    density="comfortable"
                     @click="closeEditDialog"
                     >Annuler</v-btn
                   >
