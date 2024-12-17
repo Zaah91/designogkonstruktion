@@ -1,24 +1,40 @@
 <template>
   <v-main class="mainContent">
-    <div class="pa-4 flexWrap">
-      <div class="flex-grow-1 flex-shrink-1">
+    <v-row>
+      <v-col>
         <h1>Indstillinger</h1>
-        <v-container>
-          <v-text-field
-            label="Fulde navn"
-            prepend-icon="mdi-pencil"
-            v-model="editedUserAttributes.user_fullname"
-          />
-          <v-text-field
-            label="Email"
-            prepend-icon="mdi-mail"
-            v-model="editedUserAttributes.user_mail"
-          />
-        </v-container>
-        <div class="d-flex justify-space-evenly">
-          <v-btn color="btnPrimary" @click="updateUser()"> Gem </v-btn>
-          <v-btn color="red" @click="showOverlay = true"> Slet bruger </v-btn>
-        </div>
+        <v-text-field
+          label="Fulde navn"
+          prepend-icon="mdi-pencil"
+          v-model="editedUserAttributes.user_fullname"
+        />
+        <v-text-field
+          label="Email"
+          prepend-icon="mdi-mail"
+          v-model="editedUserAttributes.user_mail"
+        />
+        <v-row>
+          <v-col>
+            <v-btn
+              size="large"
+              block
+              color="btnPrimary"
+              @click="updateUser()"
+              prepend-icon="mdi-content-save"
+              >Gem</v-btn
+            >
+          </v-col>
+          <v-col>
+            <v-btn
+              size="large"
+              block
+              color="red"
+              @click="showOverlay = true"
+              prepend-icon="mdi-delete"
+              >Slet</v-btn
+            >
+          </v-col>
+        </v-row>
 
         <!-- Dialog-overlay til bekræftelse af sletning af bruger  -->
         <v-dialog v-model="showOverlay" max-width="400">
@@ -28,42 +44,51 @@
               Er du sikker på, at du vil slette brugeren?
             </v-card-text>
             <v-card-actions>
-              <v-btn color="green darken-1" text @click="showOverlay = false">
+              <v-btn
+                size="large"
+                color="green darken-1"
+                text
+                @click="showOverlay = false"
+              >
                 Annuller
               </v-btn>
-              <v-btn color="red darken-1" text> Slet </v-btn>
+              <v-btn size="large" block color="red darken-1" text> Slet </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </div>
-      <div class="flex-grow-1 flex-shrink-1 pt-4">
-        <v-progress-circular class="vflspinner" v-if="isLoading" :size="100" indeterminate></v-progress-circular>
-        <template v-if="!imgIsLoading">
-          <v-img
-            :src="userImageSrc"
-            :alt="loggedInUser.fullname"
-            class="d-flex justify-center userPicture"
-          />
-        </template>
-          <v-container class="pa-0">
-            <h2>Interesser</h2>
-            <template
-              v-for="(community, index) in userCommunities"
-              :key="index"
-            >
-              <template v-if="this.userCommunities">
-                <v-checkbox
-                  color="btnPrimary"
-                  class="ma-0 pa-0"
-                  :label="community.community_name"
-                  v-model="userCommunities[index].value"
-                  @click="updateUserCommunities(userCommunities[index])"
-                ></v-checkbox>
-              </template>
+      </v-col>
+      <v-col>
+        <div class="imgDetails">
+          <v-progress-circular
+            class="vflspinner"
+            v-if="isLoading"
+            :size="100"
+            indeterminate
+          ></v-progress-circular>
+          <template v-if="!imgIsLoading">
+            <v-img
+              :src="userImageSrc"
+              :alt="loggedInUser.fullname"
+              class="d-flex justify-center userPicture"
+            />
+          </template>
+        </div>
+        <v-container class="pa-0">
+          <h2>Interesser</h2>
+          <template v-for="(community, index) in userCommunities" :key="index">
+            <template v-if="this.userCommunities">
+              <v-checkbox
+                color="btnPrimary"
+                class="ma-0 pa-0"
+                :label="community.community_name"
+                v-model="userCommunities[index].value"
+                @click="updateUserCommunities(userCommunities[index])"
+              ></v-checkbox>
             </template>
-          </v-container>
-      </div>
-    </div>
+          </template>
+        </v-container>
+      </v-col>
+    </v-row>
   </v-main>
 </template>
 
@@ -86,7 +111,7 @@ export default {
       showOverlay: false,
       statusMessage: "",
       isLoading: false,
-      imgIsLoading: false
+      imgIsLoading: false,
     };
   },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
@@ -228,24 +253,15 @@ export default {
 </script>
 
 <style scoped>
+.imgDetails {
+  display: flex;
+  justify-content: center;
+  align-items: middle;
+}
 .userPicture {
   width: 100%;
   border-radius: 1rem;
-}
-@media (max-width: 1024px) {
-  .flexWrap {
-    display: block;
-    justify-content: center;
-    margin-left: 0;
-    min-width: 300px;
-    width: 90%;
-  }
-}
-@media (min-width: 1024px) {
-  .flexWrap {
-    display: flex;
-    justify-content: center;
-    margin-left: 0;
-  }
+  margin: 0;
+  padding: 0;
 }
 </style>
