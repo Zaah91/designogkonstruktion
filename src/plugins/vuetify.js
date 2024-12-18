@@ -23,6 +23,7 @@ export default createVuetify({
       light: {
         colors: {
           inputBg: "#f6f6f6",
+          inputSecondaryBg: "#ececec",
           actionTxt: "#fff",
           primary: "#FA8073",
           secondary: "#AD5950",

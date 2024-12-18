@@ -1,25 +1,34 @@
 <template>
   <v-main class="mainContent">
-    <h2>Chat</h2>
-    <div class="pa-4 forumWrap">
+    <v-container class="ma-0">
+      <h2>{{ pageTitle }}</h2>
       <v-progress-circular
         v-if="isLoading"
         :size="100"
         indeterminate
       ></v-progress-circular>
-      <section v-for="(message, index) in messages" :key="index">
+      <v-card
+        class="mb-4 s"
+        :prepend-icon="
+          message.user.user_admin ? 'mdi-crown-circle' : 'mdi-account-circle'
+        "
+        :title="message.user.user_fullname"
+        variant="flat"
+        v-for="(message, index) in messages"
+        :color="alternateColorPick(index)"
+        :key="index"
+      >
         <div class="msgWrap">
           <!--<v-img
             :src="message.userImage"
             alt="Eivind"
             class="userPicture"
           />-->
-          <p class="name">{{ message.user.user_fullname }}</p>
           <p class="msg">{{ message.forum_message }}</p>
         </div>
-      </section>
-    </div>
-    <div class="pa-4 forumInput">
+      </v-card>
+    </v-container>
+    <v-container class="pa-4 forumInput">
       <v-text-field
         v-model="forumMessage"
         label="Skriv en besked"
@@ -28,7 +37,7 @@
         @keyup.enter="sendMessage"
       ></v-text-field>
       <v-btn color="primary" @click="sendMessage">Send</v-btn>
-    </div>
+    </v-container>
   </v-main>
 </template>
 
@@ -39,8 +48,9 @@ export default {
   name: "ForumView",
   data() {
     return {
+      pageTitle: "",
       messages: {},
-      forumMessage: '',
+      forumMessage: "",
       communityId: null,
       isLoading: false,
     };
@@ -49,18 +59,18 @@ export default {
     async loadLatest() {
       const lastItem = this.messages[this.messages.length - 1];
       try {
-            const imgResponse = await axiosInstance.get(
-              "/images/" + lastItem.user_id,
-              {
-                responseType: "blob",
-              }
-            );
-            // Midlertidig "object URL" til indlæsning af billedet
-            lastItem.userImage = URL.createObjectURL(imgResponse.data);
-          } catch (error) {
-            // Hvis billedet ikke blev indlæst, brug en almindelig URL til vores profil-placeholder billede
-            lastItem.userImage = "/images/placeholder.png";
+        const imgResponse = await axiosInstance.get(
+          "/images/" + lastItem.user_id,
+          {
+            responseType: "blob",
           }
+        );
+        // Midlertidig "object URL" til indlæsning af billedet
+        lastItem.userImage = URL.createObjectURL(imgResponse.data);
+      } catch (error) {
+        // Hvis billedet ikke blev indlæst, brug en almindelig URL til vores profil-placeholder billede
+        lastItem.userImage = "/images/placeholder.png";
+      }
     },
     async fetchForumMessages() {
       this.isLoading = true;
@@ -103,7 +113,7 @@ export default {
 
       try {
         await axiosInstance.post("forum/" + this.communityId, newMessageObj);
-        newMessageObj.user = {}
+        newMessageObj.user = {};
         newMessageObj.user.user_fullname = this.loggedInUser.fullname;
         this.messages.push(newMessageObj);
         this.loadLatest();
@@ -111,6 +121,22 @@ export default {
       } catch (error) {
         console.error("Error sending message:", error);
       }
+    },
+    async fetchCommunity() {
+      this.isLoading = true;
+      try {
+        const response = await axiosInstance.get(
+          "communities/" + this.communityId
+        );
+        this.pageTitle = response.data.community_name;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    alternateColorPick(index) {
+      return index % 2 === 0 ? "inputBg" : "inputSecondaryBg";
     },
   },
   computed: {
@@ -122,6 +148,7 @@ export default {
   },
   mounted() {
     this.communityId = this.$route.params.id;
+    this.fetchCommunity();
     this.fetchForumMessages();
   },
 };
@@ -146,17 +173,17 @@ export default {
 section {
   width: 100%;
   margin: 0.5rem 0rem; /* 0.5rem 0rem; betyder 0,5 top/bund og 0 højre/venstre*/
-  border-radius: 1rem;
+  padding: 0 0 0.5rem;
 }
 section p {
   margin: 1rem;
   font-size: medium;
 }
-section:nth-child(odd) {
-  background-color: #e2e2e2;
+.messageContainer:nth-child(odd) {
+  background-color: var(--v-theme-inputBg);
 }
-section:nth-child(even) {
-  background-color: #eeeeee;
+.messageContainer:nth-child(even) {
+  background-color: var(--v-theme-inputSecondaryBg);
 }
 .userPicture {
   width: 8rem;
@@ -164,8 +191,8 @@ section:nth-child(even) {
   margin: 0.5rem;
   float: left;
 }
-.msgWrap .name {
-  font-weight: bold;
+.msgWrap {
+  padding: 0.5rem;
 }
 @media (max-width: 1024px) {
   .userPicture {
