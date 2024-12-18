@@ -98,14 +98,15 @@
         </v-dialog>
       </v-col>
       <v-col style="max-width: 20rem">
-        <v-progress-circular
-          class="vflspinner"
-          v-if="imgIsLoading"
-          :size="100"
-          indeterminate
-        ></v-progress-circular>
-        <template v-if="!imgIsLoading && loggedInUser">
+        <template v-if="loggedInUser">
+          <v-progress-circular
+            class="vflspinner"
+            v-if="imgIsLoading"
+            :size="100"
+            indeterminate
+          ></v-progress-circular>
           <v-img
+            v-else
             :src="userImageSrc"
             :alt="loggedInUser.fullname"
             class="userPicture"
@@ -158,7 +159,7 @@ export default {
       tempCommunityUpdated: false,
       userImageSrc: null,
       isDeleteDialogOpen: false,
-      statusMessage: "",
+      statusMessage: {},
       isLoading: false,
       imgIsLoading: false,
       deleteThisUser: null,
