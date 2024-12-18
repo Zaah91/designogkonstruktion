@@ -210,6 +210,9 @@ export default {
       this.fetchForumMessages();
     }, 5000);
   },
+  beforeUnmount() {
+    clearInterval(this.updateInterval); // Vigtig! For at undgå overlappende intervaller. Eks. Ved at navigere frem og tilbage
+  }
 };
 </script>
 
