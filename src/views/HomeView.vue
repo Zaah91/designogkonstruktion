@@ -2,58 +2,55 @@
   <v-main :class="{ mainContent: loggedInUser }"
     ><!-- tilføj "mainContent" klassen dynamisk hvis brugeren er logget ind -->
     <LogIn v-if="!loggedInUser" />
-    <div class="d-block homeWrap pa-4" v-else>
-      <v-progress-circular
-        class="vflspinner"
-        v-if="isLoading"
-        :size="100"
-        indeterminate
-      ></v-progress-circular>
+    <v-row v-else>
+      <v-col class="homeWrap pa-4" cols="12" sm="8" md="6">
+        <v-progress-circular
+          class="vflspinner"
+          v-if="isLoading"
+          :size="100"
+          indeterminate
+        ></v-progress-circular>
 
-      <template v-if="!isLoading">
-        <v-img
-          :src="userImageSrc"
-          :alt="loggedInUser.fullname"
-          class="userPicture"
-        />
-        <p class="text-h5 mt-4 mb-16 text-left">
-          {{ loggedInUser.fullname }}
-          <span class="isAdmin">{{
-            loggedInUser.admin ? "Admin" : "Bruger"
-          }}
-          <v-icon
-            aria-label="Admin"
-            icon="mdi-crown-circle"
-            aria-hidden="false"
-            v-if="loggedInUser.admin"
-          />
-        </span>        
-
-        </p>
-        <h1>Dine fællesskaber</h1>
-        <template v-if="loggedInUser.communities">
-          <template
-            v-for="(community, index) in loggedInUser.communities"
-            :key="index"
+        <template v-if="!isLoading">
+          <v-img
+              :src="userImageSrc"
+              :alt="loggedInUser.fullname"
+              class="userPicture"
+            />
+          <v-card
+            variant="flat"
+            :prepend-icon="loggedInUser.admin ? 'mdi-crown-circle' : 'mdi-account-circle'"
+            :subtitle="loggedInUser.admin ? 'Administrator' : 'Standardbruger'"
+            :title="loggedInUser.fullname"
+            class="mb-8"
           >
-            <v-btn
-              v-if="typeof community?.value == 'undefined' || community.value"
-              color="btnPrimary"
-              class="d-block mt-8 pa-2 communityBtn"
-              :to="{
-                name: 'Forum',
-                params: { id: community.community_id },
-              }"
-              elevation="2"
-              block
-              size="large"
+          </v-card>
+
+          <h1 class="text-h4 ma-0 pa-0">Dine fællesskaber</h1>
+          <template v-if="loggedInUser.communities">
+            <template
+              v-for="(community, index) in loggedInUser.communities"
+              :key="index"
             >
-              {{ community.community_name }}
-            </v-btn>
+              <v-btn
+                v-if="typeof community?.value == 'undefined' || community.value"
+                color="btnPrimary"
+                class="d-block mt-8 pa-2 communityBtn"
+                :to="{
+                  name: 'Forum',
+                  params: { id: community.community_id },
+                }"
+                elevation="2"
+                block
+                size="large"
+              >
+                {{ community.community_name }}
+              </v-btn>
+            </template>
           </template>
         </template>
-      </template>
-    </div>
+      </v-col>
+    </v-row>
   </v-main>
 </template>
 
@@ -115,10 +112,7 @@ export default {
 };
 </script>
 
-<style>
-.communityBtn span {
-  padding:0.2rem;
-}
+<style scoped>
 .isAdmin {
   display: block;
   font-size: 1.2rem;
@@ -131,7 +125,7 @@ export default {
 
 @media (min-width: 1024px) {
   .homeWrap {
-    width: 20rem;
+    max-width: 20rem;
     margin: 0;
   }
 }

@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <BurgerMenu :siteInfo="siteInfo" v-if="loggedInUser" />
-    <NavHeader :siteInfo="siteInfo" />
-    <router-view :siteInfo="siteInfo" />
+    <BurgerMenu v-if="loggedInUser" />
+    <NavHeader v-if="loggedInUser " />
+    <router-view />
   </v-app>
 </template>
 
@@ -23,17 +23,6 @@ export default {
     return {
       route: null,
       authToken: null,
-      siteInfo: {
-        sitename: "Venner for Livet",
-        loggedIn: false,
-      },
-    };
-  },
-  provide() {
-    // Fordi siteInfo ikke er direkte tilgængelig i vores views, bliver vi nødt til at dele den først via provide
-    // Inde i de views, som skal bruge den, skal vi huske at lave en inject af den. Se eks HomeView.
-    return {
-      siteInfo: this.siteInfo, // Providing `siteInfo` for child components
     };
   },
   methods: {

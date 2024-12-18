@@ -5,320 +5,352 @@
         <v-container>
           <!-- Search Bar -->
           <v-text-field
-            label="Search users"
+            :disabled="fullListLoading || isLoading"
+            variant="outlined"
+            label="Søg efter brugere"
             v-model="searchQuery"
             outlined
             clearable
+            @input="filterUsers()"
           ></v-text-field>
 
-          <div v-if="isLoading">Loading users...</div>
-          
-          <div v-if="isError" class="statusMessage">
-            {{ statusMessage }}
+          <div class="table-container">
+            <v-data-table
+              :headers="tableHeaders"
+              :items="usersFetcher"
+              :loading="fullListLoading"
+              class="elevation-1"
+            >
+              <!-- Kolonne til handlinger -->
+              <template v-slot:[`item.actions`]="{ item }">
+                <v-row justify="end">
+                  <v-col cols="auto">
+                    <v-btn
+                      size="large"
+                      color="btnPrimary"
+                      variant="flat"
+                      :disabled="isLoading || loggedInUser.userId == item.user_id"
+                      @click="openEditDialog(item)"
+                      prepend-icon="mdi-human-edit"
+                      density="comfortable"
+                      >Rediger</v-btn
+                    >
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn
+                      size="large"
+                      color="red"
+                      variant="flat"
+                      :disabled="
+                        isLoading || loggedInUser.userId == item.user_id
+                      "
+                      @click="openRemoveConfirmDialog(item.user_id)"
+                      prepend-icon="mdi-delete"
+                      density="comfortable"
+                      >Slet</v-btn
+                    >
+                  </v-col>
+                </v-row>
+              </template>
+              <template v-slot:fullListLoading>
+                <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+              </template>
+            </v-data-table>
           </div>
-
-          <div v-if="!isLoading && !isError" class="table-container">
-            <table class="users-table">
-              <thead>
-                <tr>
-                  <th>User ID</th>
-                  <th>User Name</th>
-                  <th>User Email</th>
-                  <th>User Role</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody class="table-scroll">
-                <tr
-                  v-for="(users, index) in filteredUsers"
-                  :key="users.id"
-                  :class="{ 'even-row': index % 2 === 0 }"
-                >
-                  <td>#{{ users.user_id }}</td>
-                  <td>{{ users.user_fullname }}</td>
-                  <td>{{ users.user_mail }}</td>
-                  <td>{{ users.user_admin == 1 ? 'Admin' : 'User' }}</td>
-                  <td>
-                    <button class="editButton" @click="openEditDialog(users)">Edit</button>
-                    <button class="editButton" @click="removeUser(users.user_id)">Remove</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <v-alert
+            class="my-4"
+            v-if="statusMessage"
+            :text="statusMessage.text"
+            density="compact"
+            :type="statusMessage.type"
+            :icon="'$' + statusMessage.type"
+            variant="tonal"
+          ></v-alert>
+          <v-progress-circular
+            class="vflspinner my-4"
+            v-if="isLoading"
+            :size="100"
+            indeterminate
+          ></v-progress-circular>
         </v-container>
 
         <!-- Edit User Dialog -->
-        <div v-if="isEditDialogOpen" class="dialog-overlay">
-          <div class="dialog-box">
-            <h3>Edit User</h3>
-            <form @submit.prevent="saveEdit">
-              <div>
-                <label for="editName">Name:</label>
-                <input id="editName" v-model="editForm.user_fullname" required />
-              </div>
-              <div>
-                <label for="editEmail">Email:</label>
-                <input id="editEmail" v-model="editForm.user_mail" type="mail" required />
-              </div>
-              <div>
-                <label for="editRole">Role:</label>
-                <select id="editRole" v-model="editForm.user_admin" >
-                  <option :value="true">Admin</option>
-                  <option :value="false">User</option>
-                </select>
-              </div>
-              <div>
-                <button class="editButton" type="submit">Save</button>
-                <button class="editButton" type="button" @click="closeEditDialog">Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <v-dialog v-model="isEditDialogOpen" max-width="30rem" persistent>
+          <v-card prepend-icon="mdi-human-edit" title="Rediger bruger">
+            <v-card-text>
+              <v-text-field
+                variant="outlined"
+                :disabled="isLoading"
+                append-icon="mdi-pencil"
+                label="Navn"
+                v-model="editForm.user_fullname"
+                outlined
+              ></v-text-field>
+
+              <v-text-field
+                variant="outlined"
+                :disabled="isLoading"
+                append-icon="mdi-mail"
+                label="E-mail"
+                v-model="editForm.user_mail"
+                outlined
+              ></v-text-field>
+              <v-select
+                variant="outlined"
+                v-model="editForm.user_admin"
+                append-icon="mdi-crown-circle"
+                :hint="`${roleTitle} er valgt`"
+                :items="[
+                  { role: 'Admin', value: true },
+                  { role: 'Standardbruger', value: false },
+                ]"
+                item-title="role"
+                item-value="value"
+                label="Rolle"
+                persistent-hint
+              ></v-select>
+            </v-card-text>
+            <template v-slot:actions>
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="flat"
+                prepend-icon="mdi-content-save"
+                density="comfortable"
+                @click="saveEdit"
+                >Gem</v-btn
+              >
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="outlined"
+                prepend-icon="mdi-close"
+                density="comfortable"
+                @click="closeEditDialog"
+                >Annuler</v-btn
+              >
+            </template>
+          </v-card>
+        </v-dialog>
+
+        <!-- Delete User Dialog -->
+        <v-dialog v-model="isDeleteDialogOpen" max-width="30rem" persistent>
+          <v-card prepend-icon="mdi-delete" title="Bekræft sletning">
+            <v-card-text>
+              <v-alert
+                class="statusMessage"
+                text="Brugeren og alt tilhørende data vil blive permanent slettet!"
+                density="compact"
+                type="warning"
+                :icon="warning"
+                variant="tonal"
+              ></v-alert>
+            </v-card-text>
+            <template v-slot:actions>
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="outlined"
+                prepend-icon="mdi-content-save"
+                density="comfortable"
+                @click="removeUser"
+                >Bekræft</v-btn
+              >
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="flat"
+                prepend-icon="mdi-close"
+                density="comfortable"
+                @click="isDeleteDialogOpen = false"
+                >Annuler</v-btn
+              >
+            </template>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </v-main>
 </template>
 
-  
 <script>
 import axiosInstance from "@/api/axiosInstance";
+import debounce from "lodash/debounce";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
 
 export default {
   data() {
     return {
+      tableHeaders: [
+        { title: "Navn", value: "user_fullname" },
+        { title: "E-mail", value: "user_mail" },
+        { title: "Handlinger", value: "actions", sortable: false },
+      ],
       users: [],
+      filteredUsers: [],
+      fullListLoading: false,
       isLoading: false,
-      isError: false,
+      statusType: "info",
       statusMessage: "",
       isEditDialogOpen: false,
+      isDeleteDialogOpen: false,
+      deleteThisUser: null,
       editForm: {
         id: null,
         name: "",
         mail: "",
-        role: "",
+        role: false,
       },
       searchQuery: "",
     };
   },
   computed: {
-    // Filtrer brugerlisten baseret på input i søgefeltet
-    filteredUsers() {
-      return this.users.filter((users) =>
-        `${users.user_fullname} ${users.user_mail} ${users.user_admin}`
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase())
-      );
-    }
+    usersFetcher() {
+      if (
+        typeof this.searchQuery == "string" &&
+        this.searchQuery.length > 0 &&
+        this.filteredUsers.length > 0
+      ) {
+        return this.filteredUsers;
+      } else {
+        return this.users;
+      }
+    },
+    roleTitle() {
+      return this.editForm.user_admin ? "Administrator" : "Standardbruger";
+    },
+    loggedInUser() {
+      // Retuner user-objektet for den bruger, som er logget ind
+      return useLoggedInUserStore().user;
+    },
   },
   methods: {
     // Hent en liste af brugere fra vores backend.
     // Bemærk: det her er absolut ikke optimalt, fordi vi henter ALLE brugerne ud.
     // Det kan være meget tungt, hvis der er mange brugere, og bør derfor deles op i "batches" og noget "pagination" af en art..
     async fetchUsers() {
-      this.isLoading = true;
-      this.isError = false;
+      this.fullListLoading = true;
       try {
         const response = await axiosInstance.get(this.$apiUrl + "/users");
         this.users = response.data;
       } catch (error) {
-        this.isError = true;
-        this.statusMessage = error.message || "Kunne ikke indlæse brugere.";
+        this.statusMessage = error?.message || "Kunne ikke indlæse brugere.";
       } finally {
-        this.isLoading = false;
+        this.fullListLoading = false;
       }
     },
+    filterUsers: debounce(function () {
+      // Filtrer brugerlisten baseret på input i søgefeltet
+      this.filteredUsers = this.users.filter((users) =>
+        `${users.user_fullname} ${users.user_mail} ${users.user_admin}`
+          .toLowerCase()
+          .includes(this.searchQuery.toLowerCase())
+      );
+    }, 300),
     // Metode til at åbne dialogboksen til at editere en bruger
-    openEditDialog(user_id) {
+    openEditDialog(user) {
       this.isEditDialogOpen = true;
-      this.editForm = { ...user_id };
+      this.editForm = { ...user };
     },
-    async fetchUserData(userId) {
-      try {
-        const response = await axiosInstance.get("/users/" + userId);
-        const userData = response.data;
-        this.editForm.user_id = userData.user_id;
-        this.editForm.user_fullname = userData.user_fullname;
-        this.editForm.user_mail = userData.user_mail;
-        this.editForm.user_admin = userData.user_admin;
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
+    openRemoveConfirmDialog(userId) {
+      this.deleteThisUser = userId;
+      this.isDeleteDialogOpen = true;
     },
     // Metode til at gemme brugeren
     async saveEdit() {
       try {
-        const response = await axiosInstance.patch(this.$apiUrl + `/users/${this.editForm.user_id}`, {
-          user_fullname: this.editForm.user_fullname,
-          user_mail: this.editForm.user_mail,
-          user_admin: this.editForm.user_admin ? 1 : 0,
-        });
-        const updatedUser = response.data;
-        const userIndex = this.users.findIndex((u) => u.user_id === this.editForm.user_id);
-        if (userIndex !== -1) {
-          this.users[userIndex] = updatedUser;
+        this.isEditDialogOpen = false;
+        this.isLoading = true;
+        const unmodifiedUser = this.users.find(
+          (user) => user.user_id === this.editForm.user_id
+        );
+
+        // Find ud af hvad præcis har ændret sig ved brugeren, og opdater kun det (patch), som har ændret sig
+        const updatedFields = {};
+
+        if (this.editForm.user_fullname !== unmodifiedUser.user_fullname) {
+          updatedFields.user_fullname = this.editForm.user_fullname;
+          unmodifiedUser.user_fullname = this.editForm.user_fullname; // Opdater den originale data uden behov for at kontakte vores backend igen
         }
-        this.fetchUsers();
-        this.closeEditDialog();
+
+        if (this.editForm.user_mail !== unmodifiedUser.user_mail) {
+          updatedFields.user_mail = this.editForm.user_mail;
+          unmodifiedUser.user_mail = this.editForm.user_mail;
+        }
+
+        if ((this.editForm.user_admin ? 1 : 0) !== unmodifiedUser.user_admin) {
+          updatedFields.user_admin = this.editForm.user_admin ? 1 : 0;
+          unmodifiedUser.user_admin = this.editForm.user_admin ? 1 : 0;
+        }
+
+        // Send patch anmodningen med de opdaterede data
+        const response = await axiosInstance.patch(
+          this.$apiUrl + `/users/${this.editForm.user_id}`,
+          updatedFields
+        );
+        this.statusMessage = {
+          text:
+            response?.data?.message ||
+            "Mangler svar fra serveren. Brugeren blev muligvis ikke opdateret korrekt.",
+          type: "info",
+        };
       } catch (error) {
-        console.error('Error updating user data:', error);
+        this.statusMessage = {
+          text: error?.message || "Kunne ikke gemme de opdaterede data.",
+          type: "error",
+        };
+      } finally {
+        this.isLoading = false;
       }
     },
     closeEditDialog() {
       this.isEditDialogOpen = false;
-      this.editForm = { user_id: null, user_fullname: "", user_mail: "", user_admin: "" };
+      this.editForm = {
+        user_id: null,
+        user_fullname: "",
+        user_mail: "",
+        user_admin: "",
+      };
     },
     // Metode til at slette en bruger fra databasen
-    async removeUser(userId) {
+    async removeUser() {
+      if (!this.deleteThisUser) {
+        return;
+      }
       try {
-        await axiosInstance.delete("/users/" + userId);
-        this.fetchUsers();
+        this.isDeleteDialogOpen = false;
+        this.isLoading = true;
+        const response = await axiosInstance.delete(
+          "/users/" + this.deleteThisUser
+        );
+        this.statusMessage = {
+          text:
+            response.data?.message ||
+            "Ukendt svar. Brugeren blev muligvis ikke slettet.",
+          type: "info",
+        };
       } catch (error) {
-        console.error("Failed to remove user:", error.message);
+        this.statusMessage = {
+          text: error?.message || "Brugeren blev ikke slettet.",
+          type: "error",
+        };
+      } finally {
+        this.users = this.users.filter(
+          (user) => user.user_id !== this.deleteThisUser
+        );
+        this.isLoading = false;
+        this.deleteThisUser = null;
       }
     },
   },
   async mounted() {
     await this.fetchUsers(); // Hent en liste af brugere, når vi har mounted appen
-  },
+  }
 };
 </script>
 
-  
-  <style>
-  .table-container {
-    height: 660px;
-    overflow: hidden; 
-    border: black;
-    border-style: solid;
-    border-radius: 8px;
-    margin-top: -20px;
-  }
-  
-  .user-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  thead {
-    position: sticky; 
-    top: 0; 
-    background-color: #cf6b5f; 
-    color: #ffffff;
-    z-index: 1; 
-    border: black;
-    border-style: solid;
-  }
-  
-  .even-row {
-    background-color: #efefef;
-  }
-
-  th,td {
-    padding: 8px; 
-    text-align: left; 
-    padding-left: 14px;
-    font-size: 16px;
-  }
-  
-  .table-scroll {
-    display: block;
-    max-height: 660px;
-    overflow-y: auto;
-  }
-  
-  tbody {
-    display: block;
-    width: 100%;
-    overflow-y: auto;
-  }
-  
-  tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-  }
-  
-  td {
-    border-top: 1px solid #ccc;
-  }
-  
-  td:nth-child(2) {
-    white-space: nowrap;
-  }
-  
-  .editButton {
-      padding: 6px;
-      margin: 4px;
-      background-color: #ccc;
-      border-radius: 10px;
-  }
-  
-  .editButton:hover{
-      background-color: #c6c1c1;
-  }
-  
-  .dialog-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .dialog-box {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 400px;
-  }
-  
-  .dialog-box h3 {
-    margin-bottom: 16px;
-  }
-  
-  .dialog-box form div {
-    margin-bottom: 12px;
-  }
-  
-  .dialog-box button {
-    margin-right: 8px;
-  }
-  
-  form div label{
-      padding: 4px;
-  }
-  
-  form div input{
-      border: none;
-      border-bottom: 1px solid black; 
-      outline: none; 
-      padding: 4px; 
-      margin: 5px 0; 
-  }
-  
-  form div select {
-      background-color: #ccc; /* Background color */
-      padding: 4px; /* Padding inside the select */
-      border: 1px solid #888; /* Border color and width */
-      border-radius: 4px; /* Rounded corners */
-      /*font-size: 16px; /* Font size */
-      color: #333; /* Text color */
-      appearance: none; /* Remove default styling in some browsers */
-      cursor: pointer; /* Pointer cursor on hover */
-      text-align: center;
-  }
-  
-  /* Optional: Add a hover effect */
-  form div select:hover {
-      background-color: #bbb; /* Change background color on hover */
-  }
-  
-  </style>
-  
+<style scoped>
+.v-data-table-header__content {
+  font-weight: bold;
+}
+</style>

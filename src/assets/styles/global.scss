@@ -1,10 +1,14 @@
 html {
   font-size:20px;
 }
-
-h1,h2 {
-  padding:0 0 1rem;
-  color: #000000;
+header {
+  background: rgb(
+    var(--v-theme-primary)
+  ); /* Vi tager farven fra vores Vuetify temafil i plugins/vuetify.js */
+  width: 25vw;
+  height: 100%;
+  position: fixed;
+  left: 0;
 }
 .userPicture {
   border-radius: 1rem;
@@ -14,6 +18,17 @@ h1,h2 {
   margin-left:26vw;
 }
 .vflspinner {margin:0 auto;display:block;}
+
+/* Rare alert fade- animations */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 
 @media (max-width: 1024px) {
   .mainContent {
@@ -26,4 +41,7 @@ h1,h2 {
   .mainContent button {
     min-width: 15rem; /* 20 * 15 = ~300px */
   }
+}
+.v-btn {
+  text-transform: none;
 }
