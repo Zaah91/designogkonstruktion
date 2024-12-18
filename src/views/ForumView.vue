@@ -1,7 +1,7 @@
 <template>
   <v-main class="mainContent">
     <v-container class="ma-0">
-      <h2>{{ pageTitle }}</h2>
+      <h2 class="text-h6 ma-0 pa-0">{{ pageTitle }}</h2>
       <v-progress-circular
         class="mt-8"
         v-if="isLoading"
@@ -37,27 +37,24 @@
         dense
         @keyup.enter="sendMessage"
       ></v-text-field>
-      <v-row justify="left" align="center" style="min-height:4rem">
+      <v-row justify="left" align="center" style="min-height: 4rem">
         <v-col cols="auto">
-          <v-btn
-            color="primary"
-            @click="sendMessage"
-            :disabled="isLoading || sendMessageIsLoading"
-            >Send</v-btn
-          >
+          <v-btn color="primary" @click="sendMessage">Send</v-btn>
         </v-col>
-        <v-col v-if="showStatus" class="statusMessageContainer" cols="auto">
-          <transition name="fade" @after-leave="onAfterLeave">
-            <v-alert
-              class="statusMessage"
-              v-if="statusMessage"
-              :text="statusMessage.text"
-              density="compact"
-              :type="statusMessage.type"
-              :icon="'$' + statusMessage.type"
-              variant="tonal"
-            ></v-alert>
-          </transition>
+        <v-col class="statusMessageContainer" cols="auto">
+          <template v-if="showStatus">
+            <transition name="fade" @after-leave="onAfterLeave">
+              <v-alert
+                class="statusMessage"
+                v-if="statusMessage && !isLoading"
+                :text="statusMessage.text"
+                density="compact"
+                :type="statusMessage.type"
+                :icon="'$' + statusMessage.type"
+                variant="tonal"
+              ></v-alert>
+            </transition>
+          </template>
         </v-col>
       </v-row>
     </v-container>
@@ -72,10 +69,11 @@ export default {
   data() {
     return {
       pageTitle: "",
-      messages: {},
+      messages: [],
       forumMessage: "",
       communityId: null,
       isLoading: false,
+      sendMessageIsLoading: false,
       showStatus: false,
       statusMessage: {},
     };
@@ -98,12 +96,12 @@ export default {
       }
     },
     async fetchForumMessages() {
-      this.isLoading = true;
       try {
         const response = await axiosInstance.get("forum/" + this.communityId);
         const messages = response.data;
 
         // Vi har brug for at hente bruger-billeder individuelt, så vi nemt kan vise dem i forumet
+        /* Denne del er ikke brugt pt, og laver også bare flere HTTP anmodninger..
         for (const message of messages) {
           try {
             const imgResponse = await axiosInstance.get(
@@ -116,11 +114,18 @@ export default {
             message.userImage = URL.createObjectURL(imgResponse.data);
           } catch (error) {
             // Hvis billedet ikke blev indlæst, brug en almindelig URL til vores profil-placeholder billede
-            message.userImage = (process.env.NODE_ENV === 'production' ? '/vfl/' : '/') + 'images/placeholder.png';
+            message.userImage =
+              (process.env.NODE_ENV === "production" ? "/vfl/" : "/") +
+              "images/placeholder.png";
           }
-        }
+        } */
 
-        this.messages = messages;
+        const existingForumIds = this.messages.map((msg) => msg.forum_id);
+        messages.forEach((newMessage) => {
+          if (!existingForumIds.includes(newMessage.forum_id)) {
+            this.messages.push(newMessage);
+          }
+        });
       } catch (error) {
         this.showMessage(
           error.message || "Kunne ikke indlæse fællesskaber.",
@@ -131,12 +136,7 @@ export default {
       }
     },
     async sendMessage() {
-      if (
-        this.forumMessage?.length < 1 ||
-        this.isLoading ||
-        this.sendMessageIsLoading
-      )
-        return;
+      if (this.forumMessage?.length < 1 || this.isLoading) return;
 
       this.sendMessageIsLoading = true;
 
@@ -201,8 +201,14 @@ export default {
   },
   mounted() {
     this.communityId = this.$route.params.id;
+    this.isLoading = true; // Kun ved første visning, fordi ellers blinker alting
     this.fetchCommunity();
     this.fetchForumMessages();
+
+    // Periodisk tjek efter nye beskeder
+    this.updateInterval = setInterval(() => {
+      this.fetchForumMessages();
+    }, 5000);
   },
 };
 </script>
