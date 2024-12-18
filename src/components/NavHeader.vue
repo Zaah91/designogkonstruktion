@@ -161,15 +161,6 @@ export default {
 .userList {
   width: 95%;
 }
-header {
-  background: rgb(
-    var(--v-theme-primary)
-  ); /* Vi tager farven fra vores Vuetify temafil i plugins/vuetify.js */
-  width: 25%;
-  height: 100%;
-  position: fixed;
-  left: 0;
-}
 nav {
   width: 33%;
   justify-content: right;
