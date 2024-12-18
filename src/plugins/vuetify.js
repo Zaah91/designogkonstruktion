@@ -1,5 +1,6 @@
 import { createVuetify } from "vuetify";
 import "vuetify/styles";
+import da from 'vuetify/lib/locale/da';
 
 // Importer kun de components, som vi faktisk bruger. Eks. VIcon eller VBtn.
 // import { VIcon, VBtn, VMain, VTextField, VDivider } from 'vuetify/components';
@@ -31,5 +32,9 @@ export default createVuetify({
         },
       },
     },
+  },
+  locale: {
+    locale: 'da',
+    messages: { da },
   },
 });
