@@ -7,7 +7,7 @@
           <v-text-field
             :disabled="fullListLoading || isLoading"
             variant="outlined"
-            label="Search users"
+            label="Søg efter brugere"
             v-model="searchQuery"
             outlined
             clearable
@@ -29,7 +29,7 @@
                       size="large"
                       color="btnPrimary"
                       variant="flat"
-                      :disabled="isLoading"
+                      :disabled="isLoading || loggedInUser.userId == item.user_id"
                       @click="openEditDialog(item)"
                       prepend-icon="mdi-human-edit"
                       density="comfortable"
@@ -40,9 +40,11 @@
                     <v-btn
                       size="large"
                       color="red"
-                      variant="outlined"
-                      :disabled="isLoading"
-                      @click="removeUser(item.user_id)"
+                      variant="flat"
+                      :disabled="
+                        isLoading || loggedInUser.userId == item.user_id
+                      "
+                      @click="openRemoveConfirmDialog(item.user_id)"
                       prepend-icon="mdi-delete"
                       density="comfortable"
                       >Slet</v-btn
@@ -73,59 +75,96 @@
         </v-container>
 
         <!-- Edit User Dialog -->
-        <v-dialog v-model="isEditDialogOpen" max-width="400" persistent>
-          <v-card class="px-4">
-            <h3 class="pb-4">Rediger bruger</h3>
-            <v-text-field
-              variant="outlined"
-              :disabled="isLoading"
-              append-icon="mdi-pencil"
-              label="Navn"
-              v-model="editForm.user_fullname"
-              outlined
-            ></v-text-field>
+        <v-dialog v-model="isEditDialogOpen" max-width="30rem" persistent>
+          <v-card prepend-icon="mdi-human-edit" title="Rediger bruger">
+            <v-card-text>
+              <v-text-field
+                variant="outlined"
+                :disabled="isLoading"
+                append-icon="mdi-pencil"
+                label="Navn"
+                v-model="editForm.user_fullname"
+                outlined
+              ></v-text-field>
 
-            <v-text-field
-              variant="outlined"
-              :disabled="isLoading"
-              append-icon="mdi-mail"
-              label="E-mail"
-              v-model="editForm.user_mail"
-              outlined
-            ></v-text-field>
-            <v-select
-              variant="outlined"
-              v-model="editForm.user_admin"
-              append-icon="mdi-crown-circle"
-              :hint="`${roleTitle} er valgt`"
-              :items="[
-                { role: 'Admin', value: true },
-                { role: 'Standardbruger', value: false },
-              ]"
-              item-title="role"
-              item-value="value"
-              label="Rolle"
-              persistent-hint
-            ></v-select>
+              <v-text-field
+                variant="outlined"
+                :disabled="isLoading"
+                append-icon="mdi-mail"
+                label="E-mail"
+                v-model="editForm.user_mail"
+                outlined
+              ></v-text-field>
+              <v-select
+                variant="outlined"
+                v-model="editForm.user_admin"
+                append-icon="mdi-crown-circle"
+                :hint="`${roleTitle} er valgt`"
+                :items="[
+                  { role: 'Admin', value: true },
+                  { role: 'Standardbruger', value: false },
+                ]"
+                item-title="role"
+                item-value="value"
+                label="Rolle"
+                persistent-hint
+              ></v-select>
+            </v-card-text>
             <template v-slot:actions>
-                  <v-btn
-                    size="large"
-                    color="btnPrimary"
-                    variant="flat"
-                    prepend-icon="mdi-content-save"
-                    density="comfortable"
-                    @click="saveEdit"
-                    >Gem</v-btn
-                  >
-                  <v-btn
-                    size="large"
-                    color="btnPrimary"
-                    variant="flat"
-                    prepend-icon="mdi-close"
-                    density="comfortable"
-                    @click="closeEditDialog"
-                    >Annuler</v-btn
-                  >
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="flat"
+                prepend-icon="mdi-content-save"
+                density="comfortable"
+                @click="saveEdit"
+                >Gem</v-btn
+              >
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="outlined"
+                prepend-icon="mdi-close"
+                density="comfortable"
+                @click="closeEditDialog"
+                >Annuler</v-btn
+              >
+            </template>
+          </v-card>
+        </v-dialog>
+
+        <!-- Delete User Dialog -->
+        <v-dialog v-model="isDeleteDialogOpen" max-width="30rem" persistent>
+          <v-card prepend-icon="mdi-delete" title="Bekræft sletning">
+            <v-card-text>
+              <v-alert
+                class="statusMessage"
+                text="Brugeren og alt tilhørende data vil blive permanent slettet!"
+                density="compact"
+                type="warning"
+                :icon="warning"
+                variant="tonal"
+              ></v-alert>
+            </v-card-text>
+            <template v-slot:actions>
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="outlined"
+                prepend-icon="mdi-content-save"
+                density="comfortable"
+                @click="removeUser"
+                >Bekræft</v-btn
+              >
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="flat"
+                prepend-icon="mdi-close"
+                density="comfortable"
+                @click="isDeleteDialogOpen = false"
+                >Annuler</v-btn
+              >
             </template>
           </v-card>
         </v-dialog>
@@ -137,6 +176,7 @@
 <script>
 import axiosInstance from "@/api/axiosInstance";
 import debounce from "lodash/debounce";
+import { useLoggedInUserStore } from "../stores/loggedInUser";
 
 export default {
   data() {
@@ -153,6 +193,8 @@ export default {
       statusType: "info",
       statusMessage: "",
       isEditDialogOpen: false,
+      isDeleteDialogOpen: false,
+      deleteThisUser: null,
       editForm: {
         id: null,
         name: "",
@@ -176,6 +218,10 @@ export default {
     },
     roleTitle() {
       return this.editForm.user_admin ? "Administrator" : "Standardbruger";
+    },
+    loggedInUser() {
+      // Retuner user-objektet for den bruger, som er logget ind
+      return useLoggedInUserStore().user;
     },
   },
   methods: {
@@ -205,6 +251,10 @@ export default {
     openEditDialog(user) {
       this.isEditDialogOpen = true;
       this.editForm = { ...user };
+    },
+    openRemoveConfirmDialog(userId) {
+      this.deleteThisUser = userId;
+      this.isDeleteDialogOpen = true;
     },
     // Metode til at gemme brugeren
     async saveEdit() {
@@ -263,10 +313,16 @@ export default {
       };
     },
     // Metode til at slette en bruger fra databasen
-    async removeUser(userId) {
+    async removeUser() {
+      if (!this.deleteThisUser) {
+        return;
+      }
       try {
+        this.isDeleteDialogOpen = false;
         this.isLoading = true;
-        const response = await axiosInstance.delete("/users/" + userId);
+        const response = await axiosInstance.delete(
+          "/users/" + this.deleteThisUser
+        );
         this.statusMessage = {
           text:
             response.data?.message ||
@@ -279,14 +335,17 @@ export default {
           type: "error",
         };
       } finally {
-        this.users = this.users.filter((user) => user.user_id !== userId);
+        this.users = this.users.filter(
+          (user) => user.user_id !== this.deleteThisUser
+        );
         this.isLoading = false;
+        this.deleteThisUser = null;
       }
     },
   },
   async mounted() {
     await this.fetchUsers(); // Hent en liste af brugere, når vi har mounted appen
-  },
+  }
 };
 </script>
 
