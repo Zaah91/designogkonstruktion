@@ -1,19 +1,21 @@
 <template>
   <v-main class="mainContent">
-    <v-row>
-      <v-col>
-        <h1>Indstillinger</h1>
+    <v-row class="pa-2">
+      <v-col style="max-width: 40rem">
+        <h1 class="mb-4">Indstillinger</h1>
         <v-text-field
           variant="outlined"
           label="Fulde navn"
           prepend-icon="mdi-pencil"
           v-model="editedUserAttributes.user_fullname"
+          :disabled="isLoading"
         />
         <v-text-field
           variant="outlined"
           label="Email"
           prepend-icon="mdi-mail"
           v-model="editedUserAttributes.user_mail"
+          :disabled="isLoading"
         />
         <v-row>
           <v-col>
@@ -23,6 +25,7 @@
               color="btnPrimary"
               @click="updateUser()"
               prepend-icon="mdi-content-save"
+              :disabled="isLoading"
               >Gem</v-btn
             >
           </v-col>
@@ -31,52 +34,95 @@
               size="large"
               block
               color="red"
-              @click="showOverlay = true"
+              @click="isDeleteDialogOpen = true"
               prepend-icon="mdi-delete"
+              :disabled="isLoading"
               >Slet</v-btn
             >
           </v-col>
         </v-row>
+        <v-row>
+          <v-col>
+            <v-alert
+              class="statusMessage"
+              v-if="statusMessage"
+              :text="statusMessage.text"
+              density="compact"
+              :type="statusMessage.type"
+              :icon="'$' + statusMessage.type"
+              variant="tonal"
+            ></v-alert>
+            <v-progress-circular
+              class="vflspinner"
+              v-if="isLoading"
+              :size="100"
+              indeterminate
+            ></v-progress-circular>
+          </v-col>
+        </v-row>
 
         <!-- Dialog-overlay til bekræftelse af sletning af bruger  -->
-        <v-dialog v-model="showOverlay" max-width="400">
-          <v-card>
-            <v-card-title class="headline">Bekræft sletning</v-card-title>
+        <v-dialog v-model="isDeleteDialogOpen" max-width="400">
+          <v-card prepend-icon="mdi-delete" title="Bekræft sletning">
             <v-card-text>
-              Er du sikker på, at du vil slette brugeren?
+              <v-alert
+                class="statusMessage"
+                text="Du er ved at slette din bruger! Alt tilhørende data vil blive permanent slettet!"
+                density="compact"
+                type="warning"
+                :icon="warning"
+                variant="tonal"
+              ></v-alert>
             </v-card-text>
-            <v-card-actions>
+            <template v-slot:actions>
               <v-btn
                 size="large"
-                color="green darken-1"
-                text
-                @click="showOverlay = false"
+                color="red"
+                variant="outlined"
+                prepend-icon="mdi-emoticon-dead"
+                density="comfortable"
+                @click="removeUser"
+                >Bekræft</v-btn
               >
-                Annuller
-              </v-btn>
-              <v-btn size="large" block color="red darken-1" text> Slet </v-btn>
-            </v-card-actions>
+              <v-btn
+                size="large"
+                color="btnPrimary"
+                variant="flat"
+                prepend-icon="mdi-close"
+                density="comfortable"
+                @click="isDeleteDialogOpen = false"
+                >Annuler</v-btn
+              >
+            </template>
           </v-card>
         </v-dialog>
       </v-col>
-      <v-col>
-        <div class="imgDetails">
-          <v-progress-circular
-            class="vflspinner"
-            v-if="isLoading"
-            :size="100"
-            indeterminate
-          ></v-progress-circular>
-          <template v-if="!imgIsLoading">
-            <v-img
-              :src="userImageSrc"
-              :alt="loggedInUser.fullname"
-              class="d-flex justify-center userPicture"
-            />
-          </template>
-        </div>
+      <v-col style="max-width: 20rem">
+        <v-progress-circular
+          class="vflspinner"
+          v-if="imgIsLoading"
+          :size="100"
+          indeterminate
+        ></v-progress-circular>
+        <template v-if="!imgIsLoading && loggedInUser">
+          <v-img
+            :src="userImageSrc"
+            :alt="loggedInUser.fullname"
+            class="userPicture"
+          />
+
+          <v-card
+            variant="flat"
+            :prepend-icon="
+              loggedInUser.admin ? 'mdi-crown-circle' : 'mdi-account-circle'
+            "
+            :title="loggedInUser.admin ? 'Administrator' : 'Standardbruger'"
+            class="ma-0"
+          >
+          </v-card>
+        </template>
         <v-container class="pa-0">
-          <h2>Interesser</h2>
+          <h2 class="text-h6 ma-0 pa-0">Interesser</h2>
           <template v-for="(community, index) in userCommunities" :key="index">
             <template v-if="this.userCommunities">
               <v-checkbox
@@ -97,6 +143,7 @@
 <script>
 import axiosInstance from "@/api/axiosInstance";
 import { useLoggedInUserStore } from "../stores/loggedInUser";
+import { useRoute } from "vue-router";
 
 export default {
   name: "SettingsView",
@@ -110,10 +157,11 @@ export default {
       userCommunities: [],
       tempCommunityUpdated: false,
       userImageSrc: null,
-      showOverlay: false,
+      isDeleteDialogOpen: false,
       statusMessage: "",
       isLoading: false,
       imgIsLoading: false,
+      deleteThisUser: null,
     };
   },
   inject: ["siteInfo"], // Injekt af sideInfo, "provided" i App.vue's create() lifecycle hook.
@@ -137,28 +185,44 @@ export default {
       if (!community.value) {
         this.isLoading = true;
         try {
-          await axiosInstance.post("/memberships", {
+          const response = await axiosInstance.post("/memberships", {
             user_id: this.loggedInUser.userId,
             community_id: community.community_id,
           });
+          this.statusMessage = {
+            text: response.data.message,
+            type: "success",
+          };
         } catch (error) {
-          this.statusMessage =
-            error.message || "Kunne ikke tilføje dit medlemskab.";
+          this.statusMessage = {
+            text:
+              error.message ||
+              "Ukendt svar. Kunne ikke tilføje dit medlemskab.",
+            type: "error",
+          };
         } finally {
           this.isLoading = false;
         }
       } else {
         this.isLoading = true;
         try {
-          await axiosInstance.delete(
+          const response = await axiosInstance.delete(
             "/memberships/" +
               this.loggedInUser.userId +
               "/" +
               community.community_id
           );
+          this.statusMessage = {
+            text: response.data.message,
+            type: "success",
+          };
         } catch (error) {
-          this.statusMessage =
-            error.message || "Kunne ikke tilføje dit medlemskab.";
+          this.statusMessage = {
+            text:
+              error.message ||
+              "Ukendt svar. Kunne ikke tilføje dit medlemskab.",
+            type: "error",
+          };
         } finally {
           this.isLoading = false;
         }
@@ -168,14 +232,23 @@ export default {
       this.isLoading = true;
       try {
         // const response = await...
-        await axiosInstance.patch(
+        const response = await axiosInstance.patch(
           "/users/" + this.loggedInUser.userId,
           this.editedUserAttributes
         );
         this.loggedInUser.fullname = this.editedUserAttributes.user_fullname;
         this.loggedInUser.email = this.editedUserAttributes.user_mail;
+
+        this.statusMessage = {
+          text: response.data.message,
+          type: "success",
+        };
       } catch (error) {
-        console.log(error);
+        this.statusMessage = {
+          text:
+            error.message || "Ukendt svar. Kunne ikke tilføje dit medlemskab.",
+          type: "error",
+        };
       } finally {
         this.isLoading = false;
       }
@@ -219,6 +292,28 @@ export default {
         this.imgIsLoading = false;
       }
     },
+    // Metode til at slette en bruger fra databasen
+    async removeUser() {
+      try {
+        this.isDeleteDialogOpen = false;
+        this.isLoading = true;
+        const response = await axiosInstance.delete(
+          "/users/" + this.loggedInUser.userId
+        );
+        this.statusMessage = {
+          text: response.data.message,
+          type: "info",
+        };
+        this.loggedInUserStore.logout(this.$router);
+      } catch (error) {
+        this.statusMessage = {
+          text: error?.message || "Brugeren blev ikke slettet.",
+          type: "error",
+        };
+      } finally {
+        this.isLoading = false;
+      }
+    },
   },
   watch: {
     loggedInUser: {
@@ -251,18 +346,16 @@ export default {
       this.editedUserAttributes.user_mail = this.loggedInUser.email;
     }
   },
+  created() {
+    this.loggedInUserStore = useLoggedInUserStore();
+    this.route = useRoute();
+  },
 };
 </script>
 
 <style scoped>
-.imgDetails {
-  display: flex;
-  justify-content: center;
-  align-items: middle;
-}
 .userPicture {
   width: 100%;
-  border-radius: 1rem;
   margin: 0;
   padding: 0;
 }
