@@ -1,132 +1,147 @@
 <template>
   <v-row class="fill-height bgrnd" justify="center" align="center">
-  <v-col cols="11" sm="8" md="6">
-    <v-card variant="flat" class="pa-5 usrActionBox">
-      <h1 class="text-h4 mb-4 text-center">Venner For Livet</h1>
+    <v-col cols="11" sm="8" md="6">
+      <v-card variant="flat" class="pa-5 usrActionBox">
+        <h1 class="text-h4 mb-4 text-center">Venner For Livet</h1>
 
-      <v-container v-if="showLogin">
-        <p class="text-left pb-8">
-          Indtast din e-mail adresse og dit kodeord for at logge ind:
-        </p>
-        <v-text-field
-          label="Indtast email"
-          v-model="email"
-          variant="outlined"
-          bg-color="inputBg"
-          @keyup.enter="handleLogin"
-        ></v-text-field>
-        <v-text-field
-          label="Indtast kodeord"
-          v-model="password"
-          type="password"
-          variant="outlined"
-          bg-color="inputBg"
-          @keyup.enter="handleLogin"
-        ></v-text-field>
+        <v-container v-if="showLogin && !isValidating">
+          <p class="text-left pb-8">
+            Indtast din e-mail adresse og dit kodeord for at logge ind:
+          </p>
+          <v-text-field
+            label="Indtast email"
+            v-model="email"
+            variant="outlined"
+            bg-color="inputBg"
+            @keyup.enter="handleLogin"
+          ></v-text-field>
+          <v-text-field
+            label="Indtast kodeord"
+            v-model="password"
+            type="password"
+            variant="outlined"
+            bg-color="inputBg"
+            @keyup.enter="handleLogin"
+          ></v-text-field>
 
-        <v-row justify="left">
-          <v-col cols="auto">
-            <v-btn
-              min-width="144"
-              color="primary"
-              elevation="2"
-              size="large"
-              @click="handleLogin"
-            >
-              Log Ind
-            </v-btn>
-          </v-col>
-          <v-col cols="auto">
-            <v-btn
-              min-width="144"
-              color="primary"
-              variant="outlined"
-              size="large"
-              @click="toggleView"
-            >
-              Ny bruger
-            </v-btn>
+          <v-row justify="left">
+            <v-col cols="auto">
+              <v-btn
+                min-width="144"
+                color="primary"
+                elevation="2"
+                size="large"
+                @click="handleLogin"
+              >
+                Log Ind
+              </v-btn>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn
+                min-width="144"
+                color="primary"
+                variant="outlined"
+                size="large"
+                @click="toggleView"
+              >
+                Ny bruger
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-divider class="my-4"></v-divider>
+          <p class="text-left pb-8">
+            Eller log ind med dit Google- eller Apple ID nedenfor:
+          </p>
+          <v-row class="loginWith">
+            <v-col>
+              <v-btn
+                class="goodleId"
+                color="primary"
+                variant="tonal"
+                elevation="2"
+                block
+                size="large"
+                @click="basicLogin"
+              >
+                <template v-slot:prepend>
+                  <img src="@/assets/small-g.png" alt="Log ind med Google" />
+                </template>
+                Log ind med Google
+              </v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                class="appleId"
+                color="primary"
+                variant="tonal"
+                elevation="2"
+                block
+                size="large"
+                @click="basicLogin"
+              >
+                <template v-slot:prepend>
+                  <img src="@/assets/small-apple.png" alt="Log ind med Apple" />
+                </template>
+                Log ind med Apple
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-container class="createUser" v-else-if="!isValidating">
+          <p class="text-left pb-8">Opret en ny bruger:</p>
+          <v-text-field
+            label="Navn"
+            v-model="newUser.user_fullname"
+            variant="outlined"
+            bg-color="inputBg"
+          ></v-text-field>
+          <v-text-field
+            label="E-mail"
+            variant="outlined"
+            bg-color="inputBg"
+            v-model="newUser.user_mail"
+          ></v-text-field>
+          <v-text-field
+            type="password"
+            label="Kodeord"
+            v-model="newUser.user_password"
+            variant="outlined"
+            bg-color="inputBg"
+          ></v-text-field>
+
+          <v-btn
+            color="primary"
+            size="large"
+            elevation="2"
+            @click="registerUser"
+          >
+            Opret
+          </v-btn>
+          <v-divider class="my-4"></v-divider>
+          <v-btn
+            class="my-4"
+            color="primary"
+            variant="outlined"
+            size="large"
+            @click="toggleView"
+          >
+            Tilbage til logind
+          </v-btn>
+        </v-container>
+        <v-row justify="center" align="center" class="mt-8" v-if="isValidating">
+          <v-col>
+            <p class="text-center mb-8">Vent et øjeblik...</p>
+            <v-progress-circular
+              class="vflspinner"
+              :size="100"
+              indeterminate
+            ></v-progress-circular>
           </v-col>
         </v-row>
-        <v-divider class="my-4"></v-divider>
-        <p class="text-left pb-8">
-          Eller log ind med dit Google- eller Apple ID nedenfor:
-        </p>
-        <v-row class="loginWith">
-          <v-col>
-            <v-btn
-              class="goodleId"
-              color="primary"
-              variant="tonal"
-              elevation="2"
-              block
-              size="large"
-              @click="basicLogin"
-            >
-              <template v-slot:prepend>
-                <img src="@/assets/small-g.png" alt="Log ind med Google" />
-              </template>
-              Log ind med Google
-            </v-btn>
-          </v-col>
-          <v-col>
-            <v-btn
-              class="appleId"
-              color="primary"
-              variant="tonal"
-              elevation="2"
-              block
-              size="large"
-              @click="basicLogin"
-            >
-              <template v-slot:prepend>
-                <img src="@/assets/small-apple.png" alt="Log ind med Apple" />
-              </template>
-              Log ind med Apple
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <v-container class="createUser" v-else>
-        <p class="text-left pb-8">Opret en ny bruger:</p>
-        <v-text-field
-          label="Navn"
-          v-model="newUser.user_fullname"
-          variant="outlined"
-          bg-color="inputBg"
-        ></v-text-field>
-        <v-text-field
-          label="E-mail"
-          variant="outlined"
-          bg-color="inputBg"
-          v-model="newUser.user_mail"
-        ></v-text-field>
-        <v-text-field
-          type="password"
-          label="Kodeord"
-          v-model="newUser.user_password"
-          variant="outlined"
-          bg-color="inputBg"
-        ></v-text-field>
-
-        <v-btn color="primary" size="large" elevation="2" @click="registerUser">
-          Opret
-        </v-btn>
-        <v-divider class="my-4"></v-divider>
-        <v-btn
-          class="my-4"
-          color="primary"
-          variant="outlined"
-          size="large"
-          @click="toggleView"
-        >
-          Tilbage til logind
-        </v-btn>
-      </v-container>
-    </v-card>
-  </v-col>
-</v-row>
+      </v-card>
+    </v-col>
+  </v-row>
 
   <transition name="fade" @after-leave="onAfterLeave">
     <v-container v-if="showStatus" class="statusMessageContainer">
@@ -158,6 +173,8 @@ export default {
   },
   data() {
     return {
+      isValidating: false,
+      isLoading: false,
       isMobile: false,
       email: "", // Login
       password: "", // Login
@@ -179,6 +196,7 @@ export default {
         this.showMessage("E-mail eller Kodeord mangler!", "error");
         return;
       }
+      this.isLoading = true;
       axiosInstance
         .post("/login", {
           user_mail: this.email,
@@ -200,6 +218,9 @@ export default {
           if (error?.response?.data?.message) {
             this.showMessage(error.response.data.message, "error");
           }
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     basicLogin() {
@@ -212,6 +233,8 @@ export default {
       this.showLogin = !this.showLogin;
     },
     async registerUser() {
+      this.isLoading = true;
+
       if (
         this.newUser.user_fullname?.length < 1 ||
         this.newUser.user_mail?.length < 1 ||
@@ -232,6 +255,8 @@ export default {
           "Kunne ikke oprette brugeren. Måske findes den allerede!",
           "warning"
         );
+      } finally {
+        this.isLoading = false;
       }
     },
     showMessage(message, type) {
@@ -249,7 +274,7 @@ export default {
       if (loggedInUserStore.user) {
         return;
       }
-
+      this.isValidating = true;
       // If the user is not logged in, let's check if we can revalidate an existing token
       axiosInstance
         .get("/handshake")
@@ -271,6 +296,9 @@ export default {
           } else {
             console.error("Error:", error);
           }
+        })
+        .finally(() => {
+          this.isValidating = false;
         });
     },
     checkScreenSize() {
@@ -303,7 +331,7 @@ export default {
 
 <style scoped>
 .usrActionBox {
-  min-height:36vw;
+  min-height: 36vw;
 }
 .loginWith {
   padding: 0.5rem;
