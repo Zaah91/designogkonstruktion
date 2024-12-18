@@ -154,7 +154,7 @@ export default {
         newMessageObj.user.user_fullname = this.loggedInUser.fullname;
         newMessageObj.user.user_admin = this.loggedInUser.admin;
         newMessageObj.forum_id = response.data.what.forum_id; // Vi skal bruge forum_id fra databasen for at undgå at beskederne bliver indsat igen i vores setInterval
-        this.messages.push(newMessageObj); // Opdater messages array lokalt, så brugeren kan se den med den samme, og ikke behøver vente på update intervallet
+        this.messages.unshift(newMessageObj); // Opdater messages array lokalt, så brugeren kan se den med den samme, og ikke behøver vente på update intervallet
         // this.loadLatest(); // Bliver ikke brugt lige nu..Brugt til at indlæse billeder
         this.forumMessage = "";
         this.showMessage(response.data.message, "success");
