@@ -74,7 +74,7 @@
                       icon
                       color="secondary"
                       class="navBtn logoutBtn"
-                      @click="logout"
+                      @click="loggedInUserStore.logout($router)"
                     >
                       <v-icon color="actionTxt" icon="mdi-close" />
                     </v-btn>
@@ -113,7 +113,6 @@
 <script>
 import { useRoute } from "vue-router";
 import { useLoggedInUserStore } from "../stores/loggedInUser";
-import axiosInstance from "@/api/axiosInstance";
 
 export default {
   name: "NavHeader",
@@ -129,23 +128,6 @@ export default {
     },
   },
   methods: {
-    logout() {
-      axiosInstance
-        .post("/logout")
-        .then((response) => {
-          // console.log(response.data);
-          if (response?.data?.message) {
-            this.loggedInUserStore.clearUser();
-            this.loggedInUserStore.loggedOut = "Du er nu logget ud.";
-            if (!this.loggedInUser && this.$route.name !== "Home") {
-              this.$router.push({ name: "Home" }); // Redirect til home
-            }
-          }
-        })
-        .catch(() => {
-          // console.error("login: ", error); // Lad os undgå at skrive fejl i loggen, når vi ikke debugger
-        });
-    },
     goBack() {
       this.$router.go(-1); // Tilbage til forrige side
     },
