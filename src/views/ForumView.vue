@@ -116,7 +116,7 @@ export default {
             message.userImage = URL.createObjectURL(imgResponse.data);
           } catch (error) {
             // Hvis billedet ikke blev indlæst, brug en almindelig URL til vores profil-placeholder billede
-            message.userImage = "/images/placeholder.png";
+            message.userImage = (process.env.NODE_ENV === 'production' ? '/vfl/' : '/') + 'images/placeholder.png';
           }
         }
 
