@@ -42,7 +42,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(), // Brug history-mode for at fjerne hash fra URL'en
+  history: createWebHistory(process.env.NODE_ENV === 'production' ? '/vfl/' : '/'), // Brug history-mode for at fjerne hash fra URL'en
   routes,
 });
 

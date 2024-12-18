@@ -159,7 +159,7 @@ export default {
       tempCommunityUpdated: false,
       userImageSrc: null,
       isDeleteDialogOpen: false,
-      statusMessage: {},
+      statusMessage: null,
       isLoading: false,
       imgIsLoading: false,
       deleteThisUser: null,

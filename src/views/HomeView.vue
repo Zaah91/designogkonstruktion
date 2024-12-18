@@ -81,7 +81,7 @@ export default {
   methods: {
     // Method til at opdatere src attributten til brugerens billede
     async fetchUserImage(userId) {
-      let imageSrc = "/images/placeholder.png";
+      let imageSrc = (process.env.NODE_ENV === 'production' ? '/vfl/' : '/') + 'images/placeholder.png';
       this.isLoading = true;
       try {
         const response = await axiosInstance.get("/images/" + userId, {
