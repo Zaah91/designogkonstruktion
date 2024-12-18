@@ -3,6 +3,7 @@
     <v-container class="ma-0">
       <h2>{{ pageTitle }}</h2>
       <v-progress-circular
+        class="mt-8"
         v-if="isLoading"
         :size="100"
         indeterminate
@@ -36,7 +37,29 @@
         dense
         @keyup.enter="sendMessage"
       ></v-text-field>
-      <v-btn color="primary" @click="sendMessage">Send</v-btn>
+      <v-row justify="left" align="center" style="min-height:4rem">
+        <v-col cols="auto">
+          <v-btn
+            color="primary"
+            @click="sendMessage"
+            :disabled="isLoading || sendMessageIsLoading"
+            >Send</v-btn
+          >
+        </v-col>
+        <v-col v-if="showStatus" class="statusMessageContainer" cols="auto">
+          <transition name="fade" @after-leave="onAfterLeave">
+            <v-alert
+              class="statusMessage"
+              v-if="statusMessage"
+              :text="statusMessage.text"
+              density="compact"
+              :type="statusMessage.type"
+              :icon="'$' + statusMessage.type"
+              variant="tonal"
+            ></v-alert>
+          </transition>
+        </v-col>
+      </v-row>
     </v-container>
   </v-main>
 </template>
@@ -53,6 +76,8 @@ export default {
       forumMessage: "",
       communityId: null,
       isLoading: false,
+      showStatus: false,
+      statusMessage: {},
     };
   },
   methods: {
@@ -97,14 +122,23 @@ export default {
 
         this.messages = messages;
       } catch (error) {
-        this.statusMessage =
-          error.message || "Kunne ikke indlæse fællesskaber.";
+        this.showMessage(
+          error.message || "Kunne ikke indlæse fællesskaber.",
+          "error"
+        );
       } finally {
         this.isLoading = false;
       }
     },
     async sendMessage() {
-      if (this.forumMessage === "") return;
+      if (
+        this.forumMessage?.length < 1 ||
+        this.isLoading ||
+        this.sendMessageIsLoading
+      )
+        return;
+
+      this.sendMessageIsLoading = true;
 
       const newMessageObj = {
         user_id: this.loggedInUser.userId,
@@ -112,14 +146,23 @@ export default {
       };
 
       try {
-        await axiosInstance.post("forum/" + this.communityId, newMessageObj);
+        const response = await axiosInstance.post(
+          "forum/" + this.communityId,
+          newMessageObj
+        );
         newMessageObj.user = {};
         newMessageObj.user.user_fullname = this.loggedInUser.fullname;
         this.messages.push(newMessageObj);
         this.loadLatest();
         this.forumMessage = "";
+        this.showMessage(response.data.message, "success");
       } catch (error) {
-        console.error("Error sending message:", error);
+        this.showMessage(
+          error.message || "Ukendt svar. Beskeden blev muligvis ikke sendt.",
+          "error"
+        );
+      } finally {
+        this.sendMessageIsLoading = false;
       }
     },
     async fetchCommunity() {
@@ -137,6 +180,16 @@ export default {
     },
     alternateColorPick(index) {
       return index % 2 === 0 ? "inputBg" : "inputSecondaryBg";
+    },
+    showMessage(message, type) {
+      this.showStatus = true;
+      this.statusMessage = {
+        text: message,
+        type: type,
+      };
+      setTimeout(() => {
+        this.showStatus = false;
+      }, 4000);
     },
   },
   computed: {
