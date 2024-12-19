@@ -29,23 +29,35 @@
         </div>
       </v-card>
     </v-container>
-    <v-container class="pa-4 forumInput">
-      <v-text-field
-        v-model="forumMessage"
-        label="Skriv en besked"
-        outlined
-        dense
-        @keyup.enter="sendMessage"
-      ></v-text-field>
-      <v-row justify="left" align="center" style="min-height: 4rem">
+    <v-container class="pa-0 forumInput">
+      <v-row justify="left" align="end">
         <v-col cols="auto">
-          <v-btn color="primary" @click="sendMessage">Send</v-btn>
+          <v-btn
+            class="mb-5"
+            color="primary"
+            size="large"
+            variant="flat"
+            :disabled="sendMessageIsLoading"
+            @click="sendMessage"
+            >Send</v-btn
+          >
         </v-col>
-        <v-col class="statusMessageContainer" cols="auto">
-          <template v-if="showStatus">
-            <transition name="fade" @after-leave="onAfterLeave">
+        <v-col cols="9">
+          <v-textarea v-if="!sendMessageIsLoading && !showStatus" class="mt-4" auto-grow="true" rows="1" :max-rows="messageFocus ? '4' : '1'"
+            v-model="forumMessage"
+            label="Skriv en besked"
+            @focus="messageFocus = true"
+            @blur="messageFocus = false"
+            :style="{ height: messageFocus ? '7rem' : '3.2rem', transition: 'height 0.5s ease' }"
+            variant="outlined"
+            density="compact"
+            :disabled="sendMessageIsLoading"
+            @keyup.enter="sendMessage"
+          ></v-textarea>
+          <template v-else>
+            <transition v-if="showStatus" name="fade" @after-leave="onAfterLeave">
               <v-alert
-                class="statusMessage"
+                class="statusMessage mb-4 mt-4"
                 v-if="statusMessage && !isLoading"
                 :text="statusMessage.text"
                 density="compact"
@@ -57,6 +69,7 @@
           </template>
         </v-col>
       </v-row>
+      <div class="lined"></div>
     </v-container>
   </v-main>
 </template>
@@ -76,6 +89,7 @@ export default {
       sendMessageIsLoading: false,
       showStatus: false,
       statusMessage: {},
+      messageFocus: false
     };
   },
   methods: {
@@ -135,14 +149,17 @@ export default {
         this.isLoading = false;
       }
     },
-    async sendMessage() {
+    async sendMessage(event) {
       if (this.forumMessage?.length < 1 || this.isLoading) return;
 
+      if (event.key === 'Enter' && event.shiftKey) return;
+
       this.sendMessageIsLoading = true;
+      this.showMessage('Sender...', 'info');
 
       const newMessageObj = {
         user_id: this.loggedInUser.userId,
-        forum_message: this.forumMessage
+        forum_message: this.forumMessage,
       };
 
       try {
@@ -214,7 +231,7 @@ export default {
   },
   beforeUnmount() {
     clearInterval(this.updateInterval); // Vigtig! For at undgå overlappende intervaller. Eks. Ved at navigere frem og tilbage
-  }
+  },
 };
 </script>
 
@@ -233,6 +250,16 @@ export default {
   box-sizing: border-box;
   background-color: white;
 }
+.forumInput .lined {
+  position: absolute;
+  top: 0px;
+  left: -1vw;
+  right: 0;
+  background: #eeeeee;
+  height: 1px;
+  width: 75vw;
+  z-index: 9997;
+}
 
 section {
   width: 100%;
@@ -242,12 +269,6 @@ section {
 section p {
   margin: 1rem;
   font-size: medium;
-}
-.messageContainer:nth-child(odd) {
-  background-color: var(--v-theme-inputBg);
-}
-.messageContainer:nth-child(even) {
-  background-color: var(--v-theme-inputSecondaryBg);
 }
 .userPicture {
   width: 8rem;
@@ -269,6 +290,10 @@ section p {
     margin-left: 0;
     min-width: 300px;
     width: 90%;
+  }
+  .forumInput .lined {
+    left: 0;
+    width: 100vw;
   }
 }
 @media (min-width: 1024px) {

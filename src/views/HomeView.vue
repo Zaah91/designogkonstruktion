@@ -26,7 +26,7 @@
           >
           </v-card>
 
-          <h1 class="text-h4 ma-0 pa-0">Dine fællesskaber</h1>
+          <h1 class="text-h6 ma-0 pa-0">Dine fællesskaber</h1>
           <template v-if="loggedInUser.communities">
             <template
               v-for="(community, index) in loggedInUser.communities"
